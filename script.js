@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Enhanced typing effect for #typing-effect
+    // Simplified typing effect for #typing-effect
     const typingElement = document.getElementById("typing-effect");
     if (typingElement) {
         const phrases = [
@@ -36,24 +36,27 @@ document.addEventListener("DOMContentLoaded", function () {
         ];
         let currentPhraseIndex = 0;
 
+        // Ensure element is ready and visible
         typingElement.style.opacity = "1";
-        typingElement.textContent = "";
+        typingElement.textContent = ""; // Start empty
 
         function typeText() {
             const currentPhrase = phrases[currentPhraseIndex];
             let charIndex = 0;
+
+            // Clear previous content
             typingElement.textContent = "";
 
+            // Type out the phrase character by character
             const typeInterval = setInterval(() => {
                 if (charIndex < currentPhrase.length) {
                     typingElement.textContent += currentPhrase[charIndex];
                     charIndex++;
-                    playSound('beep', 0.1);
                 } else {
                     clearInterval(typeInterval);
-                    setTimeout(eraseText, 2000);
+                    setTimeout(eraseText, 2000); // Pause before erasing
                 }
-            }, 50);
+            }, 50); // Typing speed
         }
 
         function eraseText() {
@@ -65,11 +68,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else {
                     clearInterval(eraseInterval);
                     currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
-                    setTimeout(typeText, 500);
+                    setTimeout(typeText, 500); // Brief pause before next phrase
                 }
-            }, 30);
+            }, 30); // Erasing speed
         }
 
+        // Start the typing effect immediately
         typeText();
     } else {
         console.error("Typing element (#typing-effect) not found in the DOM!");
@@ -89,7 +93,6 @@ document.addEventListener("DOMContentLoaded", function () {
             localStorage.setItem("darkMode", body.classList.contains("dark-mode") ? "enabled" : null);
             playSound('click');
             updateParticles();
-            gsap.to(body, { backgroundColor: body.classList.contains("dark-mode") ? "#222" : "#f4f4f4", duration: 0.5 });
         });
 
         if (localStorage.getItem("darkMode") === "enabled") {
@@ -111,14 +114,10 @@ document.addEventListener("DOMContentLoaded", function () {
             hamburger.querySelector("i").classList.toggle("fa-bars");
             hamburger.querySelector("i").classList.toggle("fa-times");
             playSound('click');
-            gsap.fromTo(navUl.querySelectorAll("li"), 
-                { opacity: 0, y: -20 },
-                { opacity: 1, y: 0, duration: 0.3, stagger: 0.1 }
-            );
         });
     }
 
-    // Smooth scrolling with offset for header
+    // Smooth scrolling
     document.querySelectorAll("nav a").forEach(anchor => {
         anchor.addEventListener("click", function (e) {
             e.preventDefault();
@@ -126,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const targetElement = document.getElementById(targetId);
             if (targetElement) {
                 window.scrollTo({
-                    top: targetElement.offsetTop - 100,
+                    top: targetElement.offsetTop - 80,
                     behavior: "smooth"
                 });
                 if (window.innerWidth <= 768 && navUl) {
@@ -160,7 +159,6 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.ok ? response.json() : Promise.reject())
             .then(data => {
                 weatherText.innerHTML = `<i class="fas fa-cloud-sun" aria-hidden="true"></i> ${Math.round(data.main.temp)}°F in ${data.name}`;
-                gsap.from(weatherText, { opacity: 0, y: 10, duration: 0.5 });
             })
             .catch(() => {
                 weatherText.innerHTML = "Weather unavailable";
@@ -228,7 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     updateParticles();
 
-    // Interactive Leaflet map with animation
+    // Interactive Leaflet map
     const mapElement = document.getElementById("map");
     if (mapElement && typeof L !== "undefined") {
         const map = L.map("map", { 
@@ -246,34 +244,26 @@ document.addEventListener("DOMContentLoaded", function () {
             { lat: 41.2776, lon: -72.5250, popup: "Support Office - Get IT Help", url: "#support" }
         ];
 
-        markers.forEach((markerData, index) => {
-            const marker = L.marker([markerData.lat, markerData.lon]).addTo(map)
+        markers.forEach(markerData => {
+            L.marker([markerData.lat, markerData.lon]).addTo(map)
                 .bindPopup(markerData.popup)
                 .on('click', () => {
                     window.location.href = markerData.url;
                     playSound('click');
                 });
-            gsap.from(marker._icon, { opacity: 0, y: 20, duration: 0.5, delay: index * 0.2 });
         });
     }
 
-    // Testimonial carousel with GSAP
+    // Testimonial carousel
     const testimonials = document.querySelectorAll(".testimonial");
     let currentTestimonial = 0;
     function showTestimonial() {
-        gsap.to(testimonials, {
-            opacity: 0,
-            scale: 0.95,
-            duration: 0.5,
-            onComplete: () => {
-                testimonials.forEach((t, i) => {
-                    t.style.position = i === currentTestimonial ? "relative" : "absolute";
-                    t.style.opacity = i === currentTestimonial ? "1" : "0";
-                    t.style.transform = i === currentTestimonial ? "scale(1)" : "scale(0.95)";
-                });
-                currentTestimonial = (currentTestimonial + 1) % testimonials.length;
-            }
+        testimonials.forEach((t, i) => {
+            t.style.opacity = i === currentTestimonial ? "1" : "0";
+            t.style.transform = i === currentTestimonial ? "scale(1)" : "scale(0.95)";
+            t.style.position = i === currentTestimonial ? "relative" : "absolute";
         });
+        currentTestimonial = (currentTestimonial + 1) % testimonials.length;
     }
     showTestimonial();
     setInterval(showTestimonial, 4000);
@@ -328,7 +318,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (window.innerWidth <= 768) cursor.style.display = "none";
     }
 
-    // Service modals with enhanced interaction
+    // Service modals with fixed button functionality
     const services = document.querySelectorAll(".service");
     const modals = document.querySelectorAll(".modal");
     const closeButtons = document.querySelectorAll(".modal-close");
@@ -341,7 +331,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (modal) {
                 modal.style.display = "flex";
                 playSound('click');
-                gsap.from(modal.querySelector(".modal-content"), { scale: 0.8, opacity: 0, duration: 0.3 });
             }
         });
 
@@ -353,42 +342,32 @@ document.addEventListener("DOMContentLoaded", function () {
             const centerY = rect.height / 2;
             const tiltX = (y - centerY) / 20;
             const tiltY = -(x - centerX) / 20;
-            gsap.to(service, { rotationX: tiltX, rotationY: tiltY, duration: 0.2, ease: "power1.out" });
+            service.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.05)`;
         });
 
         service.addEventListener("mouseleave", () => {
-            gsap.to(service, { rotationX: 0, rotationY: 0, scale: 1, duration: 0.2, ease: "power1.out" });
+            service.style.transform = "perspective(1000px) scale(1)";
         });
     });
 
     closeButtons.forEach(button => {
         button.addEventListener("click", () => {
             const modal = button.closest(".modal");
-            gsap.to(modal.querySelector(".modal-content"), {
-                scale: 0.8,
-                opacity: 0,
-                duration: 0.3,
-                onComplete: () => modal.style.display = "none"
-            });
+            modal.style.display = "none";
             playSound('click');
         });
     });
 
     document.addEventListener("click", (e) => {
         if (e.target.classList.contains("modal")) {
-            gsap.to(e.target.querySelector(".modal-content"), {
-                scale: 0.8,
-                opacity: 0,
-                duration: 0.3,
-                onComplete: () => e.target.style.display = "none"
-            });
+            e.target.style.display = "none";
             playSound('click');
         }
     });
 
     modalActions.forEach(action => {
         action.addEventListener("click", (e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // Prevent modal close
             const href = action.getAttribute("onclick").match(/location\.href='([^']+)'/)[1];
             window.location.href = href;
             playSound('click');
@@ -398,7 +377,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Scroll animations with GSAP
     gsap.registerPlugin(ScrollTrigger);
     const sections = document.querySelectorAll(".parallax, .section-animation");
-    sections.forEach((section, index) => {
+    sections.forEach(section => {
         gsap.fromTo(section, 
             { opacity: 0, y: 50 },
             {
@@ -410,8 +389,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     trigger: section,
                     start: "top 85%",
                     toggleActions: "play none none none"
-                },
-                delay: index * 0.1
+                }
             }
         );
     });
@@ -440,7 +418,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Gallery lightbox with enhanced animation
+    // Gallery lightbox with sound
     const galleryItems = document.querySelectorAll(".gallery-item");
     const lightbox = document.querySelector(".lightbox");
     const lightboxImg = lightbox && lightbox.querySelector("img");
@@ -452,37 +430,26 @@ document.addEventListener("DOMContentLoaded", function () {
                 lightboxImg.src = item.getAttribute("data-src");
                 lightbox.style.display = "flex";
                 playSound('click');
-                gsap.from(lightboxImg, { scale: 0.8, opacity: 0, duration: 0.3 });
             });
 
             item.addEventListener("mouseover", () => {
-                gsap.to(item, { scale: 1.1, duration: 0.3 });
+                item.style.transform = "scale(1.1)";
                 playSound('hover', 0.3);
             });
 
             item.addEventListener("mouseout", () => {
-                gsap.to(item, { scale: 1, duration: 0.3 });
+                item.style.transform = "scale(1)";
             });
         });
 
         lightboxClose.addEventListener("click", () => {
-            gsap.to(lightboxImg, {
-                scale: 0.8,
-                opacity: 0,
-                duration: 0.3,
-                onComplete: () => lightbox.style.display = "none"
-            });
+            lightbox.style.display = "none";
             playSound('click');
         });
 
         lightbox.addEventListener("click", (e) => {
             if (e.target === lightbox) {
-                gsap.to(lightboxImg, {
-                    scale: 0.8,
-                    opacity: 0,
-                    duration: 0.3,
-                    onComplete: () => lightbox.style.display = "none"
-                });
+                lightbox.style.display = "none";
                 playSound('click');
             }
         });
@@ -539,12 +506,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 welcomeMusic.pause();
                 isMuted = true;
                 musicToggle.classList.add("muted");
-                gsap.to(musicToggle, { scale: 0.9, duration: 0.2 });
             } else {
                 welcomeMusic.play().catch(() => console.log("Music playback blocked until user interaction"));
                 isMuted = false;
                 musicToggle.classList.remove("muted");
-                gsap.to(musicToggle, { scale: 1.1, duration: 0.2, yoyo: true, repeat: 1 });
             }
             isPlaying = !isPlaying;
             playSound('click');
@@ -559,7 +524,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, { once: true });
     }
 
-    // Single tech tip per load with animation
+    // Single tech tip per load
     const techTips = [
         "Tech Tip: Regular updates keep your systems secure!",
         "Tech Tip: Back up your data weekly to avoid loss.",
@@ -597,10 +562,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Chat Bubble Toggle
     const chatBubble = document.getElementById("chat-bubble");
     if (chatBubble) {
-        setTimeout(() => {
-            chatBubble.classList.add("visible");
-            gsap.from(chatBubble, { scale: 0, opacity: 0, duration: 0.5, ease: "back.out(1.7)" });
-        }, 3000);
+        setTimeout(() => chatBubble.classList.add("visible"), 3000);
         chatBubble.addEventListener("click", () => {
             alert("Chat feature coming soon! Contact us at nick@sysfx.net for now.");
             playSound('beep');
@@ -613,7 +575,6 @@ document.addEventListener("DOMContentLoaded", function () {
         window.addEventListener("scroll", () => {
             if (window.scrollY > 300) {
                 scrollTopBtn.classList.add("visible");
-                gsap.from(scrollTopBtn, { opacity: 0, y: 20, duration: 0.3 });
             } else {
                 scrollTopBtn.classList.remove("visible");
             }
@@ -622,41 +583,18 @@ document.addEventListener("DOMContentLoaded", function () {
         scrollTopBtn.addEventListener("click", () => {
             window.scrollTo({ top: 0, behavior: "smooth" });
             playSound('click');
-            gsap.to(scrollTopBtn, { rotation: 360, duration: 0.5, ease: "power1.out" });
         });
     }
 
-    // Random Service Highlight with animation
+    // Random Service Highlight
     const serviceGrid = document.querySelector(".service-grid");
     if (serviceGrid) {
         const services = serviceGrid.querySelectorAll(".service");
         setInterval(() => {
             const randomIndex = Math.floor(Math.random() * services.length);
             services.forEach((s, i) => {
-                if (i === randomIndex) {
-                    gsap.to(s, { border: "2px solid var(--highlight-color)", duration: 0.5, ease: "power1.inOut" });
-                } else {
-                    gsap.to(s, { border: "none", duration: 0.5 });
-                }
+                s.style.border = i === randomIndex ? "2px solid var(--highlight-color)" : "none";
             });
         }, 10000);
-    }
-
-    // Easter Egg
-    const easterEggTrigger = document.querySelector(".easter-egg-trigger");
-    if (easterEggTrigger) {
-        easterEggTrigger.addEventListener("click", () => {
-            gsap.to(body, {
-                background: "linear-gradient(135deg, #ffeb3b, #00a000)",
-                duration: 1,
-                onComplete: () => {
-                    alert("You found the Easter Egg! Enjoy this tech surprise!");
-                    setTimeout(() => {
-                        gsap.to(body, { background: body.classList.contains("dark-mode") ? "#222" : "linear-gradient(135deg, #f4f4f4, #e6e6e6)", duration: 1 });
-                    }, 2000);
-                }
-            });
-            playSound('beep', 1);
-        });
     }
 });
