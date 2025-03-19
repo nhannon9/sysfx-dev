@@ -33,7 +33,10 @@
         </div>
         
         <div class="logo-container">
-            <img src="logo.jpg" alt="sysfx Logo, a symbol of tech expertise" class="spinning-logo" loading="lazy">
+            <div class="logo-flipper">
+                <img src="logo.jpg" alt="sysfx Front Logo" class="spinning-logo front" loading="lazy">
+                <img src="logo-back.jpg" alt="sysfx Back Logo" class="spinning-logo back" loading="lazy">
+            </div>
         </div>
         <h1>sysfx</h1>
         <h3 id="typing-effect" class="gradient-text"></h3>
@@ -81,7 +84,8 @@
 
         <section class="welcome glass-morphism parallax">
             <h2 class="gradient-text">Why Choose sysfx?</h2>
-            <p>At sysfx, we deliver tailored tech solutions—repairs, cybersecurity, web development, networking, cloud solutions, and 24/7 IT support—to help your business thrive.</p>
+            <p>At sysfx, we deliver innovative, tailored technology solutions to empower your business. From computer repairs and advanced cybersecurity to custom web development, networking, cloud solutions, and 24/7 IT support, we’ve got you covered.</p>
+            <p>Based in Clinton, CT, our expert team brings over 15 years of experience to ensure your tech works seamlessly, securely, and efficiently—whether you’re a small business or a growing enterprise.</p>
             <p>Contact us: <span id="email" aria-label="Contact email"></span></p>
             <button class="modern-button" onclick="location.href='#contact'">Request a Quote</button>
         </section>
@@ -95,48 +99,48 @@
 
         <section id="services" class="services glass-morphism parallax">
             <h2 class="gradient-text">Our Services</h2>
-            <p class="services-text">Comprehensive tech services—from hardware fixes to cloud migrations—delivered with expertise.</p>
+            <p class="services-text">We provide a full range of technology services designed to meet your needs—from hardware repairs to cloud migrations—delivered with precision and expertise.</p>
             <div class="service-grid">
                 <article class="service card-hover" data-modal="computer-repair">
                     <i class="fas fa-laptop" aria-hidden="true"></i>
                     <h3>Computer Repair</h3>
-                    <p>Fast repairs for desktops and laptops with same-day service options.</p>
-                    <p class="extra-info">Certified technicians restore your devices to peak performance.</p>
+                    <p>Fast, reliable repairs for desktops, laptops, and peripherals with same-day service options.</p>
+                    <p class="extra-info">Our certified technicians diagnose and fix hardware and software issues to get you back up and running quickly.</p>
                     <button class="modern-button small" onclick="location.href='#contact'">Learn More</button>
                 </article>
                 <article class="service card-hover" data-modal="cybersecurity">
                     <i class="fas fa-shield-alt" aria-hidden="true"></i>
                     <h3>Cybersecurity</h3>
-                    <p>Advanced security solutions to protect your data from threats.</p>
-                    <p class="extra-info">Custom plans ensure peace of mind against digital risks.</p>
+                    <p>Advanced security solutions to safeguard your data and systems from cyber threats.</p>
+                    <p class="extra-info">We offer custom security plans, including firewalls, encryption, and threat monitoring, for total peace of mind.</p>
                     <button class="modern-button small" onclick="location.href='#contact'">Get Protected</button>
                 </article>
                 <article class="service card-hover" data-modal="web-development">
                     <i class="fas fa-code" aria-hidden="true"></i>
                     <h3>Web Development</h3>
-                    <p>Custom, responsive websites to boost your online presence.</p>
-                    <p class="extra-info">SEO-optimized sites that drive traffic and conversions.</p>
+                    <p>Custom, responsive websites built to enhance your online presence and drive business growth.</p>
+                    <p class="extra-info">SEO-optimized, mobile-friendly designs that attract visitors and convert leads into customers.</p>
                     <button class="modern-button small" onclick="location.href='#contact'">Request a Site</button>
                 </article>
                 <article class="service card-hover" data-modal="networking">
                     <i class="fas fa-network-wired" aria-hidden="true"></i>
                     <h3>Networking</h3>
-                    <p>Secure, robust networks for seamless connectivity.</p>
-                    <p class="extra-info">Enterprise-grade solutions for speed and reliability.</p>
+                    <p>Secure, high-performance networks tailored to your connectivity needs.</p>
+                    <p class="extra-info">From setup to optimization, we deliver enterprise-grade solutions for speed and reliability.</p>
                     <button class="modern-button small" onclick="location.href='#contact'">Improve Connectivity</button>
                 </article>
                 <article class="service card-hover" data-modal="cloud-solutions">
                     <i class="fas fa-cloud" aria-hidden="true"></i>
                     <h3>Cloud Solutions</h3>
-                    <p>Scalable cloud systems to optimize your IT infrastructure.</p>
-                    <p class="extra-info">Streamline workflows with cutting-edge technology.</p>
+                    <p>Scalable, efficient cloud systems to modernize your IT infrastructure.</p>
+                    <p class="extra-info">Seamless migrations and management to streamline workflows and reduce costs.</p>
                     <button class="modern-button small" onclick="location.href='#contact'">Go Cloud</button>
                 </article>
                 <article class="service card-hover" data-modal="it-support">
                     <i class="fas fa-phone" aria-hidden="true"></i>
                     <h3>IT Support</h3>
-                    <p>24/7 support with proactive maintenance and assistance.</p>
-                    <p class="extra-info">Available anytime to keep your systems running.</p>
+                    <p>24/7 IT support with proactive maintenance and rapid response times.</p>
+                    <p class="extra-info">We’re here around the clock to keep your systems running smoothly and resolve issues fast.</p>
                     <button class="modern-button small" onclick="location.href='#contact'">Get Support</button>
                 </article>
             </div>
@@ -184,6 +188,18 @@
                     <div class="stat-number" data-count="50">0</div>
                     <div class="stat-label">Websites Built</div>
                 </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-count="200">0</div>
+                    <div class="stat-label">Networks Secured</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-count="75">0</div>
+                    <div class="stat-label">Cloud Migrations</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-count="1500">0</div>
+                    <div class="stat-label">Support Tickets Resolved</div>
+                </div>
             </div>
             <button class="modern-button" onclick="location.href='#about'">Learn More</button>
         </section>
@@ -196,7 +212,7 @@
                     <div class="event-date">March 10, 2025</div>
                     <div class="event-content">
                         <h3>Cybersecurity 101</h3>
-                        <p>Learn basics of digital protection.</p>
+                        <p>Learn the basics of digital protection and how to secure your systems.</p>
                         <button class="modern-button small" onclick="location.href='#contact'">Register</button>
                     </div>
                 </article>
@@ -204,7 +220,7 @@
                     <div class="event-date">March 15, 2025</div>
                     <div class="event-content">
                         <h3>Intro to Web Development</h3>
-                        <p>Start coding with practical exercises.</p>
+                        <p>Start coding with hands-on exercises and build your first webpage.</p>
                         <button class="modern-button small" onclick="location.href='#contact'">Sign Up</button>
                     </div>
                 </article>
@@ -212,24 +228,24 @@
             <button class="modern-button" onclick="location.href='#contact'">All Events</button>
         </section>
 
-        <section id="case-studies" class="case-studies glass-morphism parallax compact-section">
+        <section id="case-studies" class="case-studies glass-morphism parallax">
             <h2 class="gradient-text">Case Studies</h2>
             <p>How sysfx transforms businesses.</p>
             <div class="case-study-grid">
                 <article class="case-study card-hover">
                     <h3>Retail Chain Upgrade</h3>
-                    <p>Reduced downtime by 40%.</p>
+                    <p>Reduced downtime by 40% with a full network overhaul.</p>
                     <button class="modern-button small" onclick="location.href='#contact'">Read More</button>
                 </article>
                 <article class="case-study card-hover">
                     <h3>E-commerce Platform</h3>
-                    <p>Boosted sales by 25%.</p>
+                    <p>Boosted sales by 25% with a custom website redesign.</p>
                     <button class="modern-button small" onclick="location.href='#contact'">Read More</button>
                 </article>
             </div>
         </section>
 
-        <section id="testimonials" class="testimonials glass-morphism parallax compact-section">
+        <section id="testimonials" class="testimonials glass-morphism parallax">
             <h2 class="gradient-text">Client Testimonials</h2>
             <p>What businesses say about sysfx.</p>
             <div class="testimonial-slider">
@@ -257,7 +273,7 @@
             <button class="modern-button" onclick="location.href='#contact'">Contact Us</button>
         </section>
 
-        <section id="cta" class="cta glass-morphism parallax compact-section">
+        <section id="cta" class="cta glass-morphism parallax">
             <h2 class="cta-title">Transform Your Tech</h2>
             <p>Partner with sysfx to drive your business forward.</p>
             <div class="button-container">
@@ -270,7 +286,7 @@
             </div>
         </section>
 
-        <section id="contact" class="contact glass-morphism parallax tiny-section">
+        <section id="contact" class="contact glass-morphism parallax">
             <h2 class="gradient-text">Contact Us</h2>
             <p>Get a free consultation or support 24/7!</p>
             <div class="contact-grid">
@@ -283,12 +299,16 @@
                         <i class="fas fa-phone" aria-hidden="true"></i>
                         <a href="tel:+18603754425" aria-label="Call sysfx at (860) 375-4425">(860) 375-4425</a>
                     </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                        <span>123 Main Street, Clinton, CT 06413</span>
+                    </div>
                 </div>
             </div>
             <button class="modern-button" onclick="location.href='mailto:nick@sysfx.net'">Send Email</button>
         </section>
 
-        <section class="blog-teaser glass-morphism parallax compact-section">
+        <section class="blog-teaser glass-morphism parallax">
             <h2 class="gradient-text">Tech Insights</h2>
             <p>Latest tips and industry news.</p>
             <div class="blog-preview">
@@ -321,7 +341,7 @@
         <div class="modal-content">
             <span class="modal-close">×</span>
             <h3>Computer Repair Services</h3>
-            <p>Fast repairs for desktops and laptops with same-day options.</p>
+            <p>Fast, reliable repairs for desktops, laptops, and peripherals with same-day options.</p>
             <button class="modern-button small modal-action" onclick="location.href='#contact'">Request Repair</button>
         </div>
     </div>
@@ -329,7 +349,7 @@
         <div class="modal-content">
             <span class="modal-close">×</span>
             <h3>Cybersecurity Solutions</h3>
-            <p>Advanced security to protect your data from threats.</p>
+            <p>Advanced security to protect your data and systems from threats.</p>
             <button class="modern-button small modal-action" onclick="location.href='#contact'">Secure My Business</button>
         </div>
     </div>
