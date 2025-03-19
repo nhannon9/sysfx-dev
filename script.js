@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const targetElement = document.getElementById(targetId);
             if (targetElement) {
                 window.scrollTo({
-                    top: targetElement.offsetTop - 60, // Adjusted for smaller header
+                    top: targetElement.offsetTop - 80,
                     behavior: "smooth"
                 });
                 if (window.innerWidth <= 768 && navUl) {
@@ -132,6 +132,16 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             playSound('click');
         });
+    });
+
+    // Header shrink on scroll
+    const header = document.querySelector("header");
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > 100) {
+            header.classList.add("shrink");
+        } else {
+            header.classList.remove("shrink");
+        }
     });
 
     // Real-time clock
@@ -145,23 +155,19 @@ document.addEventListener("DOMContentLoaded", function () {
     updateClock();
     setInterval(updateClock, 1000);
 
-    // Weather widget with OpenWeatherMap API
+    // Weather widget with WeatherAPI (free alternative)
     const weatherText = document.getElementById("weather-text");
     const localWeatherBtn = document.getElementById("local-weather-btn");
-    const apiKey = "e81a6aaad7e8ebfd5e8b3aafaedcde42"; // Replace with your actual API key
+    const apiKey = "YOUR_WEATHERAPI_KEY"; // Replace with your WeatherAPI key
 
     function updateWeather(lat = 41.2788, lon = -72.5276) {
-        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`)
-            .then(response => {
-                if (!response.ok) throw new Error("Weather API error");
-                return response.json();
-            })
+        fetch(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${lat},${lon}&aqi=no`)
+            .then(response => response.ok ? response.json() : Promise.reject())
             .then(data => {
-                weatherText.innerHTML = `<i class="fas fa-cloud-sun" aria-hidden="true"></i> ${Math.round(data.main.temp)}°F in ${data.name}`;
+                weatherText.innerHTML = `<i class="fas fa-cloud-sun" aria-hidden="true"></i> ${Math.round(data.current.temp_f)}°F in ${data.location.name}`;
             })
-            .catch(error => {
-                console.error(error);
-                weatherText.innerHTML = "Weather data temporarily unavailable";
+            .catch(() => {
+                weatherText.innerHTML = "Weather unavailable";
             });
     }
     updateWeather();
@@ -466,18 +472,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Header shrink on scroll
-    const header = document.querySelector("header");
-    if (header) {
-        window.addEventListener("scroll", () => {
-            if (window.scrollY > 50) {
-                header.classList.add("shrink");
-            } else {
-                header.classList.remove("shrink");
-            }
-        });
-    }
-
     // Audio feedback with mute control
     let audioContext;
     let isMuted = false;
@@ -608,38 +602,5 @@ document.addEventListener("DOMContentLoaded", function () {
                 s.style.border = i === randomIndex ? "2px solid var(--highlight-color)" : "none";
             });
         }, 10000);
-    }
-
-    // Easter Egg Activation
-    const easterEggTrigger = document.querySelector(".easter-egg-trigger");
-    if (easterEggTrigger) {
-        easterEggTrigger.addEventListener("click", () => {
-            const easterEggMessage = document.createElement("div");
-            easterEggMessage.textContent = "🎉 You found the Easter Egg! Enjoy this secret tech tip: 'Ctrl + Alt + Delete' isn’t just for crashes—use it to quickly lock your PC!'";
-            easterEggMessage.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: var(--primary-color);
-                color: white;
-                padding: 20px;
-                border-radius: 10px;
-                z-index: 2000;
-                box-shadow: 0 0 20px rgba(0, 160, 0, 0.8);
-                text-align: center;
-                font-size: 1.2em;
-            `;
-            document.body.appendChild(easterEggMessage);
-            playSound('beep', 0.7);
-
-            setTimeout(() => {
-                gsap.to(easterEggMessage, {
-                    opacity: 0,
-                    duration: 1,
-                    onComplete: () => easterEggMessage.remove()
-                });
-            }, 5000);
-        });
     }
 });
