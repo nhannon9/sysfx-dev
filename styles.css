@@ -246,38 +246,20 @@ body.dark-mode header h1 {
     transition: height 0.5s ease-in-out;
 }
 
-.logo-flipper {
-    position: relative;
+.spinning-logo {
     width: 100px;
     height: 100px;
-    transform-style: preserve-3d;
-    animation: flipLogo 4s infinite ease-in-out;
-}
-
-.spinning-logo {
-    position: absolute;
-    width: 100%;
-    height: 100%;
     border-radius: 50%;
     box-shadow: 0 0 15px var(--highlight-color);
-    backface-visibility: hidden;
+    animation: spinLogo 6s infinite linear;
 }
 
-.spinning-logo.front {
-    z-index: 2;
+@keyframes spinLogo {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-.spinning-logo.back {
-    transform: rotateX(180deg);
-}
-
-@keyframes flipLogo {
-    0% { transform: rotateX(0deg); }
-    50% { transform: rotateX(180deg); }
-    100% { transform: rotateX(360deg); }
-}
-
-header.shrink .logo-flipper {
+header.shrink .spinning-logo {
     width: 60px;
     height: 60px;
 }
@@ -346,6 +328,7 @@ body.dark-mode .nav-link {
     color: var(--highlight-color);
     background: rgba(255, 255, 255, 0.2);
     box-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+    transform: scale(1.05);
 }
 
 /* Gradient text effect */
@@ -515,6 +498,7 @@ body.dark-mode .nav-link {
     gap: 20px;
     max-width: 1000px;
     margin: 15px auto;
+    justify-items: center;
 }
 
 .stat-item {
@@ -658,6 +642,7 @@ body.dark-mode #darkModeToggle:hover {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
     padding: 15px 0;
+    justify-items: center;
 }
 
 .service {
@@ -668,6 +653,8 @@ body.dark-mode #darkModeToggle:hover {
     transition: all 0.3s ease;
     transform-style: preserve-3d;
     cursor: pointer;
+    width: 100%;
+    max-width: 300px;
 }
 
 body.dark-mode .service {
@@ -684,22 +671,11 @@ body.dark-mode .service {
     font-size: 2.5em;
     margin-bottom: 10px;
     color: var(--primary-color);
-    animation: float 3s infinite ease-in-out;
+    transition: transform 0.3s ease;
 }
 
-@keyframes float {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0); }
-}
-
-.extra-info {
-    font-size: 0.85em;
-    color: #666;
-}
-
-body.dark-mode .extra-info {
-    color: #ccc;
+.service:hover i {
+    transform: scale(1.2);
 }
 
 /* Modal for service details */
@@ -783,26 +759,28 @@ body.dark-mode .event-card {
     font-size: 0.85em;
 }
 
-/* Testimonials */
-.testimonial-slider {
+/* Case Studies & Testimonials Section */
+.case-testimonial-grid {
     display: grid;
-    gap: 15px;
-    margin-top: 15px;
-    position: relative;
-    overflow: hidden;
-    height: 200px;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 15px 0;
 }
 
-.testimonial {
+.case-study-column, .testimonial-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.case-study, .testimonial {
     background-color: rgba(255, 255, 255, 0.9);
     padding: 15px;
     border-radius: 12px;
-    position: absolute;
-    width: 100%;
-    color: #333;
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition: all 0.3s ease;
 }
 
+body.dark-mode .case-study,
 body.dark-mode .testimonial {
     background-color: rgba(51, 51, 51, 0.9);
     color: #fff;
@@ -818,28 +796,6 @@ body.dark-mode .testimonial {
     margin-top: 5px;
     font-style: italic;
     color: var(--primary-color);
-    background: none; /* Explicitly no background */
-}
-
-/* Case Studies Section */
-.case-studies .case-study-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-    padding: 15px 0;
-}
-
-.case-study {
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-    transition: all 0.3s ease;
-}
-
-body.dark-mode .case-study {
-    background-color: rgba(51, 51, 51, 0.9);
-    color: #fff;
 }
 
 /* CTA Section */
@@ -908,7 +864,7 @@ footer {
 }
 
 footer p {
-    color: #fff; /* Ensure text is white */
+    color: #fff;
     font-size: 0.9em;
 }
 
@@ -1072,7 +1028,11 @@ body.dark-mode .blog-preview article {
         margin: 15px 0;
     }
 
-    .service-grid, .gallery-grid, .case-study-grid, .blog-preview {
+    .service-grid, .gallery-grid, .stats-grid, .blog-preview {
+        grid-template-columns: 1fr;
+    }
+
+    .case-testimonial-grid {
         grid-template-columns: 1fr;
     }
 
@@ -1155,12 +1115,12 @@ body.dark-mode .blog-preview article {
         height: 80px;
     }
 
-    .logo-flipper {
+    .spinning-logo {
         width: 80px;
         height: 80px;
     }
 
-    header.shrink .logo-flipper {
+    header.shrink .spinning-logo {
         width: 50px;
         height: 50px;
     }
