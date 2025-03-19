@@ -134,16 +134,30 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Header shrink on scroll with smoother transition
+    // Header shrink on scroll with new animation (reverted to old style with fade)
     const header = document.querySelector("header");
     window.addEventListener("scroll", () => {
         const scrollY = window.scrollY;
         if (scrollY > 100) {
             header.classList.add("shrink");
+            gsap.to(header, { opacity: 0.95, duration: 0.6, ease: "power2.out" });
         } else {
             header.classList.remove("shrink");
+            gsap.to(header, { opacity: 1, duration: 0.6, ease: "power2.out" });
         }
     });
+
+    // Logo spin (single logo, no back, normal facing)
+    const logo = document.querySelector(".logo-container img");
+    if (logo) {
+        gsap.to(logo, {
+            rotation: 360,
+            duration: 3,
+            repeat: -1,
+            ease: "linear",
+            transformOrigin: "center center"
+        });
+    }
 
     // Real-time clock
     function updateClock() {
@@ -297,7 +311,8 @@ document.addEventListener("DOMContentLoaded", function () {
         observer.observe(stat);
 
         gsap.to(stat.closest(".stat-item"), {
-            y: -15,
+            y: -20,
+            scale: 1.1,
             ease: "power1.inOut",
             scrollTrigger: {
                 trigger: stat.closest(".stat-item"),
@@ -328,7 +343,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (window.innerWidth <= 768) cursor.style.display = "none";
     }
 
-    // Service modals
+    // Service modals with improved layout
     const services = document.querySelectorAll(".service");
     const modals = document.querySelectorAll(".modal");
     const closeButtons = document.querySelectorAll(".modal-close");
@@ -340,7 +355,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 const modalId = service.getAttribute("data-modal") + "-modal";
                 const modal = document.getElementById(modalId);
                 if (modal) {
-                    modal.style.display = "flex";
+                    gsap.fromTo(modal, 
+                        { scale: 0.8, opacity: 0 },
+                        { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.7)", display: "flex" }
+                    );
                     playSound('click');
                 }
             }
@@ -365,14 +383,26 @@ document.addEventListener("DOMContentLoaded", function () {
     closeButtons.forEach(button => {
         button.addEventListener("click", () => {
             const modal = button.closest(".modal");
-            modal.style.display = "none";
+            gsap.to(modal, {
+                scale: 0.8,
+                opacity: 0,
+                duration: 0.3,
+                ease: "power2.in",
+                onComplete: () => modal.style.display = "none"
+            });
             playSound('click');
         });
     });
 
     document.addEventListener("click", (e) => {
         if (e.target.classList.contains("modal")) {
-            e.target.style.display = "none";
+            gsap.to(e.target, {
+                scale: 0.8,
+                opacity: 0,
+                duration: 0.3,
+                ease: "power2.in",
+                onComplete: () => e.target.style.display = "none"
+            });
             playSound('click');
         }
     });
@@ -593,5 +623,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 s.style.border = i === randomIndex ? "2px solid var(--highlight-color)" : "none";
             });
         }, 10000);
+    }
+
+    // CTA animation
+    const ctaSection = document.getElementById("cta");
+    if (ctaSection) {
+        gsap.fromTo(ctaSection.querySelector(".cta-title"), 
+            { scale: 0.9, opacity: 0 },
+            {
+                scale: 1,
+                opacity: 1,
+                duration: 1,
+                ease: "elastic.out(1, 0.5)",
+                scrollTrigger: {
+                    trigger: ctaSection,
+                    start: "top 85%",
+                    toggleActions: "play none none none"
+                }
+            }
+        );
     }
 });
