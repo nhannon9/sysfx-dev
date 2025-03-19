@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const targetElement = document.getElementById(targetId);
             if (targetElement) {
                 window.scrollTo({
-                    top: targetElement.offsetTop - 80,
+                    top: targetElement.offsetTop - 70,
                     behavior: "smooth"
                 });
                 if (window.innerWidth <= 768 && navUl) {
@@ -134,10 +134,11 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Header shrink on scroll
+    // Header shrink on scroll with smoother transition
     const header = document.querySelector("header");
     window.addEventListener("scroll", () => {
-        if (window.scrollY > 100) {
+        const scrollY = window.scrollY;
+        if (scrollY > 100) {
             header.classList.add("shrink");
         } else {
             header.classList.remove("shrink");
@@ -155,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateClock();
     setInterval(updateClock, 1000);
 
-    // Weather widget with WeatherAPI (free alternative)
+    // Weather widget with WeatherAPI
     const weatherText = document.getElementById("weather-text");
     const localWeatherBtn = document.getElementById("local-weather-btn");
     const apiKey = "YOUR_WEATHERAPI_KEY"; // Replace with your WeatherAPI key
@@ -293,7 +294,7 @@ document.addEventListener("DOMContentLoaded", function () {
         observer.observe(stat);
 
         gsap.to(stat.closest(".stat-item"), {
-            y: -15,
+            y: -10,
             ease: "power1.inOut",
             scrollTrigger: {
                 trigger: stat.closest(".stat-item"),
@@ -324,7 +325,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (window.innerWidth <= 768) cursor.style.display = "none";
     }
 
-    // Service modals with fixed button functionality
+    // Service modals
     const services = document.querySelectorAll(".service");
     const modals = document.querySelectorAll(".modal");
     const closeButtons = document.querySelectorAll(".modal-close");
@@ -398,21 +399,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
         );
-    });
-
-    // Parallax effect for testimonials
-    const testimonialItems = document.querySelectorAll(".testimonial");
-    testimonialItems.forEach(testimonial => {
-        gsap.to(testimonial, {
-            y: -15,
-            ease: "power1.inOut",
-            scrollTrigger: {
-                trigger: testimonial,
-                start: "top 85%",
-                end: "bottom 20%",
-                scrub: true
-            }
-        });
     });
 
     // Video background fallback
