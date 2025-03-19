@@ -33,7 +33,10 @@
         </div>
         
         <div class="logo-container">
-            <img src="logo.jpg" alt="sysfx Logo, a symbol of tech expertise" class="spinning-logo" loading="lazy">
+            <div class="logo-flipper">
+                <img src="logo.jpg" alt="sysfx Logo, a symbol of tech expertise" class="spinning-logo front" loading="lazy">
+                <img src="logo.jpg" alt="sysfx Logo, a symbol of tech expertise" class="spinning-logo back" loading="lazy">
+            </div>
         </div>
         <h1>sysfx</h1>
         <h3 id="typing-effect" class="gradient-text"></h3>
@@ -79,317 +82,319 @@
             </div>
         </section>
 
-        <section class="welcome glass-morphism parallax">
-            <h2 class="gradient-text">Why Choose sysfx?</h2>
-            <p>At sysfx, we deliver expert tech solutions tailored to your needs. Our certified technicians specialize in computer repairs, cybersecurity, web development, networking, cloud solutions, and 24/7 IT support, ensuring your business thrives in the digital age.</p>
-            <p>With over a decade of experience, Sys Fix is committed to precision, innovation, and customer satisfaction. Contact us today to transform your tech infrastructure!</p>
-            <p>Contact us for support at: <span id="email" aria-label="Contact email"></span></p>
-            <button class="modern-button" onclick="location.href='#contact'">Request a Quote</button>
-        </section>
+        <div class="content-wrapper">
+            <section class="welcome glass-morphism parallax">
+                <h2 class="gradient-text">Why Choose sysfx?</h2>
+                <p>At sysfx, we deliver expert tech solutions tailored to your needs. Our certified technicians specialize in computer repairs, cybersecurity, web development, networking, cloud solutions, and 24/7 IT support, ensuring your business thrives in the digital age.</p>
+                <p>With over a decade of experience, Sys Fix is committed to precision, innovation, and customer satisfaction. Contact us today to transform your tech infrastructure!</p>
+                <p>Contact us for support at: <span id="email" aria-label="Contact email"></span></p>
+                <button class="modern-button" onclick="location.href='#contact'">Request a Quote</button>
+            </section>
 
-        <section id="location" class="glass-morphism parallax location-section">
-            <h2 class="gradient-text">Find Us in Clinton, CT</h2>
-            <p>Visit our headquarters at 123 Main Street, Clinton, CT, or reach out for remote support. We serve clients across the region with top-tier tech solutions.</p>
-            <div id="map" class="map-container" aria-label="Map showing sysfx location in Clinton, CT"></div>
-            <button class="modern-button" onclick="location.href='#contact'">Get Directions</button>
-        </section>
+            <section id="location" class="glass-morphism parallax location-section">
+                <h2 class="gradient-text">Find Us in Clinton, CT</h2>
+                <p>Visit our headquarters at 123 Main Street, Clinton, CT, or reach out for remote support. We serve clients across the region with top-tier tech solutions.</p>
+                <div id="map" class="map-container" aria-label="Map showing sysfx location in Clinton, CT"></div>
+                <button class="modern-button" onclick="location.href='#contact'">Get Directions</button>
+            </section>
 
-        <section id="services" class="services glass-morphism parallax">
-            <h2 class="gradient-text">Our Services</h2>
-            <p class="services-text">sysfx offers a comprehensive suite of tech services to empower your business. From hardware fixes to cloud migrations, we’re here to solve your challenges with expertise and efficiency.</p>
-            <div class="service-grid">
-                <article class="service card-hover" data-modal="computer-repair">
-                    <i class="fas fa-laptop" aria-hidden="true"></i>
-                    <h3>Computer Repair</h3>
-                    <p>Fast, reliable repairs for desktops, laptops, and more. We fix hardware issues, optimize software, and ensure same-day service for urgent needs.</p>
-                    <p class="extra-info">Our certified technicians use state-of-the-art tools to restore your devices to peak performance.</p>
-                    <button class="modern-button small" onclick="location.href='#contact'">Learn More</button>
-                </article>
-                <article class="service card-hover" data-modal="cybersecurity">
-                    <i class="fas fa-shield-alt" aria-hidden="true"></i>
-                    <h3>Cybersecurity</h3>
-                    <p>Protect your data with advanced security solutions, including threat detection, firewalls, and monitoring to safeguard against cyber threats.</p>
-                    <p class="extra-info">We provide customized plans to secure your business from evolving digital risks, ensuring peace of mind.</p>
-                    <button class="modern-button small" onclick="location.href='#contact'">Get Protected</button>
-                </article>
-                <article class="service card-hover" data-modal="web-development">
-                    <i class="fas fa-code" aria-hidden="true"></i>
-                    <h3>Web Development</h3>
-                    <p>Build a stunning online presence with custom websites tailored to your brand, featuring responsive designs and e-commerce capabilities.</p>
-                    <p class="extra-info">Our developers create fast, SEO-optimized sites that drive traffic and conversions for your business.</p>
-                    <button class="modern-button small" onclick="location.href='#contact'">Request a Site</button>
-                </article>
-                <article class="service card-hover" data-modal="networking">
-                    <i class="fas fa-network-wired" aria-hidden="true"></i>
-                    <h3>Networking</h3>
-                    <p>Set up and maintain secure, robust networks for seamless connectivity, optimized for small businesses to large enterprises.</p>
-                    <p class="extra-info">We specialize in enterprise-grade solutions to ensure speed, reliability, and security.</p>
-                    <button class="modern-button small" onclick="location.href='#contact'">Improve Connectivity</button>
-                </article>
-                <article class="service card-hover" data-modal="cloud-solutions">
-                    <i class="fas fa-cloud" aria-hidden="true"></i>
-                    <h3>Cloud Solutions</h3>
-                    <p>Migrate to the cloud with scalable, secure systems to optimize your IT infrastructure and boost efficiency.</p>
-                    <p class="extra-info">Our experts streamline your workflow with cutting-edge cloud technology for growth and flexibility.</p>
-                    <button class="modern-button small" onclick="location.href='#contact'">Go Cloud</button>
-                </article>
-                <article class="service card-hover" data-modal="it-support">
-                    <i class="fas fa-phone" aria-hidden="true"></i>
-                    <h3>IT Support</h3>
-                    <p>24/7 IT support to keep your systems running smoothly, with proactive maintenance and remote/on-site assistance.</p>
-                    <p class="extra-info">Our team is available anytime, anywhere, to resolve issues and maintain peak performance.</p>
-                    <button class="modern-button small" onclick="location.href='#contact'">Get Support</button>
-                </article>
-            </div>
-            <div class="supported-badges">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Microsoft_Edge_logo_%282019%29.svg" alt="Windows Supported" class="badge" loading="lazy">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/Apple_logo_black.svg" alt="Apple Supported" class="badge" loading="lazy">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg" alt="Linux Supported" class="badge" loading="lazy">
-            </div>
-        </section>
-
-        <section class="gallery">
-            <h2 class="gradient-text">Our Work</h2>
-            <p>Explore our portfolio of successful projects, showcasing our expertise in tech solutions for businesses like yours.</p>
-            <div class="gallery-grid">
-                <div class="gallery-item" data-src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
-                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Tech hardware repair project" loading="lazy">
-                </div>
-                <div class="gallery-item" data-src="https://images.unsplash.com/photo-1507679799989-0c83b7a86bb1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
-                    <img src="https://images.unsplash.com/photo-1507679799989-0c83b7a86bb1?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Networking setup installation" loading="lazy">
-                </div>
-                <div class="gallery-item" data-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
-                    <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Web development project" loading="lazy">
-                </div>
-                <div class="gallery-item" data-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
-                    <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Cybersecurity implementation" loading="lazy">
-                </div>
-                <div class="gallery-item" data-src="https://images.unsplash.com/photo-1454165804606-c3d57bc860?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
-                    <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc860?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Cloud solution deployment" loading="lazy">
-                </div>
-                <div class="gallery-item" data-src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
-                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="IT support session" loading="lazy">
-                </div>
-            </div>
-            <button class="modern-button" onclick="location.href='#contact'">View Full Portfolio</button>
-            <div class="lightbox">
-                <span class="lightbox-close">×</span>
-                <img src="" alt="Enlarged image">
-            </div>
-        </section>
-
-        <section class="stats">
-            <h2 class="gradient-text">Our Impact</h2>
-            <p>Here’s how sysfx has made a difference for our clients through innovative tech solutions.</p>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-number" data-count="500">0</div>
-                    <div class="stat-label">Clients Served</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-count="1000">0</div>
-                    <div class="stat-label">Repairs Completed</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-count="50">0</div>
-                    <div class="stat-label">Websites Built</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-count="200">0</div>
-                    <div class="stat-label">Networks Secured</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-count="150">0</div>
-                    <div class="stat-label">Cloud Migrations</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-count="3000">0</div>
-                    <div class="stat-label">Support Tickets Resolved</div>
-                </div>
-            </div>
-            <button class="modern-button" onclick="location.href='#about'">Learn More About Our Impact</button>
-        </section>
-
-        <section id="events" class="events glass-morphism parallax">
-            <h2 class="gradient-text">Events & Workshops</h2>
-            <p>Stay ahead in the tech world by joining our upcoming events and workshops on cybersecurity, web development, networking, and more.</p>
-            <div class="event-timeline">
-                <article class="event-card">
-                    <div class="event-date">March 10, 2025</div>
-                    <div class="event-content">
-                        <h3>Cybersecurity 101</h3>
-                        <p>Learn the basics of protecting your digital assets in this beginner-friendly workshop.</p>
-                        <p class="extra-info">Includes hands-on demos, Q&A with experts, and a certificate of completion.</p>
-                        <button class="modern-button small" onclick="location.href='#contact'">Register Now</button>
-                    </div>
-                </article>
-                <article class="event-card">
-                    <div class="event-date">March 15, 2025</div>
-                    <div class="event-content">
-                        <h3>Intro to Web Development</h3>
-                        <p>Start your journey in web development with practical coding exercises and real-world applications.</p>
-                        <p class="extra-info">Perfect for beginners—bring your laptop for hands-on learning.</p>
-                        <button class="modern-button small" onclick="location.href='#contact'">Sign Up</button>
-                    </div>
-                </article>
-                <article class="event-card">
-                    <div class="event-date">March 22, 2025</div>
-                    <div class="event-content">
-                        <h3>Networking Essentials</h3>
-                        <p>Master the fundamentals of networking with real-world applications for business success.</p>
-                        <p class="extra-info">Covers routers, switches, and network security basics with expert guidance.</p>
-                        <button class="modern-button small" onclick="location.href='#contact'">Join Event</button>
-                    </div>
-                </article>
-            </div>
-            <button class="modern-button" onclick="location.href='#contact'">View All Events</button>
-        </section>
-
-        <section id="case-studies" class="case-studies glass-morphism parallax compact-section">
-            <h2 class="gradient-text">Case Studies</h2>
-            <p>Discover how sysfx has transformed businesses with our tailored tech solutions.</p>
-            <div class="case-study-grid">
-                <article class="case-study card-hover">
-                    <h3>Retail Chain Upgrade</h3>
-                    <p>Revamped a retail chain's network infrastructure, reducing downtime by 40%.</p>
-                    <button class="modern-button small" onclick="location.href='#contact'">Read More</button>
-                </article>
-                <article class="case-study card-hover">
-                    <h3>E-commerce Platform</h3>
-                    <p>Built a scalable e-commerce site, boosting sales by 25% in 3 months.</p>
-                    <button class="modern-button small" onclick="location.href='#contact'">Read More</button>
-                </article>
-            </div>
-        </section>
-
-        <section id="testimonials" class="testimonials glass-morphism parallax compact-section">
-            <h2 class="gradient-text">What Our Clients Say</h2>
-            <p>Hear from businesses like yours who’ve transformed their tech with sysfx’s expertise.</p>
-            <div class="testimonial-slider">
-                <article class="testimonial card-hover">
-                    <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
-                    <blockquote>
-                        <p>"Sysfx provided excellent service. They fixed my computer quickly and efficiently, saving our business downtime."</p>
-                        <footer class="testimonial-author">- John Doe, CEO of TechTrend Solutions</footer>
-                    </blockquote>
-                </article>
-                <article class="testimonial card-hover">
-                    <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
-                    <blockquote>
-                        <p>"I’m very happy with the website they built for my business. It’s modern, fast, and drives more traffic than ever."</p>
-                        <footer class="testimonial-author">- Jane Smith, Founder of WebWise Co.</footer>
-                    </blockquote>
-                </article>
-                <article class="testimonial card-hover">
-                    <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
-                    <blockquote>
-                        <p>"Their cybersecurity solutions gave us peace of mind. Our data is now secure from threats we didn’t even know existed."</p>
-                        <footer class="testimonial-author">- Michael Johnson, IT Director at NetSecure Inc.</footer>
-                    </blockquote>
-                </article>
-            </div>
-            <button class="modern-button" onclick="location.href='#contact'">Share Your Story</button>
-        </section>
-
-        <section id="team" class="team glass-morphism parallax compact-section">
-            <h2 class="gradient-text">Meet Our Team</h2>
-            <p>Our skilled professionals are dedicated to delivering top-tier tech solutions.</p>
-            <div class="team-grid">
-                <article class="team-member card-hover">
-                    <h3>Nick Carter</h3>
-                    <p>Founder & Lead Technician</p>
-                    <p class="extra-info">15+ years in IT, specializing in repairs and cybersecurity.</p>
-                </article>
-                <article class="team-member card-hover">
-                    <h3>Sarah Lee</h3>
-                    <p>Web Development Expert</p>
-                    <p class="extra-info">Passionate about creating user-friendly, high-performance websites.</p>
-                </article>
-            </div>
-        </section>
-
-        <section id="about" class="about glass-morphism parallax">
-            <h2 class="gradient-text">About Us</h2>
-            <p>sysfx is a team of experienced tech professionals dedicated to delivering top-notch solutions to our clients. With over 15 years of industry expertise, we specialize in computer repairs, cybersecurity, web development, networking, cloud solutions, and 24/7 IT support.</p>
-            <p>Our mission is to empower businesses with innovative technology, ensuring precision, reliability, and exceptional customer service. Located in Clinton, CT, we serve clients across the region, helping them thrive in a digital-first world.</p>
-            <p>Our core values include innovation, integrity, and client satisfaction, driving us to exceed expectations with every project.</p>
-            <button class="modern-button" onclick="location.href='#contact'">Contact Us Today</button>
-            <div class="tech-trivia">
-                <h3>Tech Trivia</h3>
-                <p>Did you know the first computer "bug" was an actual insect? In 1947, engineers found a malfunction in the Harvard Mark II caused by a moth stuck in a relay!</p>
-            </div>
-        </section>
-
-        <section id="cta" class="cta glass-morphism parallax compact-section">
-            <h2 class="cta-title">Ready to Transform Your Tech?</h2>
-            <p>Partner with sysfx for innovative solutions that drive your business forward.</p>
-            <div class="button-container">
-                <button class="modern-button primary" onclick="location.href='#contact'">
-                    <i class="fas fa-rocket" aria-hidden="true"></i> Start Now
-                </button>
-                <button class="modern-button secondary" onclick="location.href='#services'">
-                    <i class="fas fa-info-circle"></i> Learn More
-                </button>
-            </div>
-        </section>
-
-        <section id="contact" class="contact glass-morphism parallax tiny-section">
-            <h2 class="gradient-text">Contact Us</h2>
-            <p>Ready to elevate your tech with sysfx? Contact our team for a free consultation, quote, or support. We’re here to help 24/7!</p>
-            <div class="contact-grid">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <i class="fas fa-envelope" aria-hidden="true"></i>
-                        <a href="#" class="email-link" id="email-link" aria-label="Email sysfx">Click to email</a>
-                    </div>
-                    <div class="contact-item">
+            <section id="services" class="services glass-morphism parallax">
+                <h2 class="gradient-text">Our Services</h2>
+                <p class="services-text">sysfx offers a comprehensive suite of tech services to empower your business. From hardware fixes to cloud migrations, we’re here to solve your challenges with expertise and efficiency.</p>
+                <div class="service-grid">
+                    <article class="service card-hover" data-modal="computer-repair">
+                        <i class="fas fa-laptop" aria-hidden="true"></i>
+                        <h3>Computer Repair</h3>
+                        <p>Fast, reliable repairs for desktops, laptops, and more. We fix hardware issues, optimize software, and ensure same-day service for urgent needs.</p>
+                        <p class="extra-info">Our certified technicians use state-of-the-art tools to restore your devices to peak performance.</p>
+                        <button class="modern-button small" onclick="location.href='#contact'">Learn More</button>
+                    </article>
+                    <article class="service card-hover" data-modal="cybersecurity">
+                        <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                        <h3>Cybersecurity</h3>
+                        <p>Protect your data with advanced security solutions, including threat detection, firewalls, and monitoring to safeguard against cyber threats.</p>
+                        <p class="extra-info">We provide customized plans to secure your business from evolving digital risks, ensuring peace of mind.</p>
+                        <button class="modern-button small" onclick="location.href='#contact'">Get Protected</button>
+                    </article>
+                    <article class="service card-hover" data-modal="web-development">
+                        <i class="fas fa-code" aria-hidden="true"></i>
+                        <h3>Web Development</h3>
+                        <p>Build a stunning online presence with custom websites tailored to your brand, featuring responsive designs and e-commerce capabilities.</p>
+                        <p class="extra-info">Our developers create fast, SEO-optimized sites that drive traffic and conversions for your business.</p>
+                        <button class="modern-button small" onclick="location.href='#contact'">Request a Site</button>
+                    </article>
+                    <article class="service card-hover" data-modal="networking">
+                        <i class="fas fa-network-wired" aria-hidden="true"></i>
+                        <h3>Networking</h3>
+                        <p>Set up and maintain secure, robust networks for seamless connectivity, optimized for small businesses to large enterprises.</p>
+                        <p class="extra-info">We specialize in enterprise-grade solutions to ensure speed, reliability, and security.</p>
+                        <button class="modern-button small" onclick="location.href='#contact'">Improve Connectivity</button>
+                    </article>
+                    <article class="service card-hover" data-modal="cloud-solutions">
+                        <i class="fas fa-cloud" aria-hidden="true"></i>
+                        <h3>Cloud Solutions</h3>
+                        <p>Migrate to the cloud with scalable, secure systems to optimize your IT infrastructure and boost efficiency.</p>
+                        <p class="extra-info">Our experts streamline your workflow with cutting-edge cloud technology for growth and flexibility.</p>
+                        <button class="modern-button small" onclick="location.href='#contact'">Go Cloud</button>
+                    </article>
+                    <article class="service card-hover" data-modal="it-support">
                         <i class="fas fa-phone" aria-hidden="true"></i>
-                        <a href="tel:+18603754425" aria-label="Call sysfx at (860) 375-4425">(860) 375-4425</a>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-                        <span>123 Main Street, Clinton, CT</span>
-                    </div>
+                        <h3>IT Support</h3>
+                        <p>24/7 IT support to keep your systems running smoothly, with proactive maintenance and remote/on-site assistance.</p>
+                        <p class="extra-info">Our team is available anytime, anywhere, to resolve issues and maintain peak performance.</p>
+                        <button class="modern-button small" onclick="location.href='#contact'">Get Support</button>
+                    </article>
                 </div>
-            </div>
-            <button class="modern-button" onclick="location.href='mailto:nick@sysfx.net'">Send Email</button>
-        </section>
+                <div class="supported-badges">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Microsoft_Edge_logo_%282019%29.svg" alt="Windows Supported" class="badge" loading="lazy">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/Apple_logo_black.svg" alt="Apple Supported" class="badge" loading="lazy">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg" alt="Linux Supported" class="badge" loading="lazy">
+                </div>
+            </section>
 
-        <section class="blog-teaser glass-morphism parallax">
-            <h2 class="gradient-text">Tech Insights</h2>
-            <p>Get a sneak peek at our latest blog posts for tips, tricks, and industry news.</p>
-            <div class="blog-preview">
-                <article>
-                    <h3>5 Ways to Boost Your Network Speed</h3>
-                    <p>Learn simple tweaks to optimize your network performance, from QoS settings to hardware upgrades.</p>
-                    <button class="modern-button small" onclick="alert('Blog coming soon!')">Read More</button>
-                </article>
-                <article>
-                    <h3>The Future of Cloud Computing</h3>
-                    <p>Explore how edge computing and AI are shaping the next era of cloud solutions.</p>
-                    <button class="modern-button small" onclick="alert('Blog coming soon!')">Read More</button>
-                </article>
-            </div>
-        </section>
+            <section class="gallery">
+                <h2 class="gradient-text">Our Work</h2>
+                <p>Explore our portfolio of successful projects, showcasing our expertise in tech solutions for businesses like yours.</p>
+                <div class="gallery-grid">
+                    <div class="gallery-item" data-src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Tech hardware repair project" loading="lazy">
+                    </div>
+                    <div class="gallery-item" data-src="https://images.unsplash.com/photo-1507679799989-0c83b7a86bb1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                        <img src="https://images.unsplash.com/photo-1507679799989-0c83b7a86bb1?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Networking setup installation" loading="lazy">
+                    </div>
+                    <div class="gallery-item" data-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Web development project" loading="lazy">
+                    </div>
+                    <div class="gallery-item" data-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                        <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Cybersecurity implementation" loading="lazy">
+                    </div>
+                    <div class="gallery-item" data-src="https://images.unsplash.com/photo-1454165804606-c3d57bc860?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                        <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc860?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Cloud solution deployment" loading="lazy">
+                    </div>
+                    <div class="gallery-item" data-src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="IT support session" loading="lazy">
+                    </div>
+                </div>
+                <button class="modern-button" onclick="location.href='#contact'">View Full Portfolio</button>
+                <div class="lightbox">
+                    <span class="lightbox-close">×</span>
+                    <img src="" alt="Enlarged image">
+                </div>
+            </section>
 
-        <section class="tech-timeline glass-morphism parallax">
-            <h2 class="gradient-text">Our Tech Journey</h2>
-            <p>A brief history of sysfx’s evolution in the tech world.</p>
-            <div class="timeline">
-                <div class="timeline-item">
-                    <span class="year">2010</span>
-                    <p>Founded as N-TEC, focusing on local PC repairs.</p>
+            <section class="stats">
+                <h2 class="gradient-text">Our Impact</h2>
+                <p>Here’s how sysfx has made a difference for our clients through innovative tech solutions.</p>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="500">0</div>
+                        <div class="stat-label">Clients Served</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="1000">0</div>
+                        <div class="stat-label">Repairs Completed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="50">0</div>
+                        <div class="stat-label">Websites Built</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="200">0</div>
+                        <div class="stat-label">Networks Secured</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="150">0</div>
+                        <div class="stat-label">Cloud Migrations</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="3000">0</div>
+                        <div class="stat-label">Support Tickets Resolved</div>
+                    </div>
                 </div>
-                <div class="timeline-item">
-                    <span class="year">2015</span>
-                    <p>Expanded into cybersecurity and networking solutions.</p>
+                <button class="modern-button" onclick="location.href='#about'">Learn More About Our Impact</button>
+            </section>
+
+            <section id="events" class="events glass-morphism parallax">
+                <h2 class="gradient-text">Events & Workshops</h2>
+                <p>Stay ahead in the tech world by joining our upcoming events and workshops on cybersecurity, web development, networking, and more.</p>
+                <div class="event-timeline">
+                    <article class="event-card">
+                        <div class="event-date">March 10, 2025</div>
+                        <div class="event-content">
+                            <h3>Cybersecurity 101</h3>
+                            <p>Learn the basics of protecting your digital assets in this beginner-friendly workshop.</p>
+                            <p class="extra-info">Includes hands-on demos, Q&A with experts, and a certificate of completion.</p>
+                            <button class="modern-button small" onclick="location.href='#contact'">Register Now</button>
+                        </div>
+                    </article>
+                    <article class="event-card">
+                        <div class="event-date">March 15, 2025</div>
+                        <div class="event-content">
+                            <h3>Intro to Web Development</h3>
+                            <p>Start your journey in web development with practical coding exercises and real-world applications.</p>
+                            <p class="extra-info">Perfect for beginners—bring your laptop for hands-on learning.</p>
+                            <button class="modern-button small" onclick="location.href='#contact'">Sign Up</button>
+                        </div>
+                    </article>
+                    <article class="event-card">
+                        <div class="event-date">March 22, 2025</div>
+                        <div class="event-content">
+                            <h3>Networking Essentials</h3>
+                            <p>Master the fundamentals of networking with real-world applications for business success.</p>
+                            <p class="extra-info">Covers routers, switches, and network security basics with expert guidance.</p>
+                            <button class="modern-button small" onclick="location.href='#contact'">Join Event</button>
+                        </div>
+                    </article>
                 </div>
-                <div class="timeline-item">
-                    <span class="year">2020</span>
-                    <p>Rebranded to sysfx, adding web development and cloud services.</p>
+                <button class="modern-button" onclick="location.href='#contact'">View All Events</button>
+            </section>
+
+            <section id="case-studies" class="case-studies glass-morphism parallax compact-section">
+                <h2 class="gradient-text">Case Studies</h2>
+                <p>Discover how sysfx has transformed businesses with our tailored tech solutions.</p>
+                <div class="case-study-grid">
+                    <article class="case-study card-hover">
+                        <h3>Retail Chain Upgrade</h3>
+                        <p>Revamped a retail chain's network infrastructure, reducing downtime by 40%.</p>
+                        <button class="modern-button small" onclick="location.href='#contact'">Read More</button>
+                    </article>
+                    <article class="case-study card-hover">
+                        <h3>E-commerce Platform</h3>
+                        <p>Built a scalable e-commerce site, boosting sales by 25% in 3 months.</p>
+                        <button class="modern-button small" onclick="location.href='#contact'">Read More</button>
+                    </article>
                 </div>
-            </div>
-        </section>
+            </section>
+
+            <section id="testimonials" class="testimonials glass-morphism parallax compact-section">
+                <h2 class="gradient-text">What Our Clients Say</h2>
+                <p>Hear from businesses like yours who’ve transformed their tech with sysfx’s expertise.</p>
+                <div class="testimonial-slider">
+                    <article class="testimonial card-hover">
+                        <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
+                        <blockquote>
+                            <p>"Sysfx provided excellent service. They fixed my computer quickly and efficiently, saving our business downtime."</p>
+                            <footer class="testimonial-author">- John Doe, CEO of TechTrend Solutions</footer>
+                        </blockquote>
+                    </article>
+                    <article class="testimonial card-hover">
+                        <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
+                        <blockquote>
+                            <p>"I’m very happy with the website they built for my business. It’s modern, fast, and drives more traffic than ever."</p>
+                            <footer class="testimonial-author">- Jane Smith, Founder of WebWise Co.</footer>
+                        </blockquote>
+                    </article>
+                    <article class="testimonial card-hover">
+                        <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
+                        <blockquote>
+                            <p>"Their cybersecurity solutions gave us peace of mind. Our data is now secure from threats we didn’t even know existed."</p>
+                            <footer class="testimonial-author">- Michael Johnson, IT Director at NetSecure Inc.</footer>
+                        </blockquote>
+                    </article>
+                </div>
+                <button class="modern-button" onclick="location.href='#contact'">Share Your Story</button>
+            </section>
+
+            <section id="team" class="team glass-morphism parallax compact-section">
+                <h2 class="gradient-text">Meet Our Team</h2>
+                <p>Our skilled professionals are dedicated to delivering top-tier tech solutions.</p>
+                <div class="team-grid">
+                    <article class="team-member card-hover">
+                        <h3>Nick Carter</h3>
+                        <p>Founder & Lead Technician</p>
+                        <p class="extra-info">15+ years in IT, specializing in repairs and cybersecurity.</p>
+                    </article>
+                    <article class="team-member card-hover">
+                        <h3>Sarah Lee</h3>
+                        <p>Web Development Expert</p>
+                        <p class="extra-info">Passionate about creating user-friendly, high-performance websites.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section id="about" class="about glass-morphism parallax">
+                <h2 class="gradient-text">About Us</h2>
+                <p>sysfx is a team of experienced tech professionals dedicated to delivering top-notch solutions to our clients. With over 15 years of industry expertise, we specialize in computer repairs, cybersecurity, web development, networking, cloud solutions, and 24/7 IT support.</p>
+                <p>Our mission is to empower businesses with innovative technology, ensuring precision, reliability, and exceptional customer service. Located in Clinton, CT, we serve clients across the region, helping them thrive in a digital-first world.</p>
+                <p>Our core values include innovation, integrity, and client satisfaction, driving us to exceed expectations with every project.</p>
+                <button class="modern-button" onclick="location.href='#contact'">Contact Us Today</button>
+                <div class="tech-trivia">
+                    <h3>Tech Trivia</h3>
+                    <p>Did you know the first computer "bug" was an actual insect? In 1947, engineers found a malfunction in the Harvard Mark II caused by a moth stuck in a relay!</p>
+                </div>
+            </section>
+
+            <section id="cta" class="cta glass-morphism parallax compact-section">
+                <h2 class="cta-title">Ready to Transform Your Tech?</h2>
+                <p>Partner with sysfx for innovative solutions that drive your business forward.</p>
+                <div class="button-container">
+                    <button class="modern-button primary" onclick="location.href='#contact'">
+                        <i class="fas fa-rocket" aria-hidden="true"></i> Start Now
+                    </button>
+                    <button class="modern-button secondary" onclick="location.href='#services'">
+                        <i class="fas fa-info-circle"></i> Learn More
+                    </button>
+                </div>
+            </section>
+
+            <section id="contact" class="contact glass-morphism parallax tiny-section">
+                <h2 class="gradient-text">Contact Us</h2>
+                <p>Ready to elevate your tech with sysfx? Contact our team for a free consultation, quote, or support. We’re here to help 24/7!</p>
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope" aria-hidden="true"></i>
+                            <a href="#" class="email-link" id="email-link" aria-label="Email sysfx">Click to email</a>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone" aria-hidden="true"></i>
+                            <a href="tel:+18603754425" aria-label="Call sysfx at (860) 375-4425">(860) 375-4425</a>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                            <span>123 Main Street, Clinton, CT</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="modern-button" onclick="location.href='mailto:nick@sysfx.net'">Send Email</button>
+            </section>
+
+            <section class="blog-teaser glass-morphism parallax">
+                <h2 class="gradient-text">Tech Insights</h2>
+                <p>Get a sneak peek at our latest blog posts for tips, tricks, and industry news.</p>
+                <div class="blog-preview">
+                    <article>
+                        <h3>5 Ways to Boost Your Network Speed</h3>
+                        <p>Learn simple tweaks to optimize your network performance, from QoS settings to hardware upgrades.</p>
+                        <button class="modern-button small" onclick="alert('Blog coming soon!')">Read More</button>
+                    </article>
+                    <article>
+                        <h3>The Future of Cloud Computing</h3>
+                        <p>Explore how edge computing and AI are shaping the next era of cloud solutions.</p>
+                        <button class="modern-button small" onclick="alert('Blog coming soon!')">Read More</button>
+                    </article>
+                </div>
+            </section>
+
+            <section class="tech-timeline glass-morphism parallax">
+                <h2 class="gradient-text">Our Tech Journey</h2>
+                <p>A brief history of sysfx’s evolution in the tech world.</p>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <span class="year">2010</span>
+                        <p>Founded as N-TEC, focusing on local PC repairs.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">2015</span>
+                        <p>Expanded into cybersecurity and networking solutions.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">2020</span>
+                        <p>Rebranded to sysfx, adding web development and cloud services.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
     </main>
 
     <footer class="glass-morphism" role="contentinfo">
@@ -465,15 +470,15 @@
         <button id="close-tech-tip" class="close-btn" aria-label="Close Tech Tip">×</button>
     </div>
 
-    <!-- New Feature: Floating Chat Bubble -->
+    <!-- Floating Chat Bubble -->
     <div class="chat-bubble" id="chat-bubble">
         <span>Need help? Chat with us!</span>
     </div>
 
-    <!-- New Feature: Scroll-to-Top Button -->
+    <!-- Scroll-to-Top Button -->
     <button class="scroll-top-btn" aria-label="Scroll to Top"><i class="fas fa-arrow-up"></i></button>
 
-    <!-- New Feature: Easter Egg Trigger -->
+    <!-- Easter Egg Trigger -->
     <div class="easter-egg-trigger" aria-hidden="true"></div>
 </body>
 </html>
