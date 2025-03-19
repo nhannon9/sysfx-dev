@@ -36,27 +36,24 @@ document.addEventListener("DOMContentLoaded", function () {
         ];
         let currentPhraseIndex = 0;
 
-        // Ensure element is ready and visible
         typingElement.style.opacity = "1";
-        typingElement.textContent = ""; // Start empty
+        typingElement.textContent = "";
 
         function typeText() {
             const currentPhrase = phrases[currentPhraseIndex];
             let charIndex = 0;
 
-            // Clear previous content
             typingElement.textContent = "";
 
-            // Type out the phrase character by character
             const typeInterval = setInterval(() => {
                 if (charIndex < currentPhrase.length) {
                     typingElement.textContent += currentPhrase[charIndex];
                     charIndex++;
                 } else {
                     clearInterval(typeInterval);
-                    setTimeout(eraseText, 2000); // Pause before erasing
+                    setTimeout(eraseText, 2000);
                 }
-            }, 50); // Typing speed
+            }, 50);
         }
 
         function eraseText() {
@@ -68,12 +65,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else {
                     clearInterval(eraseInterval);
                     currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
-                    setTimeout(typeText, 500); // Brief pause before next phrase
+                    setTimeout(typeText, 500);
                 }
-            }, 30); // Erasing speed
+            }, 30);
         }
 
-        // Start the typing effect immediately
         typeText();
     } else {
         console.error("Typing element (#typing-effect) not found in the DOM!");
@@ -125,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const targetElement = document.getElementById(targetId);
             if (targetElement) {
                 window.scrollTo({
-                    top: targetElement.offsetTop - 80,
+                    top: targetElement.offsetTop - 60, // Adjusted for smaller header
                     behavior: "smooth"
                 });
                 if (window.innerWidth <= 768 && navUl) {
@@ -152,16 +148,20 @@ document.addEventListener("DOMContentLoaded", function () {
     // Weather widget with OpenWeatherMap API
     const weatherText = document.getElementById("weather-text");
     const localWeatherBtn = document.getElementById("local-weather-btn");
-    const apiKey = "YOUR_OPENWEATHERMAP_API_KEY";
+    const apiKey = "e81a6aaad7e8ebfd5e8b3aafaedcde42"; // Replace with your actual API key
 
     function updateWeather(lat = 41.2788, lon = -72.5276) {
         fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`)
-            .then(response => response.ok ? response.json() : Promise.reject())
+            .then(response => {
+                if (!response.ok) throw new Error("Weather API error");
+                return response.json();
+            })
             .then(data => {
                 weatherText.innerHTML = `<i class="fas fa-cloud-sun" aria-hidden="true"></i> ${Math.round(data.main.temp)}°F in ${data.name}`;
             })
-            .catch(() => {
-                weatherText.innerHTML = "Weather unavailable";
+            .catch(error => {
+                console.error(error);
+                weatherText.innerHTML = "Weather data temporarily unavailable";
             });
     }
     updateWeather();
@@ -367,7 +367,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     modalActions.forEach(action => {
         action.addEventListener("click", (e) => {
-            e.stopPropagation(); // Prevent modal close
+            e.stopPropagation();
             const href = action.getAttribute("onclick").match(/location\.href='([^']+)'/)[1];
             window.location.href = href;
             playSound('click');
@@ -463,6 +463,18 @@ document.addEventListener("DOMContentLoaded", function () {
             const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             const scrollPercent = (scrollTop / docHeight) * 100;
             scrollProgress.style.width = `${scrollPercent}%`;
+        });
+    }
+
+    // Header shrink on scroll
+    const header = document.querySelector("header");
+    if (header) {
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 50) {
+                header.classList.add("shrink");
+            } else {
+                header.classList.remove("shrink");
+            }
         });
     }
 
@@ -596,5 +608,38 @@ document.addEventListener("DOMContentLoaded", function () {
                 s.style.border = i === randomIndex ? "2px solid var(--highlight-color)" : "none";
             });
         }, 10000);
+    }
+
+    // Easter Egg Activation
+    const easterEggTrigger = document.querySelector(".easter-egg-trigger");
+    if (easterEggTrigger) {
+        easterEggTrigger.addEventListener("click", () => {
+            const easterEggMessage = document.createElement("div");
+            easterEggMessage.textContent = "🎉 You found the Easter Egg! Enjoy this secret tech tip: 'Ctrl + Alt + Delete' isn’t just for crashes—use it to quickly lock your PC!'";
+            easterEggMessage.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: var(--primary-color);
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                z-index: 2000;
+                box-shadow: 0 0 20px rgba(0, 160, 0, 0.8);
+                text-align: center;
+                font-size: 1.2em;
+            `;
+            document.body.appendChild(easterEggMessage);
+            playSound('beep', 0.7);
+
+            setTimeout(() => {
+                gsap.to(easterEggMessage, {
+                    opacity: 0,
+                    duration: 1,
+                    onComplete: () => easterEggMessage.remove()
+                });
+            }, 5000);
+        });
     }
 });
