@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const markers = [
             { lat: 41.2788, lon: -72.5276, popup: "sysfx HQ - Click for Contact", url: "#contact" },
             { lat: 41.2800, lon: -72.5300, popup: "Service Center - Learn About Repairs", url: "#services" },
-            { lat: 41.2776, lon: -72.5250, popup: "Support Office - Get IT Help", url: "#support" }
+            { lat: 41.2776, lon: -72.5250, popup: "Support Office - Get IT Help", url: "#contact" }
         ];
 
         markers.forEach(markerData => {
@@ -261,19 +261,22 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Testimonial carousel
+    // Testimonial carousel (updated for new placement)
     const testimonials = document.querySelectorAll(".testimonial");
     let currentTestimonial = 0;
     function showTestimonial() {
         testimonials.forEach((t, i) => {
             t.style.opacity = i === currentTestimonial ? "1" : "0";
-            t.style.transform = i === currentTestimonial ? "scale(1)" : "scale(0.95)";
+            t.style.transform = i === currentTestimonial ? "translateX(0)" : "translateX(20px)";
             t.style.position = i === currentTestimonial ? "relative" : "absolute";
+            t.style.height = i === currentTestimonial ? "auto" : "0";
         });
         currentTestimonial = (currentTestimonial + 1) % testimonials.length;
     }
-    showTestimonial();
-    setInterval(showTestimonial, 4000);
+    if (testimonials.length) {
+        showTestimonial();
+        setInterval(showTestimonial, 4000);
+    }
 
     // Animated stats counters with parallax
     const statNumbers = document.querySelectorAll(".stat-number");
