@@ -42,7 +42,6 @@ document.addEventListener("DOMContentLoaded", function () {
         function typeText() {
             const currentPhrase = phrases[currentPhraseIndex];
             let charIndex = 0;
-
             typingElement.textContent = "";
 
             const typeInterval = setInterval(() => {
@@ -110,54 +109,33 @@ document.addEventListener("DOMContentLoaded", function () {
             hamburger.querySelector("i").classList.toggle("fa-bars");
             hamburger.querySelector("i").classList.toggle("fa-times");
             playSound('click');
+            // Ensure header doesn't overlap content when menu is open
+            document.querySelector("header").classList.toggle("expanded", navUl.classList.contains("active"));
         });
     }
 
-    // Smooth scrolling
+    // Smooth scrolling with offset adjustment for fixed header
     document.querySelectorAll("nav a").forEach(anchor => {
         anchor.addEventListener("click", function (e) {
             e.preventDefault();
             const targetId = this.getAttribute("href").substring(1);
             const targetElement = document.getElementById(targetId);
             if (targetElement) {
+                const headerHeight = document.querySelector("header").offsetHeight;
                 window.scrollTo({
-                    top: targetElement.offsetTop - 70,
+                    top: targetElement.offsetTop - (headerHeight > 100 ? 80 : headerHeight),
                     behavior: "smooth"
                 });
                 if (window.innerWidth <= 768 && navUl) {
                     navUl.classList.remove("active");
                     hamburger.querySelector("i").classList.remove("fa-times");
                     hamburger.querySelector("i").classList.add("fa-bars");
+                    document.querySelector("header").classList.remove("expanded");
                 }
             }
             playSound('click');
         });
     });
-
-    // Header shrink on scroll with new animation (reverted to old style with fade)
-    const header = document.querySelector("header");
-    window.addEventListener("scroll", () => {
-        const scrollY = window.scrollY;
-        if (scrollY > 100) {
-            header.classList.add("shrink");
-            gsap.to(header, { opacity: 0.95, duration: 0.6, ease: "power2.out" });
-        } else {
-            header.classList.remove("shrink");
-            gsap.to(header, { opacity: 1, duration: 0.6, ease: "power2.out" });
-        }
-    });
-
-    // Logo spin (single logo, no back, normal facing)
-    const logo = document.querySelector(".logo-container img");
-    if (logo) {
-        gsap.to(logo, {
-            rotation: 360,
-            duration: 3,
-            repeat: -1,
-            ease: "linear",
-            transformOrigin: "center center"
-        });
-    }
 
     // Real-time clock
     function updateClock() {
@@ -170,16 +148,16 @@ document.addEventListener("DOMContentLoaded", function () {
     updateClock();
     setInterval(updateClock, 1000);
 
-    // Weather widget with WeatherAPI
+    // Weather widget with OpenWeatherMap API
     const weatherText = document.getElementById("weather-text");
     const localWeatherBtn = document.getElementById("local-weather-btn");
-    const apiKey = "YOUR_WEATHERAPI_KEY"; // Replace with your WeatherAPI key
+    const apiKey = "YOUR_OPENWEATHERMAP_API_KEY";
 
     function updateWeather(lat = 41.2788, lon = -72.5276) {
-        fetch(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${lat},${lon}&aqi=no`)
+        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`)
             .then(response => response.ok ? response.json() : Promise.reject())
             .then(data => {
-                weatherText.innerHTML = `<i class="fas fa-cloud-sun" aria-hidden="true"></i> ${Math.round(data.current.temp_f)}°F in ${data.location.name}`;
+                weatherText.innerHTML = `<i class="fas fa-cloud-sun" aria-hidden="true"></i> ${Math.round(data.main.temp)}°F in ${data.name}`;
             })
             .catch(() => {
                 weatherText.innerHTML = "Weather unavailable";
@@ -262,7 +240,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const markers = [
             { lat: 41.2788, lon: -72.5276, popup: "sysfx HQ - Click for Contact", url: "#contact" },
             { lat: 41.2800, lon: -72.5300, popup: "Service Center - Learn About Repairs", url: "#services" },
-            { lat: 41.2776, lon: -72.5250, popup: "Support Office - Get IT Help", url: "#contact" }
+            { lat: 41.2776, lon: -72.5250, popup: "Support Office - Get IT Help", url: "#support" }
         ];
 
         markers.forEach(markerData => {
@@ -281,16 +259,15 @@ document.addEventListener("DOMContentLoaded", function () {
     function showTestimonial() {
         testimonials.forEach((t, i) => {
             t.style.opacity = i === currentTestimonial ? "1" : "0";
-            t.style.transform = i === currentTestimonial ? "translateX(0)" : "translateX(20px)";
+            t.style.transform = i === currentTestimonial ? "scale(1)" : "scale(0.95)";
             t.style.position = i === currentTestimonial ? "relative" : "absolute";
-            t.style.height = i === currentTestimonial ? "auto" : "0";
+            t.style.left = "0"; // Ensure centered alignment
+            t.style.width = "100%"; // Match CSS max-width
         });
         currentTestimonial = (currentTestimonial + 1) % testimonials.length;
     }
-    if (testimonials.length) {
-        showTestimonial();
-        setInterval(showTestimonial, 4000);
-    }
+    showTestimonial();
+    setInterval(showTestimonial, 4000);
 
     // Animated stats counters with parallax
     const statNumbers = document.querySelectorAll(".stat-number");
@@ -311,8 +288,7 @@ document.addEventListener("DOMContentLoaded", function () {
         observer.observe(stat);
 
         gsap.to(stat.closest(".stat-item"), {
-            y: -20,
-            scale: 1.1,
+            y: -15,
             ease: "power1.inOut",
             scrollTrigger: {
                 trigger: stat.closest(".stat-item"),
@@ -343,24 +319,19 @@ document.addEventListener("DOMContentLoaded", function () {
         if (window.innerWidth <= 768) cursor.style.display = "none";
     }
 
-    // Service modals with improved layout
+    // Service modals with fixed button functionality
     const services = document.querySelectorAll(".service");
     const modals = document.querySelectorAll(".modal");
     const closeButtons = document.querySelectorAll(".modal-close");
     const modalActions = document.querySelectorAll(".modal-action");
 
     services.forEach(service => {
-        service.addEventListener("click", (e) => {
-            if (e.target.tagName !== "BUTTON") {
-                const modalId = service.getAttribute("data-modal") + "-modal";
-                const modal = document.getElementById(modalId);
-                if (modal) {
-                    gsap.fromTo(modal, 
-                        { scale: 0.8, opacity: 0 },
-                        { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.7)", display: "flex" }
-                    );
-                    playSound('click');
-                }
+        service.addEventListener("click", () => {
+            const modalId = service.getAttribute("data-modal") + "-modal";
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = "flex";
+                playSound('click');
             }
         });
 
@@ -383,26 +354,14 @@ document.addEventListener("DOMContentLoaded", function () {
     closeButtons.forEach(button => {
         button.addEventListener("click", () => {
             const modal = button.closest(".modal");
-            gsap.to(modal, {
-                scale: 0.8,
-                opacity: 0,
-                duration: 0.3,
-                ease: "power2.in",
-                onComplete: () => modal.style.display = "none"
-            });
+            modal.style.display = "none";
             playSound('click');
         });
     });
 
     document.addEventListener("click", (e) => {
         if (e.target.classList.contains("modal")) {
-            gsap.to(e.target, {
-                scale: 0.8,
-                opacity: 0,
-                duration: 0.3,
-                ease: "power2.in",
-                onComplete: () => e.target.style.display = "none"
-            });
+            e.target.style.display = "none";
             playSound('click');
         }
     });
@@ -434,6 +393,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
         );
+    });
+
+    // Parallax effect for testimonials
+    const testimonialItems = document.querySelectorAll(".testimonial");
+    testimonialItems.forEach(testimonial => {
+        gsap.to(testimonial, {
+            y: -15,
+            ease: "power1.inOut",
+            scrollTrigger: {
+                trigger: testimonial,
+                start: "top 85%",
+                end: "bottom 20%",
+                scrub: true
+            }
+        });
     });
 
     // Video background fallback
@@ -490,6 +464,27 @@ document.addEventListener("DOMContentLoaded", function () {
             const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             const scrollPercent = (scrollTop / docHeight) * 100;
             scrollProgress.style.width = `${scrollPercent}%`;
+        });
+    }
+
+    // Header shrink on scroll with mobile fix
+    const header = document.querySelector("header");
+    if (header) {
+        let lastScroll = 0;
+        window.addEventListener("scroll", () => {
+            const currentScroll = window.scrollY;
+            if (currentScroll > 50 && currentScroll > lastScroll) {
+                header.classList.add("shrink");
+                if (window.innerWidth <= 768 && navUl.classList.contains("active")) {
+                    navUl.classList.remove("active");
+                    hamburger.querySelector("i").classList.remove("fa-times");
+                    hamburger.querySelector("i").classList.add("fa-bars");
+                    header.classList.remove("expanded");
+                }
+            } else if (currentScroll <= 50) {
+                header.classList.remove("shrink");
+            }
+            lastScroll = currentScroll;
         });
     }
 
@@ -623,24 +618,5 @@ document.addEventListener("DOMContentLoaded", function () {
                 s.style.border = i === randomIndex ? "2px solid var(--highlight-color)" : "none";
             });
         }, 10000);
-    }
-
-    // CTA animation
-    const ctaSection = document.getElementById("cta");
-    if (ctaSection) {
-        gsap.fromTo(ctaSection.querySelector(".cta-title"), 
-            { scale: 0.9, opacity: 0 },
-            {
-                scale: 1,
-                opacity: 1,
-                duration: 1,
-                ease: "elastic.out(1, 0.5)",
-                scrollTrigger: {
-                    trigger: ctaSection,
-                    start: "top 85%",
-                    toggleActions: "play none none none"
-                }
-            }
-        );
     }
 });
