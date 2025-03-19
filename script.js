@@ -294,7 +294,7 @@ document.addEventListener("DOMContentLoaded", function () {
         observer.observe(stat);
 
         gsap.to(stat.closest(".stat-item"), {
-            y: -10,
+            y: -15,
             ease: "power1.inOut",
             scrollTrigger: {
                 trigger: stat.closest(".stat-item"),
