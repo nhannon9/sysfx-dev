@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Testimonial carousel (updated for new placement)
+    // Testimonial carousel
     const testimonials = document.querySelectorAll(".testimonial");
     let currentTestimonial = 0;
     function showTestimonial() {
@@ -335,12 +335,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalActions = document.querySelectorAll(".modal-action");
 
     services.forEach(service => {
-        service.addEventListener("click", () => {
-            const modalId = service.getAttribute("data-modal") + "-modal";
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = "flex";
-                playSound('click');
+        service.addEventListener("click", (e) => {
+            if (e.target.tagName !== "BUTTON") {
+                const modalId = service.getAttribute("data-modal") + "-modal";
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.style.display = "flex";
+                    playSound('click');
+                }
             }
         });
 
