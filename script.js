@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Simplified typing effect for #typing-effect
+    // Optimized typing effect with gradient sync
     const typingElement = document.getElementById("typing-effect");
     if (typingElement) {
         const phrases = [
@@ -34,47 +34,32 @@ document.addEventListener("DOMContentLoaded", function () {
             "Securing your tech, 24/7.",
             "Building the web of tomorrow."
         ];
-        let currentPhraseIndex = 0;
+        let index = 0, charIndex = 0, isDeleting = false;
 
         typingElement.style.opacity = "1";
-        typingElement.textContent = "";
+        function updateTyping() {
+            const phrase = phrases[index];
+            typingElement.textContent = phrase.slice(0, charIndex);
+            typingElement.style.background = `linear-gradient(45deg, #00a000 ${charIndex * 3}%, #4CAF50)`;
+            charIndex += isDeleting ? -1 : 1;
 
-        function typeText() {
-            const currentPhrase = phrases[currentPhraseIndex];
-            let charIndex = 0;
-            typingElement.textContent = "";
-
-            const typeInterval = setInterval(() => {
-                if (charIndex < currentPhrase.length) {
-                    typingElement.textContent += currentPhrase[charIndex];
-                    charIndex++;
-                } else {
-                    clearInterval(typeInterval);
-                    setTimeout(eraseText, 2000);
-                }
-            }, 50);
+            if (!isDeleting && charIndex > phrase.length) {
+                isDeleting = true;
+                setTimeout(updateTyping, 2000);
+            } else if (isDeleting && charIndex <= 0) {
+                isDeleting = false;
+                index = (index + 1) % phrases.length;
+                setTimeout(updateTyping, 500);
+            } else {
+                setTimeout(updateTyping, isDeleting ? 30 : 50);
+            }
         }
-
-        function eraseText() {
-            let text = typingElement.textContent;
-            const eraseInterval = setInterval(() => {
-                if (text.length > 0) {
-                    text = text.slice(0, -1);
-                    typingElement.textContent = text;
-                } else {
-                    clearInterval(eraseInterval);
-                    currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
-                    setTimeout(typeText, 500);
-                }
-            }, 30);
-        }
-
-        typeText();
+        updateTyping();
     } else {
-        console.error("Typing element (#typing-effect) not found in the DOM!");
+        console.error("Typing element (#typing-effect) not found!");
     }
 
-    // Dark mode toggle with localStorage
+    // Dark mode toggle with rotation
     const darkModeToggle = document.getElementById("darkModeToggle");
     const body = document.body;
     if (darkModeToggle) {
@@ -84,6 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (icon) {
                 icon.classList.toggle("fa-moon");
                 icon.classList.toggle("fa-sun");
+                gsap.to(darkModeToggle, { rotation: 180, duration: 0.5, ease: "power2.out" });
             }
             localStorage.setItem("darkMode", body.classList.contains("dark-mode") ? "enabled" : null);
             playSound('click');
@@ -100,21 +86,27 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Hamburger menu toggle
+    // Hamburger menu with GSAP animation
     const hamburger = document.querySelector(".hamburger");
     const navUl = document.querySelector("nav ul");
     if (hamburger && navUl) {
         hamburger.addEventListener("click", () => {
-            navUl.classList.toggle("active");
-            hamburger.querySelector("i").classList.toggle("fa-bars");
-            hamburger.querySelector("i").classList.toggle("fa-times");
+            const isActive = navUl.classList.toggle("active");
+            const icon = hamburger.querySelector("i");
+            icon.classList.toggle("fa-bars");
+            icon.classList.toggle("fa-times");
+            gsap.to(navUl, {
+                opacity: isActive ? 1 : 0,
+                y: isActive ? 0 : -20,
+                duration: 0.3,
+                ease: "power2.out"
+            });
             playSound('click');
-            // Ensure header doesn't overlap content when menu is open
-            document.querySelector("header").classList.toggle("expanded", navUl.classList.contains("active"));
+            document.querySelector("header").classList.toggle("expanded", isActive);
         });
     }
 
-    // Smooth scrolling with offset adjustment for fixed header
+    // Smooth scrolling with offset
     document.querySelectorAll("nav a").forEach(anchor => {
         anchor.addEventListener("click", function (e) {
             e.preventDefault();
@@ -148,22 +140,30 @@ document.addEventListener("DOMContentLoaded", function () {
     updateClock();
     setInterval(updateClock, 1000);
 
-    // Weather widget with OpenWeatherMap API
+    // Weather widget with caching
     const weatherText = document.getElementById("weather-text");
     const localWeatherBtn = document.getElementById("local-weather-btn");
     const apiKey = "YOUR_OPENWEATHERMAP_API_KEY";
 
-    function updateWeather(lat = 41.2788, lon = -72.5276) {
+    function fetchWeather(lat = 41.2788, lon = -72.5276) {
+        const cacheKey = `weather_${lat}_${lon}`;
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+            const data = JSON.parse(cached);
+            weatherText.innerHTML = `<i class="fas fa-cloud-sun" aria-hidden="true"></i> ${Math.round(data.main.temp)}°F in ${data.name}`;
+            return;
+        }
         fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`)
             .then(response => response.ok ? response.json() : Promise.reject())
             .then(data => {
                 weatherText.innerHTML = `<i class="fas fa-cloud-sun" aria-hidden="true"></i> ${Math.round(data.main.temp)}°F in ${data.name}`;
+                localStorage.setItem(cacheKey, JSON.stringify(data));
             })
             .catch(() => {
                 weatherText.innerHTML = "Weather unavailable";
             });
     }
-    updateWeather();
+    fetchWeather();
 
     if (localWeatherBtn) {
         localWeatherBtn.addEventListener("click", () => {
@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const { latitude, longitude } = position.coords;
-                        updateWeather(latitude, longitude);
+                        fetchWeather(latitude, longitude);
                     },
                     () => {
                         weatherText.innerHTML = "Location access denied";
@@ -184,7 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Particles.js with dynamic dark mode update
+    // Particles.js with dynamic update
     function updateParticles() {
         const isDarkMode = body.classList.contains("dark-mode");
         particlesJS("particles-js", {
@@ -222,10 +222,38 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             retina_detect: true
         });
+
+        // Footer particles
+        particlesJS("footer-particles", {
+            particles: {
+                number: { value: 30, density: { enable: true, value_area: 1000 } },
+                color: { value: isDarkMode ? "#ffffff" : "#4CAF50" },
+                shape: { type: "circle" },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                move: { 
+                    enable: true, 
+                    speed: 2, 
+                    direction: "bottom", 
+                    random: true, 
+                    straight: false, 
+                    out_mode: "out" 
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: false },
+                    onclick: { enable: false },
+                    resize: true
+                }
+            },
+            retina_detect: true
+        });
     }
     updateParticles();
 
-    // Interactive Leaflet map
+    // Leaflet map
     const mapElement = document.getElementById("map");
     if (mapElement && typeof L !== "undefined") {
         const map = L.map("map", { 
@@ -261,15 +289,15 @@ document.addEventListener("DOMContentLoaded", function () {
             t.style.opacity = i === currentTestimonial ? "1" : "0";
             t.style.transform = i === currentTestimonial ? "scale(1)" : "scale(0.95)";
             t.style.position = i === currentTestimonial ? "relative" : "absolute";
-            t.style.left = "0"; // Ensure centered alignment
-            t.style.width = "100%"; // Match CSS max-width
+            t.style.left = "0";
+            t.style.width = "100%";
         });
         currentTestimonial = (currentTestimonial + 1) % testimonials.length;
     }
     showTestimonial();
     setInterval(showTestimonial, 4000);
 
-    // Animated stats counters with parallax
+    // Animated stats with GSAP
     const statNumbers = document.querySelectorAll(".stat-number");
     statNumbers.forEach(stat => {
         const target = parseInt(stat.getAttribute("data-count"));
@@ -299,7 +327,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Custom cursor effect with trail
+    // Custom cursor
     const cursor = document.querySelector(".cursor");
     if (cursor) {
         let lastX = 0, lastY = 0;
@@ -319,7 +347,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (window.innerWidth <= 768) cursor.style.display = "none";
     }
 
-    // Service modals with fixed button functionality
+    // Service modals
     const services = document.querySelectorAll(".service");
     const modals = document.querySelectorAll(".modal");
     const closeButtons = document.querySelectorAll(".modal-close");
@@ -395,7 +423,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     });
 
-    // Parallax effect for testimonials
+    // Testimonial parallax
     const testimonialItems = document.querySelectorAll(".testimonial");
     testimonialItems.forEach(testimonial => {
         gsap.to(testimonial, {
@@ -410,7 +438,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Video background fallback
+    // Video fallback
     const heroVideo = document.querySelector(".hero-video");
     if (heroVideo) {
         heroVideo.addEventListener("error", () => {
@@ -419,7 +447,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Gallery lightbox with sound
+    // Gallery lightbox
     const galleryItems = document.querySelectorAll(".gallery-item");
     const lightbox = document.querySelector(".lightbox");
     const lightboxImg = lightbox && lightbox.querySelector("img");
@@ -456,39 +484,39 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Scroll progress bar
+    // Throttled scroll progress and header shrink
     const scrollProgress = document.querySelector(".scroll-progress");
-    if (scrollProgress) {
-        window.addEventListener("scroll", () => {
+    const header = document.querySelector("header");
+    function throttle(fn, wait) {
+        let lastTime = 0;
+        return function (...args) {
+            const now = Date.now();
+            if (now - lastTime >= wait) {
+                fn(...args);
+                lastTime = now;
+            }
+        };
+    }
+    if (scrollProgress && header) {
+        let lastScroll = 0;
+        window.addEventListener("scroll", throttle(() => {
             const scrollTop = window.scrollY;
             const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             const scrollPercent = (scrollTop / docHeight) * 100;
             scrollProgress.style.width = `${scrollPercent}%`;
-        });
-    }
 
-    // Header shrink on scroll with mobile fix
-    const header = document.querySelector("header");
-    if (header) {
-        let lastScroll = 0;
-        window.addEventListener("scroll", () => {
-            const currentScroll = window.scrollY;
-            if (currentScroll > 50 && currentScroll > lastScroll) {
+            if (scrollTop > 100 && scrollTop > lastScroll) {
+                gsap.to(header, { height: 80, duration: 0.3, ease: "power2.out" });
                 header.classList.add("shrink");
-                if (window.innerWidth <= 768 && navUl.classList.contains("active")) {
-                    navUl.classList.remove("active");
-                    hamburger.querySelector("i").classList.remove("fa-times");
-                    hamburger.querySelector("i").classList.add("fa-bars");
-                    header.classList.remove("expanded");
-                }
-            } else if (currentScroll <= 50) {
+            } else if (scrollTop <= 100) {
+                gsap.to(header, { height: "auto", duration: 0.3, ease: "power2.out" });
                 header.classList.remove("shrink");
             }
-            lastScroll = currentScroll;
-        });
+            lastScroll = scrollTop;
+        }, 100));
     }
 
-    // Audio feedback with mute control
+    // Audio feedback
     let audioContext;
     let isMuted = false;
 
@@ -516,7 +544,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (audioContext && audioContext.state === "suspended" && !isMuted) audioContext.resume();
     }, { once: true });
 
-    // Music toggle with mute control
+    // Music toggle
     const musicToggle = document.getElementById("music-toggle");
     const welcomeMusic = document.getElementById("welcome-music");
     if (musicToggle && welcomeMusic) {
@@ -529,7 +557,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 isMuted = true;
                 musicToggle.classList.add("muted");
             } else {
-                welcomeMusic.play().catch(() => console.log("Music playback blocked until user interaction"));
+                welcomeMusic.play().catch(() => console.log("Music playback blocked"));
                 isMuted = false;
                 musicToggle.classList.remove("muted");
             }
@@ -546,7 +574,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, { once: true });
     }
 
-    // Single tech tip per load
+    // Tech tip
     const techTips = [
         "Tech Tip: Regular updates keep your systems secure!",
         "Tech Tip: Back up your data weekly to avoid loss.",
@@ -581,7 +609,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Chat Bubble Toggle
+    // Chat bubble
     const chatBubble = document.getElementById("chat-bubble");
     if (chatBubble) {
         setTimeout(() => chatBubble.classList.add("visible"), 3000);
@@ -591,16 +619,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Scroll-to-Top Button
+    // Scroll-to-top
     const scrollTopBtn = document.querySelector(".scroll-top-btn");
     if (scrollTopBtn) {
-        window.addEventListener("scroll", () => {
-            if (window.scrollY > 300) {
-                scrollTopBtn.classList.add("visible");
-            } else {
-                scrollTopBtn.classList.remove("visible");
-            }
-        });
+        window.addEventListener("scroll", throttle(() => {
+            scrollTopBtn.classList.toggle("visible", window.scrollY > 300);
+        }, 100));
 
         scrollTopBtn.addEventListener("click", () => {
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -608,7 +632,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Random Service Highlight
+    // Random service highlight
     const serviceGrid = document.querySelector(".service-grid");
     if (serviceGrid) {
         const services = serviceGrid.querySelectorAll(".service");
@@ -618,5 +642,31 @@ document.addEventListener("DOMContentLoaded", function () {
                 s.style.border = i === randomIndex ? "2px solid var(--highlight-color)" : "none";
             });
         }, 10000);
+    }
+
+    // Elon-inspired Easter egg
+    const logo = document.querySelector(".spinning-logo");
+    let clickCount = 0;
+    if (logo) {
+        logo.addEventListener("click", () => {
+            clickCount++;
+            if (clickCount === 3) {
+                gsap.to(logo, {
+                    scale: 1.5,
+                    rotation: 360,
+                    duration: 1,
+                    ease: "elastic.out(1, 0.3)",
+                    onComplete: () => {
+                        alert("Tesla Mode Activated! 🚗");
+                        logo.style.background = "url('https://www.tesla.com/themes/custom/tesla_frontend/assets/favicons/favicon.ico') center/contain no-repeat";
+                        setTimeout(() => {
+                            gsap.to(logo, { scale: 1, rotation: 0, duration: 0.5 });
+                            logo.style.background = "none";
+                        }, 2000);
+                    }
+                });
+                clickCount = 0;
+            }
+        });
     }
 });
