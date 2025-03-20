@@ -31,14 +31,17 @@
                 <button id="local-weather-btn" class="modern-button" style="margin-left: 10px;">Tap for Local Weather</button>
             </div>
         </div>
-        
-        <div class="logo-container">
-            <img src="logo.jpg" alt="sysfx Logo, a symbol of tech expertise" class="spinning-logo" loading="lazy">
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="logo.jpg" alt="sysfx Logo, a symbol of tech expertise" class="spinning-logo" loading="lazy">
+            </div>
+            <div class="header-text">
+                <h1>sysfx</h1>
+                <h3 id="typing-effect" class="gradient-text"></h3>
+            </div>
         </div>
-        <h1>sysfx</h1>
-        <h3 id="typing-effect" class="gradient-text"></h3>
-        <button class="hamburger" aria-label="Toggle Navigation"><i class="fas fa-bars"></i></button>
-        <nav role="navigation">
+        <button class="hamburger" aria-label="Toggle Navigation" aria-expanded="false"><i class="fas fa-bars"></i></button>
+        <nav role="navigation" class="nav-menu">
             <ul>
                 <li><a href="#home" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
                 <li><a href="#events" class="nav-link"><i class="fas fa-calendar-alt"></i> Events</a></li>
@@ -62,6 +65,7 @@
                 <source src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-4326-large.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
+            <div class="hero-gradient-overlay"></div> <!-- Added gradient overlay -->
             <div class="hero-content glass-morphism">
                 <h2 class="gradient-text">Welcome to sysfx!</h2>
                 <p class="hero-text">Unlock cutting-edge technology with Sys Fix—your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support.</p>
@@ -303,8 +307,8 @@
             </div>
         </section>
 
-        <section id="cta" class="cta glass-morphism parallax compact-section">
-            <h2 class="cta-title">Ready to Transform Your Tech?</h2>
+        <section id="cta" class="cta glass-morphism parallax compact-section centered-mobile">
+            <h2 class="cta-title gradient-text">Ready to Transform Your Tech?</h2>
             <p>Partner with sysfx for innovative solutions that drive your business forward.</p>
             <div class="button-container">
                 <button class="modern-button primary" onclick="location.href='#contact'">
@@ -352,7 +356,7 @@
             </div>
         </section>
 
-        <section id="contact" class="contact glass-morphism parallax tiny-section">
+        <section id="contact" class="contact glass-morphism parallax tiny-section centered-mobile">
             <h2 class="gradient-text">Contact Us</h2>
             <p>Ready to elevate your tech with sysfx? Contact our team for a free consultation, quote, or support. We’re here to help 24/7!</p>
             <div class="contact-grid">
@@ -382,6 +386,7 @@
             <a href="https://facebook.com/sysfxtech" target="_blank" aria-label="Follow us on Facebook"><i class="fab fa-facebook"></i></a>
             <a href="https://linkedin.com/company/sysfx" target="_blank" aria-label="Follow us on LinkedIn"><i class="fab fa-linkedin"></i></a>
         </div>
+        <div id="footer-particles" class="particles-container"></div> <!-- Added particle effect -->
     </footer>
 
     <!-- Service Modals -->
