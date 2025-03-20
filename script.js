@@ -186,21 +186,21 @@ document.addEventListener("DOMContentLoaded", function () {
         const isDarkMode = body.classList.contains("dark-mode");
         particlesJS("particles-js", {
             particles: {
-                number: { value: 80, density: { enable: true, value_area: 800 } },
+                number: { value: 60, density: { enable: true, value_area: 800 } },
                 color: { value: isDarkMode ? "#ffffff" : "#00a000" },
                 shape: { type: "polygon", polygon: { nb_sides: 6 } },
-                opacity: { value: isDarkMode ? 0.8 : 0.3, random: true },
-                size: { value: 4, random: true },
+                opacity: { value: isDarkMode ? 0.6 : 0.2, random: true },
+                size: { value: 3, random: true },
                 line_linked: { 
                     enable: true, 
-                    distance: 120, 
+                    distance: 100, 
                     color: isDarkMode ? "#ffffff" : "#00a000",
-                    opacity: 0.4, 
+                    opacity: 0.3, 
                     width: 1 
                 },
                 move: { 
                     enable: true, 
-                    speed: 4, 
+                    speed: 3, 
                     direction: "none", 
                     random: true, 
                     straight: false, 
@@ -223,10 +223,10 @@ document.addEventListener("DOMContentLoaded", function () {
         // Static footer particles
         particlesJS("footer-particles", {
             particles: {
-                number: { value: 20, density: { enable: true, value_area: 1000 } },
+                number: { value: 15, density: { enable: true, value_area: 1000 } },
                 color: { value: isDarkMode ? "#ffffff" : "#4CAF50" },
                 shape: { type: "circle" },
-                opacity: { value: 0.3, random: false },
+                opacity: { value: 0.2, random: false },
                 size: { value: 2, random: true },
                 move: { enable: false }
             },
@@ -330,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (window.innerWidth <= 768) cursor.style.display = "none";
     }
 
-    // Service modals and card flip sync
+    // Service modals and card hover sync
     const services = document.querySelectorAll(".service");
     const modals = document.querySelectorAll(".modal");
     const closeButtons = document.querySelectorAll(".modal-close");
@@ -347,11 +347,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         service.addEventListener("mouseenter", () => {
-            gsap.to(service, { rotationY: 180, duration: 0.5, ease: "power2.out" });
-        });
-
-        service.addEventListener("mouseleave", () => {
-            gsap.to(service, { rotationY: 0, duration: 0.5, ease: "power2.out" });
+            playSound('hover', 0.3);
         });
     });
 
@@ -376,17 +372,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const href = action.getAttribute("onclick").match(/location\.href='([^']+)'/)[1];
             window.location.href = href;
             playSound('click');
-        });
-    });
-
-    // Flip animations for other cards
-    const flipCards = document.querySelectorAll(".case-study, .testimonial, .event-card");
-    flipCards.forEach(card => {
-        card.addEventListener("mouseenter", () => {
-            gsap.to(card, { rotationY: 180, duration: 0.5, ease: "power2.out" });
-        });
-        card.addEventListener("mouseleave", () => {
-            gsap.to(card, { rotationY: 0, duration: 0.5, ease: "power2.out" });
         });
     });
 
@@ -435,12 +420,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             item.addEventListener("mouseover", () => {
-                item.style.transform = "scale(1.1)";
                 playSound('hover', 0.3);
-            });
-
-            item.addEventListener("mouseout", () => {
-                item.style.transform = "scale(1)";
             });
         });
 
@@ -460,7 +440,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Throttled scroll progress and header shrink
     const scrollProgress = document.querySelector(".scroll-progress");
     const header = document.querySelector("header");
-    const logoContainer = document.querySelector(".logo-container");
+    const logoContainer = document.querySelector(".header-top .logo-container");
     function throttle(fn, wait) {
         let lastTime = 0;
         return function (...args) {
@@ -616,7 +596,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 10000);
     }
 
-    // Enhanced Easter egg with Hyperloop burst
+    // Enhanced Easter egg with Quantum Flux burst
     const logo = document.querySelector(".spinning-logo");
     let clickCount = 0;
     if (logo) {
@@ -629,17 +609,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     duration: 1,
                     ease: "elastic.out(1, 0.3)",
                     onComplete: () => {
-                        alert("Hyperloop Mode Activated! 🚇");
+                        alert("Quantum Flux Mode Activated! ⚡️");
                         particlesJS("particles-js", {
                             particles: {
-                                number: { value: 100, density: { enable: true, value_area: 800 } },
+                                number: { value: 120, density: { enable: true, value_area: 800 } },
                                 color: { value: "#ffeb3b" },
-                                shape: { type: "circle" },
+                                shape: { type: "star" },
                                 opacity: { value: 0.8, random: true },
-                                size: { value: 5, random: true },
+                                size: { value: 4, random: true },
                                 move: { 
                                     enable: true, 
-                                    speed: 10, 
+                                    speed: 12, 
                                     direction: "none", 
                                     random: true, 
                                     straight: false, 
