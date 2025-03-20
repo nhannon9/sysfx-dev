@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Optimized typing effect with gradient sync
+    // Optimized typing effect
     const typingElement = document.getElementById("typing-effect");
     if (typingElement) {
         const phrases = [
@@ -40,7 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
         function updateTyping() {
             const phrase = phrases[index];
             typingElement.textContent = phrase.slice(0, charIndex);
-            typingElement.style.background = `linear-gradient(45deg, #00a000 ${charIndex * 3}%, #4CAF50)`;
             charIndex += isDeleting ? -1 : 1;
 
             if (!isDeleting && charIndex > phrase.length) {
@@ -102,7 +101,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 ease: "power2.out"
             });
             playSound('click');
-            document.querySelector("header").classList.toggle("expanded", isActive);
         });
     }
 
@@ -115,14 +113,13 @@ document.addEventListener("DOMContentLoaded", function () {
             if (targetElement) {
                 const headerHeight = document.querySelector("header").offsetHeight;
                 window.scrollTo({
-                    top: targetElement.offsetTop - (headerHeight > 100 ? 80 : headerHeight),
+                    top: targetElement.offsetTop - (headerHeight > 80 ? 60 : headerHeight),
                     behavior: "smooth"
                 });
                 if (window.innerWidth <= 768 && navUl) {
                     navUl.classList.remove("active");
                     hamburger.querySelector("i").classList.remove("fa-times");
                     hamburger.querySelector("i").classList.add("fa-bars");
-                    document.querySelector("header").classList.remove("expanded");
                 }
             }
             playSound('click');
@@ -223,31 +220,17 @@ document.addEventListener("DOMContentLoaded", function () {
             retina_detect: true
         });
 
-        // Footer particles
+        // Static footer particles
         particlesJS("footer-particles", {
             particles: {
-                number: { value: 30, density: { enable: true, value_area: 1000 } },
+                number: { value: 20, density: { enable: true, value_area: 1000 } },
                 color: { value: isDarkMode ? "#ffffff" : "#4CAF50" },
                 shape: { type: "circle" },
-                opacity: { value: 0.5, random: true },
-                size: { value: 3, random: true },
-                move: { 
-                    enable: true, 
-                    speed: 2, 
-                    direction: "bottom", 
-                    random: true, 
-                    straight: false, 
-                    out_mode: "out" 
-                }
+                opacity: { value: 0.3, random: false },
+                size: { value: 2, random: true },
+                move: { enable: false }
             },
-            interactivity: {
-                detect_on: "canvas",
-                events: {
-                    onhover: { enable: false },
-                    onclick: { enable: false },
-                    resize: true
-                }
-            },
+            interactivity: { detect_on: "canvas", events: { resize: true } },
             retina_detect: true
         });
     }
@@ -347,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (window.innerWidth <= 768) cursor.style.display = "none";
     }
 
-    // Service modals
+    // Service modals and card flip sync
     const services = document.querySelectorAll(".service");
     const modals = document.querySelectorAll(".modal");
     const closeButtons = document.querySelectorAll(".modal-close");
@@ -363,19 +346,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        service.addEventListener("mousemove", (e) => {
-            const rect = service.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const tiltX = (y - centerY) / 20;
-            const tiltY = -(x - centerX) / 20;
-            service.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.05)`;
+        service.addEventListener("mouseenter", () => {
+            gsap.to(service, { rotationY: 180, duration: 0.5, ease: "power2.out" });
         });
 
         service.addEventListener("mouseleave", () => {
-            service.style.transform = "perspective(1000px) scale(1)";
+            gsap.to(service, { rotationY: 0, duration: 0.5, ease: "power2.out" });
         });
     });
 
@@ -403,6 +379,17 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // Flip animations for other cards
+    const flipCards = document.querySelectorAll(".case-study, .testimonial, .event-card");
+    flipCards.forEach(card => {
+        card.addEventListener("mouseenter", () => {
+            gsap.to(card, { rotationY: 180, duration: 0.5, ease: "power2.out" });
+        });
+        card.addEventListener("mouseleave", () => {
+            gsap.to(card, { rotationY: 0, duration: 0.5, ease: "power2.out" });
+        });
+    });
+
     // Scroll animations with GSAP
     gsap.registerPlugin(ScrollTrigger);
     const sections = document.querySelectorAll(".parallax, .section-animation");
@@ -417,25 +404,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 scrollTrigger: {
                     trigger: section,
                     start: "top 85%",
-                    toggleActions: "play none none none"
+                    toggleActions: "play none none none",
+                    onEnter: () => playSound('beep', 0.2)
                 }
             }
         );
-    });
-
-    // Testimonial parallax
-    const testimonialItems = document.querySelectorAll(".testimonial");
-    testimonialItems.forEach(testimonial => {
-        gsap.to(testimonial, {
-            y: -15,
-            ease: "power1.inOut",
-            scrollTrigger: {
-                trigger: testimonial,
-                start: "top 85%",
-                end: "bottom 20%",
-                scrub: true
-            }
-        });
     });
 
     // Video fallback
@@ -487,6 +460,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Throttled scroll progress and header shrink
     const scrollProgress = document.querySelector(".scroll-progress");
     const header = document.querySelector("header");
+    const logoContainer = document.querySelector(".logo-container");
     function throttle(fn, wait) {
         let lastTime = 0;
         return function (...args) {
@@ -497,7 +471,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         };
     }
-    if (scrollProgress && header) {
+    if (scrollProgress && header && logoContainer) {
         let lastScroll = 0;
         window.addEventListener("scroll", throttle(() => {
             const scrollTop = window.scrollY;
@@ -506,10 +480,8 @@ document.addEventListener("DOMContentLoaded", function () {
             scrollProgress.style.width = `${scrollPercent}%`;
 
             if (scrollTop > 100 && scrollTop > lastScroll) {
-                gsap.to(header, { height: 80, duration: 0.3, ease: "power2.out" });
                 header.classList.add("shrink");
             } else if (scrollTop <= 100) {
-                gsap.to(header, { height: "auto", duration: 0.3, ease: "power2.out" });
                 header.classList.remove("shrink");
             }
             lastScroll = scrollTop;
@@ -644,7 +616,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 10000);
     }
 
-    // Elon-inspired Easter egg
+    // Enhanced Easter egg with Hyperloop burst
     const logo = document.querySelector(".spinning-logo");
     let clickCount = 0;
     if (logo) {
@@ -657,11 +629,29 @@ document.addEventListener("DOMContentLoaded", function () {
                     duration: 1,
                     ease: "elastic.out(1, 0.3)",
                     onComplete: () => {
-                        alert("Tesla Mode Activated! 🚗");
-                        logo.style.background = "url('https://www.tesla.com/themes/custom/tesla_frontend/assets/favicons/favicon.ico') center/contain no-repeat";
+                        alert("Hyperloop Mode Activated! 🚇");
+                        particlesJS("particles-js", {
+                            particles: {
+                                number: { value: 100, density: { enable: true, value_area: 800 } },
+                                color: { value: "#ffeb3b" },
+                                shape: { type: "circle" },
+                                opacity: { value: 0.8, random: true },
+                                size: { value: 5, random: true },
+                                move: { 
+                                    enable: true, 
+                                    speed: 10, 
+                                    direction: "none", 
+                                    random: true, 
+                                    straight: false, 
+                                    out_mode: "out" 
+                                }
+                            },
+                            interactivity: { events: { resize: true } },
+                            retina_detect: true
+                        });
                         setTimeout(() => {
                             gsap.to(logo, { scale: 1, rotation: 0, duration: 0.5 });
-                            logo.style.background = "none";
+                            updateParticles();
                         }, 2000);
                     }
                 });
