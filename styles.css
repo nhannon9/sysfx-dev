@@ -6,14 +6,14 @@
     --glass-border: rgba(255, 255, 255, 0.18);
     --secondary-color: #4CAF50;
     --highlight-color: #ffeb3b;
-    --blue-gradient: linear-gradient(45deg, #1E90FF, #00BFFF); /* Added for Explore Services */
+    --blue-gradient: linear-gradient(45deg, #1E90FF, #00BFFF);
 }
 
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #f4f4f4, #e6e6e6); /* Gradient added */
+    background: linear-gradient(135deg, #f4f4f4, #e6e6e6);
     color: #333;
     line-height: 1.6;
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -22,7 +22,7 @@ body {
 }
 
 body.dark-mode {
-    background: linear-gradient(135deg, #222, #333); /* Gradient for dark mode */
+    background: linear-gradient(135deg, #222, #333);
     color: #eee;
     --glass-bg: rgba(51, 51, 51, 0.8);
     --glass-border: rgba(255, 255, 255, 0.08);
@@ -198,42 +198,40 @@ header {
     position: sticky;
     top: 0;
     z-index: 100;
-    min-height: 240px; /* Increased to ensure space for typing effect */
-    transition: all 0.3s ease, transform 0.3s ease; /* Enhanced for smoother shrink */
-    box-sizing: border-box;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Added depth */
+    transition: padding 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 header.shrink {
-    padding: 10px 20px;
-    min-height: 80px; /* Adjusted for better spacing */
-    transform: scale(0.95); /* Subtle scale for animation */
-    background-color: rgba(34, 34, 34, 0.95); /* Slightly more opaque */
+    padding: 8px 20px;
+    background-color: rgba(34, 34, 34, 0.95);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
-header.shrink nav, header.shrink .status-bar, header.shrink h1 {
-    display: none; /* Keep original behavior */
+header .header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.4s ease;
 }
 
-header.shrink .logo-container {
-    height: 80px;
-    margin-bottom: 0; /* Improved spacing */
+header.shrink .header-content {
+    transform: scale(0.9);
 }
 
-header.shrink .spinning-logo {
-    width: 80px;
-}
-
-@media (min-width: 769px) {
-    header {
-        padding: 15px 20px;
-    }
+header.shrink nav, header.shrink .status-bar {
+    display: none;
 }
 
 header h1 {
     color: #333;
     font-size: 1.5em;
     margin: 5px 0;
+    transition: opacity 0.4s ease;
+}
+
+header.shrink h1 {
+    opacity: 0;
 }
 
 body.dark-mode header h1 {
@@ -249,6 +247,11 @@ body.dark-mode header h1 {
     margin-bottom: 10px;
     font-size: 0.8em;
     color: #fff;
+    transition: opacity 0.4s ease;
+}
+
+header.shrink .status-bar {
+    opacity: 0;
 }
 
 /* Logo animation */
@@ -258,17 +261,26 @@ body.dark-mode header h1 {
     align-items: center;
     height: 120px;
     margin-bottom: 5px;
-    perspective: 1000px; /* Add perspective for 3D effect */
-    transition: height 0.3s ease; /* Added for shrinking */
+    perspective: 1000px;
+    transition: height 0.4s ease, margin 0.4s ease;
+}
+
+header.shrink .logo-container {
+    height: 80px;
+    margin-bottom: 0;
 }
 
 .spinning-logo {
     width: 120px;
-    animation: simpleSpin 4s infinite linear; /* Simplified to basic spin */
+    animation: simpleSpin 4s infinite linear;
     border-radius: 50%;
     box-shadow: 0 0 15px var(--highlight-color);
-    transform-style: preserve-3d; /* Ensure 3D transform */
-    transition: width 0.3s ease; /* Added for shrinking */
+    transform-style: preserve-3d;
+    transition: width 0.4s ease;
+}
+
+header.shrink .spinning-logo {
+    width: 80px;
 }
 
 @keyframes simpleSpin {
@@ -278,14 +290,19 @@ body.dark-mode header h1 {
 
 /* Typing effect styling */
 #typing-effect {
-    min-height: 40px; /* Ensure space for text */
+    min-height: 40px;
     display: block;
-    opacity: 1; /* Ensure visibility */
-    color: #333; /* Dark gray for light mode readability */
+    opacity: 1;
+    color: #333;
+    transition: opacity 0.4s ease;
+}
+
+header.shrink #typing-effect {
+    opacity: 0;
 }
 
 body.dark-mode #typing-effect {
-    color: #fff; /* White for dark mode */
+    color: #fff;
 }
 
 /* Hamburger menu */
@@ -296,15 +313,19 @@ body.dark-mode #typing-effect {
     color: #fff;
     font-size: 1.5em;
     cursor: pointer;
-    position: absolute;
+    position: fixed;
     top: 15px;
     right: 20px;
     z-index: 101;
-    transition: color 0.3s ease; /* Added for hover effect */
+    transition: color 0.3s ease, transform 0.4s ease;
 }
 
 .hamburger:hover {
-    color: var(--highlight-color); /* Added hover feedback */
+    color: var(--highlight-color);
+}
+
+header.shrink .hamburger {
+    transform: scale(1);
 }
 
 nav ul {
@@ -369,7 +390,7 @@ body.dark-mode .nav-link {
 
 /* Centered text */
 .centered-text {
-    text-align: center; /* Added for "Find us in Clinton, CT" */
+    text-align: center;
 }
 
 /* Map container and section */
@@ -397,7 +418,7 @@ body.dark-mode .nav-link {
     transition: transform 0.3s ease;
     position: relative;
     overflow: hidden;
-    box-sizing: border-box; /* Ensure padding fits within width */
+    box-sizing: border-box;
 }
 
 .compact-section {
@@ -440,9 +461,9 @@ body.dark-mode .nav-link {
     height: 50px;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     transition: transform 0.3s ease;
-    background: #fff; /* Ensure visibility */
-    padding: 5px; /* Add padding for consistency */
-    border-radius: 5px; /* Slight rounding */
+    background: #fff;
+    padding: 5px;
+    border-radius: 5px;
 }
 
 .badge:hover {
@@ -542,7 +563,7 @@ body.dark-mode .nav-link {
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Adjusted for responsiveness */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 25px;
     max-width: 1200px;
     margin: 0 auto;
@@ -551,13 +572,13 @@ body.dark-mode .nav-link {
 .stat-item {
     padding: 20px;
     transition: transform 0.3s ease;
-    background: rgba(255, 255, 255, 0.1); /* Added subtle gradient effect */
-    border-radius: 12px; /* Added for consistency */
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
 }
 
 .stat-item:hover {
     transform: scale(1.05);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Added hover effect */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .stat-number {
@@ -607,8 +628,8 @@ body.dark-mode .nav-link {
 }
 
 .modern-button.explore-services {
-    background: var(--blue-gradient); /* Blue gradient for Explore Services */
-    border-radius: 30px; /* Rounded edges */
+    background: var(--blue-gradient);
+    border-radius: 30px;
 }
 
 .modern-button::before {
@@ -633,8 +654,8 @@ body.dark-mode .nav-link {
 }
 
 .modern-button.explore-services:hover {
-    background: linear-gradient(45deg, #00BFFF, #1E90FF); /* Reverse blue gradient on hover */
-    box-shadow: 0 6px 20px rgba(30, 144, 255, 0.5); /* Blue shadow */
+    background: linear-gradient(45deg, #00BFFF, #1E90FF);
+    box-shadow: 0 6px 20px rgba(30, 144, 255, 0.5);
 }
 
 .modern-button:focus {
@@ -702,7 +723,7 @@ body.dark-mode #darkModeToggle:hover {
 }
 
 .music-btn.muted i:before {
-    content: "\f6a9"; /* fa-volume-mute */
+    content: "\f6a9";
 }
 
 /* Tech tip styles */
@@ -1305,34 +1326,34 @@ body.dark-mode .blog-preview article {
     }
 
     header {
-        position: sticky; /* Changed to sticky for better control */
         padding: 15px;
-        min-height: 220px;
-        z-index: 100; /* Ensure header stays above content */
+        z-index: 100;
     }
 
     header.shrink {
-        min-height: 60px; /* Adjusted for mobile */
-        transform: scale(1); /* Prevent awkward scaling on mobile */
+        padding: 8px 15px;
     }
 
     .hamburger {
         display: block;
-        z-index: 102; /* Above nav */
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        z-index: 102;
     }
 
     nav ul {
         display: none;
         flex-direction: column;
         align-items: center;
-        position: fixed; /* Fixed to stay in place */
-        top: 0; /* Fullscreen menu from top */
+        position: fixed;
+        top: 0;
         left: 0;
         width: 100%;
-        height: 100vh; /* Full height for better tap access */
+        height: 100vh;
         background: rgba(34, 34, 34, 0.95);
-        padding: 60px 0 20px; /* Adjusted padding for spacing */
-        z-index: 101; /* Above header but below hamburger */
+        padding: 60px 0 20px;
+        z-index: 101;
     }
 
     nav ul.active {
@@ -1345,9 +1366,9 @@ body.dark-mode .blog-preview article {
     }
 
     .welcome, .events, .services, .testimonials, .about, .contact, .case-studies, .team, .cta, .blog-teaser, .tech-timeline {
-        width: 100%; /* Full width on mobile */
-        padding: 20px; /* Reduced padding */
-        margin: 15px 0; /* Reduced margin */
+        width: 100%;
+        padding: 20px;
+        margin: 15px 0;
     }
 
     .compact-section {
