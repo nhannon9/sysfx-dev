@@ -100,44 +100,51 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Hamburger menu toggle with mobile fix
+    // Hamburger menu toggle
     const hamburger = document.querySelector(".hamburger");
     const navUl = document.querySelector("nav ul");
     if (hamburger && navUl) {
         hamburger.addEventListener("click", () => {
-            navUl.classList.toggle("active");
-            hamburger.querySelector("i").classList.toggle("fa-bars");
-            hamburger.querySelector("i").classList.toggle("fa-times");
+            const isActive = navUl.classList.toggle("active");
+            const icon = hamburger.querySelector("i");
+            icon.classList.toggle("fa-bars");
+            icon.classList.toggle("fa-times");
+            hamburger.setAttribute("aria-expanded", isActive ? "true" : "false");
             playSound('click');
-            // Lock body scroll when menu is active on mobile
-            if (navUl.classList.contains("active") && window.innerWidth <= 768) {
-                body.style.overflow = "hidden";
-            } else {
-                body.style.overflow = "";
+        });
+
+        // Close menu on outside click
+        document.addEventListener("click", (e) => {
+            if (!navUl.contains(e.target) && !hamburger.contains(e.target) && navUl.classList.contains("active")) {
+                navUl.classList.remove("active");
+                hamburger.querySelector("i").classList.remove("fa-times");
+                hamburger.querySelector("i").classList.add("fa-bars");
+                hamburger.setAttribute("aria-expanded", "false");
+                playSound('click');
             }
         });
     }
 
-    // Smooth scrolling with event delegation
-    document.querySelector("nav ul").addEventListener("click", function (e) {
-        const anchor = e.target.closest("a.nav-link");
-        if (!anchor) return;
-        e.preventDefault();
-        const targetId = anchor.getAttribute("href").substring(1);
-        const targetElement = document.getElementById(targetId);
-        if (targetElement) {
-            window.scrollTo({
-                top: targetElement.offsetTop - 80,
-                behavior: "smooth"
-            });
-            if (window.innerWidth <= 768 && navUl) {
-                navUl.classList.remove("active");
-                hamburger.querySelector("i").classList.remove("fa-times");
-                hamburger.querySelector("i").classList.add("fa-bars");
-                body.style.overflow = ""; // Restore scroll
+    // Smooth scrolling
+    document.querySelectorAll("nav a").forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute("href").substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: "smooth"
+                });
+                if (window.innerWidth <= 768 && navUl) {
+                    navUl.classList.remove("active");
+                    hamburger.querySelector("i").classList.remove("fa-times");
+                    hamburger.querySelector("i").classList.add("fa-bars");
+                    hamburger.setAttribute("aria-expanded", "false");
+                }
             }
-        }
-        playSound('click');
+            playSound('click');
+        });
     });
 
     // Real-time clock
@@ -154,16 +161,15 @@ document.addEventListener("DOMContentLoaded", function () {
     // Weather widget with OpenWeatherMap API
     const weatherText = document.getElementById("weather-text");
     const localWeatherBtn = document.getElementById("local-weather-btn");
-    const apiKey = "YOUR_OPENWEATHERMAP_API_KEY"; // Replace with your key
+    const apiKey = "YOUR_OPENWEATHERMAP_API_KEY";
 
     function updateWeather(lat = 41.2788, lon = -72.5276) {
         fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`)
-            .then(response => response.ok ? response.json() : Promise.reject("Weather API failed"))
+            .then(response => response.ok ? response.json() : Promise.reject())
             .then(data => {
                 weatherText.innerHTML = `<i class="fas fa-cloud-sun" aria-hidden="true"></i> ${Math.round(data.main.temp)}°F in ${data.name}`;
             })
-            .catch(error => {
-                console.error("Weather fetch error:", error);
+            .catch(() => {
                 weatherText.innerHTML = "Weather unavailable";
             });
     }
@@ -255,8 +261,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     playSound('click');
                 });
         });
-    } else if (!mapElement) {
-        console.warn("Map element (#map) not found in the DOM!");
     }
 
     // Testimonial carousel
@@ -284,7 +288,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     duration: 2,
                     roundProps: "textContent",
                     ease: "power1.out",
-                    onUpdate: () => stat.textContent = Math.round(stat.textContent),
                     onComplete: () => stat.textContent = target
                 });
                 observer.disconnect();
@@ -465,29 +468,25 @@ document.addEventListener("DOMContentLoaded", function () {
     const scrollProgress = document.querySelector(".scroll-progress");
     if (scrollProgress) {
         window.addEventListener("scroll", () => {
-            requestAnimationFrame(() => {
-                const scrollTop = window.scrollY;
-                const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                const scrollPercent = (scrollTop / docHeight) * 100;
-                scrollProgress.style.width = `${scrollPercent}%`;
-            });
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            scrollProgress.style.width = `${scrollPercent}%`;
         });
     }
 
-    // Header shrink on scroll with refined animation
+    // Header shrink on scroll
     const header = document.querySelector("header");
     if (header) {
         let lastScroll = 0;
         window.addEventListener("scroll", () => {
-            requestAnimationFrame(() => {
-                const currentScroll = window.scrollY;
-                if (currentScroll > 50 && currentScroll > lastScroll) {
-                    header.classList.add("shrink");
-                } else if (currentScroll <= 50) {
-                    header.classList.remove("shrink");
-                }
-                lastScroll = currentScroll;
-            });
+            const currentScroll = window.scrollY;
+            if (currentScroll > 50 && currentScroll > lastScroll) {
+                header.classList.add("shrink");
+            } else if (currentScroll <= 50) {
+                header.classList.remove("shrink");
+            }
+            lastScroll = currentScroll;
         });
     }
 
@@ -598,13 +597,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const scrollTopBtn = document.querySelector(".scroll-top-btn");
     if (scrollTopBtn) {
         window.addEventListener("scroll", () => {
-            requestAnimationFrame(() => {
-                if (window.scrollY > 300) {
-                    scrollTopBtn.classList.add("visible");
-                } else {
-                    scrollTopBtn.classList.remove("visible");
-                }
-            });
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add("visible");
+            } else {
+                scrollTopBtn.classList.remove("visible");
+            }
         });
 
         scrollTopBtn.addEventListener("click", () => {
