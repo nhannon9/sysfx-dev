@@ -10,19 +10,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const emailElement = document.getElementById("email");
     if (emailElement) {
         emailElement.innerHTML = `<a href="mailto:${emailConfig.getEmail()}">${emailConfig.getEmail()}</a>`;
+    } else {
+        console.error("Email element (#email) not found in DOM at load time!");
     }
 
     // Set email link in contact section
     const emailLink = document.getElementById("email-link");
     if (emailLink) {
-        emailLink.addEventListener("click", (e) => {
-            e.preventDefault();
-            window.location.href = `mailto:${emailConfig.getEmail()}`;
-            playSound('click');
-        });
+        emailLink.href = `mailto:${emailConfig.getEmail()}`;
+        emailLink.textContent = emailConfig.getEmail();
+    } else {
+        console.error("Email link (#email-link) not found in DOM!");
     }
 
-    // Optimized typing effect
+    // Typing effect with pause and speed variation
     const typingElement = document.getElementById("typing-effect");
     if (typingElement) {
         const phrases = [
@@ -34,74 +35,72 @@ document.addEventListener("DOMContentLoaded", function () {
             "Securing your tech, 24/7.",
             "Building the web of tomorrow."
         ];
-        let index = 0, charIndex = 0, isDeleting = false;
+        let index = 0, charIndex = 0, isDeleting = false, speed = 50;
 
-        typingElement.style.opacity = "1";
         function updateTyping() {
             const phrase = phrases[index];
             typingElement.textContent = phrase.slice(0, charIndex);
+            typingElement.setAttribute("aria-label", phrase);
             charIndex += isDeleting ? -1 : 1;
 
             if (!isDeleting && charIndex > phrase.length) {
                 isDeleting = true;
-                setTimeout(updateTyping, 2000);
+                speed = 30;
+                setTimeout(updateTyping, 1500);
             } else if (isDeleting && charIndex <= 0) {
                 isDeleting = false;
                 index = (index + 1) % phrases.length;
+                speed = 50;
                 setTimeout(updateTyping, 500);
             } else {
-                setTimeout(updateTyping, isDeleting ? 30 : 50);
+                setTimeout(updateTyping, speed);
             }
         }
         updateTyping();
     } else {
-        console.error("Typing element (#typing-effect) not found!");
+        console.error("Typing element (#typing-effect) not found in DOM!");
     }
 
-    // Dark mode toggle with rotation
+    // Dark mode toggle with transition
     const darkModeToggle = document.getElementById("darkModeToggle");
     const body = document.body;
     if (darkModeToggle) {
         darkModeToggle.addEventListener("click", () => {
+            body.style.transition = "background 0.5s ease";
             body.classList.toggle("dark-mode");
             const icon = darkModeToggle.querySelector("i");
-            if (icon) {
-                icon.classList.toggle("fa-moon");
-                icon.classList.toggle("fa-sun");
-                gsap.to(darkModeToggle, { rotation: 180, duration: 0.5, ease: "power2.out" });
-            }
-            localStorage.setItem("darkMode", body.classList.contains("dark-mode") ? "enabled" : null);
-            playSound('click');
+            icon.classList.toggle("fa-moon");
+            icon.classList.toggle("fa-sun");
+            localStorage.setItem("darkMode", body.classList.contains("dark-mode"));
             updateParticles();
+            setTimeout(() => body.style.transition = "", 500);
         });
-
-        if (localStorage.getItem("darkMode") === "enabled") {
+        if (localStorage.getItem("darkMode") === "true") {
             body.classList.add("dark-mode");
-            const icon = darkModeToggle.querySelector("i");
-            if (icon) {
-                icon.classList.remove("fa-moon");
-                icon.classList.add("fa-sun");
-            }
+            darkModeToggle.querySelector("i").classList.replace("fa-moon", "fa-sun");
         }
+    } else {
+        console.warn("Dark mode toggle not found; skipping initialization.");
     }
 
-    // Hamburger menu with GSAP animation
+    // Hamburger menu with accessibility
     const hamburger = document.querySelector(".hamburger");
     const navUl = document.querySelector("nav ul");
     if (hamburger && navUl) {
         hamburger.addEventListener("click", () => {
-            const isActive = navUl.classList.toggle("active");
-            const icon = hamburger.querySelector("i");
-            icon.classList.toggle("fa-bars");
-            icon.classList.toggle("fa-times");
-            gsap.to(navUl, {
-                opacity: isActive ? 1 : 0,
-                y: isActive ? 0 : -20,
-                duration: 0.3,
-                ease: "power2.out"
-            });
-            playSound('click');
+            navUl.classList.toggle("active");
+            hamburger.querySelector("i").classList.toggle("fa-bars");
+            hamburger.querySelector("i").classList.toggle("fa-times");
+            hamburger.setAttribute("aria-expanded", navUl.classList.contains("active"));
         });
+        document.addEventListener("keydown", e => {
+            if (e.key === "Escape" && navUl.classList.contains("active")) {
+                navUl.classList.remove("active");
+                hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
+            }
+        });
+    } else {
+        console.error("Hamburger or nav ul not found in DOM!");
     }
 
     // Smooth scrolling with offset
@@ -113,530 +112,568 @@ document.addEventListener("DOMContentLoaded", function () {
             if (targetElement) {
                 const headerHeight = document.querySelector("header").offsetHeight;
                 window.scrollTo({
-                    top: targetElement.offsetTop - (headerHeight > 80 ? 60 : headerHeight),
+                    top: targetElement.offsetTop - headerHeight - 20,
                     behavior: "smooth"
                 });
                 if (window.innerWidth <= 768 && navUl) {
                     navUl.classList.remove("active");
-                    hamburger.querySelector("i").classList.remove("fa-times");
-                    hamburger.querySelector("i").classList.add("fa-bars");
+                    hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
                 }
+            } else {
+                console.error(`Navigation target #${targetId} not found in DOM!`);
             }
-            playSound('click');
         });
     });
 
-    // Real-time clock
+    // Clock with date option
     function updateClock() {
         const clockElement = document.getElementById("current-time");
         if (clockElement) {
             const now = new Date();
-            clockElement.innerHTML = `<i class="fas fa-clock" aria-hidden="true"></i> ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const dateString = now.toLocaleDateString();
+            clockElement.textContent = `${timeString} | ${dateString}`;
         }
     }
     updateClock();
     setInterval(updateClock, 1000);
 
-    // Weather widget with caching
+    // Weather with retry and caching
     const weatherText = document.getElementById("weather-text");
-    const localWeatherBtn = document.getElementById("local-weather-btn");
-    const apiKey = "YOUR_OPENWEATHERMAP_API_KEY";
+    const weatherBtn = document.getElementById("local-weather-btn");
+    if (weatherText && weatherBtn) {
+        let retryCount = 0;
+        const maxRetries = 3;
+        const cacheKey = "weatherData";
+        const cacheTTL = 30 * 60 * 1000; // 30 minutes
 
-    function fetchWeather(lat = 41.2788, lon = -72.5276) {
-        const cacheKey = `weather_${lat}_${lon}`;
-        const cached = localStorage.getItem(cacheKey);
-        if (cached) {
-            const data = JSON.parse(cached);
-            weatherText.innerHTML = `<i class="fas fa-cloud-sun" aria-hidden="true"></i> ${Math.round(data.main.temp)}°F in ${data.name}`;
+        function fetchWeather() {
+            const cached = localStorage.getItem(cacheKey);
+            const cacheTime = localStorage.getItem(`${cacheKey}_time`);
+            if (cached && cacheTime && (Date.now() - cacheTime < cacheTTL)) {
+                weatherText.textContent = cached;
+                return;
+            }
+
+            // Uncomment with your OpenWeatherMap API key
+            /*
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=Clinton,CT,US&appid=YOUR_API_KEY&units=imperial`)
+                .then(response => {
+                    if (!response.ok) throw new Error("Weather fetch failed");
+                    return response.json();
+                })
+                .then(data => {
+                    const weatherStr = `Weather: ${Math.round(data.main.temp)}°F, ${data.weather[0].description}`;
+                    weatherText.textContent = weatherStr;
+                    localStorage.setItem(cacheKey, weatherStr);
+                    localStorage.setItem(`${cacheKey}_time`, Date.now());
+                })
+                .catch(() => {
+                    if (retryCount < maxRetries) {
+                        retryCount++;
+                        setTimeout(fetchWeather, 2000 * retryCount);
+                    } else {
+                        weatherText.textContent = "Weather unavailable";
+                    }
+                });
+            */
+            const placeholder = "Weather: 65°F, Sunny (Clinton, CT)";
+            weatherText.textContent = placeholder;
+            localStorage.setItem(cacheKey, placeholder);
+            localStorage.setItem(`${cacheKey}_time`, Date.now());
+        }
+
+        weatherBtn.addEventListener("click", fetchWeather);
+        fetchWeather();
+    } else {
+        console.warn("Weather elements not found; skipping weather functionality.");
+    }
+
+    // Particles with custom config
+    function updateParticles() {
+        if (typeof particlesJS === "undefined") {
+            console.warn("Particles.js not loaded; skipping particle effects.");
             return;
         }
-        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`)
-            .then(response => response.ok ? response.json() : Promise.reject())
-            .then(data => {
-                weatherText.innerHTML = `<i class="fas fa-cloud-sun" aria-hidden="true"></i> ${Math.round(data.main.temp)}°F in ${data.name}`;
-                localStorage.setItem(cacheKey, JSON.stringify(data));
-            })
-            .catch(() => {
-                weatherText.innerHTML = "Weather unavailable";
-            });
-    }
-    fetchWeather();
-
-    if (localWeatherBtn) {
-        localWeatherBtn.addEventListener("click", () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const { latitude, longitude } = position.coords;
-                        fetchWeather(latitude, longitude);
-                    },
-                    () => {
-                        weatherText.innerHTML = "Location access denied";
-                    }
-                );
-            } else {
-                weatherText.innerHTML = "Geolocation not supported";
-            }
-            playSound('click');
-        });
-    }
-
-    // Particles.js with dynamic update
-    function updateParticles() {
         const isDarkMode = body.classList.contains("dark-mode");
         particlesJS("particles-js", {
             particles: {
-                number: { value: 60, density: { enable: true, value_area: 800 } },
+                number: { value: 100, density: { enable: true, value_area: 800 } },
                 color: { value: isDarkMode ? "#ffffff" : "#00a000" },
-                shape: { type: "polygon", polygon: { nb_sides: 6 } },
-                opacity: { value: isDarkMode ? 0.6 : 0.2, random: true },
-                size: { value: 3, random: true },
-                line_linked: { 
-                    enable: true, 
-                    distance: 100, 
-                    color: isDarkMode ? "#ffffff" : "#00a000",
-                    opacity: 0.3, 
-                    width: 1 
-                },
-                move: { 
-                    enable: true, 
-                    speed: 3, 
-                    direction: "none", 
-                    random: true, 
-                    straight: false, 
-                    out_mode: "out", 
-                    bounce: false,
-                    attract: { enable: true, rotateX: 600, rotateY: 1200 }
-                }
+                shape: { type: "circle", stroke: { width: 0 } },
+                opacity: { value: 0.5, random: true, anim: { enable: true, speed: 1 } },
+                size: { value: 3, random: true, anim: { enable: true, speed: 2 } },
+                line_linked: { enable: true, distance: 150, color: isDarkMode ? "#ffffff" : "#00a000", opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 3, direction: "none", random: true, out_mode: "out" }
             },
             interactivity: {
                 detect_on: "canvas",
-                events: {
-                    onhover: { enable: true, mode: "repulse" },
-                    onclick: { enable: true, mode: "push" },
-                    resize: true
-                }
+                events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" }, resize: true },
+                modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
             },
             retina_detect: true
         });
 
-        // Static footer particles
         particlesJS("footer-particles", {
             particles: {
-                number: { value: 15, density: { enable: true, value_area: 1000 } },
+                number: { value: 40, density: { enable: true, value_area: 1000 } },
                 color: { value: isDarkMode ? "#ffffff" : "#4CAF50" },
                 shape: { type: "circle" },
-                opacity: { value: 0.2, random: false },
-                size: { value: 2, random: true },
+                opacity: { value: 0.3 },
+                size: { value: 2 },
                 move: { enable: false }
-            },
-            interactivity: { detect_on: "canvas", events: { resize: true } },
-            retina_detect: true
+            }
         });
     }
     updateParticles();
 
-    // Leaflet map
+    // Map with zoom control
     const mapElement = document.getElementById("map");
     if (mapElement && typeof L !== "undefined") {
-        const map = L.map("map", { 
-            scrollWheelZoom: false, 
-            dragging: !L.Browser.mobile,
-            touchZoom: false 
-        }).setView([41.2788, -72.5276], 13);
+        const map = L.map(mapElement, { zoomControl: true }).setView([41.2788, -72.5276], 13);
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            maxZoom: 18
         }).addTo(map);
+        const marker = L.marker([41.2788, -72.5276]).addTo(map).bindPopup("sysfx HQ").openPopup();
+        map.on("click", () => marker.openPopup());
+    } else {
+        console.warn("Map element or Leaflet not available.");
+    }
 
-        const markers = [
-            { lat: 41.2788, lon: -72.5276, popup: "sysfx HQ - Click for Contact", url: "#contact" },
-            { lat: 41.2800, lon: -72.5300, popup: "Service Center - Learn About Repairs", url: "#services" },
-            { lat: 41.2776, lon: -72.5250, popup: "Support Office - Get IT Help", url: "#support" }
-        ];
-
-        markers.forEach(markerData => {
-            L.marker([markerData.lat, markerData.lon]).addTo(map)
-                .bindPopup(markerData.popup)
-                .on('click', () => {
-                    window.location.href = markerData.url;
-                    playSound('click');
-                });
+    // Custom cursor with hover detection
+    const cursor = document.querySelector(".cursor");
+    if (cursor) {
+        document.addEventListener("mousemove", e => {
+            cursor.style.left = `${e.clientX - 10}px`;
+            cursor.style.top = `${e.clientY - 10}px`;
+        });
+        document.addEventListener("mousedown", () => cursor.classList.add("trail"));
+        document.addEventListener("mouseup", () => cursor.classList.remove("trail"));
+        document.querySelectorAll("a, button").forEach(el => {
+            el.addEventListener("mouseenter", () => cursor.style.transform = "scale(1.5)");
+            el.addEventListener("mouseleave", () => cursor.style.transform = "scale(1)");
         });
     }
 
-    // Testimonial carousel
+    // GSAP animations with enhanced effects
+    if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero animation
+        gsap.from(".hero-content", { y: 100, opacity: 0, duration: 1.2, ease: "power2.out" });
+        gsap.from(".hero-video", { scale: 1.1, duration: 2, ease: "power1.out" });
+
+        // Section fade-ins
+        document.querySelectorAll("main section").forEach(section => {
+            gsap.from(section, {
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%",
+                    toggleActions: "play none none reverse"
+                },
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+        });
+
+        // Service cards stagger
+        gsap.from(".service", {
+            scrollTrigger: { trigger: ".service-grid", start: "top 80%" },
+            y: 30,
+            opacity: 0,
+            duration: 0.6,
+            stagger: 0.2,
+            ease: "power2.out"
+        });
+
+        // Button pulse
+        gsap.to(".modern-button", {
+            scale: 1.02,
+            duration: 0.5,
+            repeat: -1,
+            yoyo: true,
+            ease: "power1.inOut"
+        });
+
+        // Parallax effect
+        document.querySelectorAll(".parallax").forEach(section => {
+            gsap.to(section, {
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true
+                },
+                backgroundPosition: "50% 100%",
+                ease: "none"
+            });
+        });
+    } else {
+        console.warn("GSAP or ScrollTrigger not loaded; animations skipped.");
+    }
+
+    // Testimonial carousel with pause on hover
     const testimonials = document.querySelectorAll(".testimonial");
-    let currentTestimonial = 0;
-    function showTestimonial() {
-        testimonials.forEach((t, i) => {
-            t.style.opacity = i === currentTestimonial ? "1" : "0";
-            t.style.transform = i === currentTestimonial ? "scale(1)" : "scale(0.95)";
-            t.style.position = i === currentTestimonial ? "relative" : "absolute";
-            t.style.left = "0";
-            t.style.width = "100%";
-        });
-        currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+    if (testimonials.length) {
+        let current = 0, interval;
+        function rotateTestimonials() {
+            testimonials.forEach((t, i) => {
+                t.style.opacity = i === current ? "1" : "0";
+                t.style.transform = i === current ? "translateY(0)" : "translateY(20px)";
+            });
+            current = (current + 1) % testimonials.length;
+        }
+        rotateTestimonials();
+        interval = setInterval(rotateTestimonials, 4000);
+        document.querySelector(".testimonials").addEventListener("mouseenter", () => clearInterval(interval));
+        document.querySelector(".testimonials").addEventListener("mouseleave", () => interval = setInterval(rotateTestimonials, 4000));
     }
-    showTestimonial();
-    setInterval(showTestimonial, 4000);
 
-    // Animated stats with GSAP
+    // Stats animation with sound (simulated)
     const statNumbers = document.querySelectorAll(".stat-number");
     statNumbers.forEach(stat => {
         const target = parseInt(stat.getAttribute("data-count"));
         const observer = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting) {
-                gsap.to(stat, {
-                    textContent: target,
-                    duration: 2,
-                    roundProps: "textContent",
-                    ease: "power1.out",
-                    onComplete: () => stat.textContent = target
-                });
+                let count = 0;
+                const increment = target / 100;
+                const interval = setInterval(() => {
+                    count += increment;
+                    stat.textContent = Math.round(count);
+                    if (count >= target) {
+                        stat.textContent = target;
+                        clearInterval(interval);
+                        console.log(`Stat ${stat.textContent} reached!`);
+                    }
+                }, 20);
                 observer.disconnect();
             }
         }, { threshold: 0.5 });
         observer.observe(stat);
-
-        gsap.to(stat.closest(".stat-item"), {
-            y: -15,
-            ease: "power1.inOut",
-            scrollTrigger: {
-                trigger: stat.closest(".stat-item"),
-                start: "top 85%",
-                end: "bottom 20%",
-                scrub: true
-            }
-        });
     });
 
-    // Custom cursor
-    const cursor = document.querySelector(".cursor");
-    if (cursor) {
-        let lastX = 0, lastY = 0;
-        let trailTimeout;
-        function updateCursor(e) {
-            const x = e.clientX;
-            const y = e.clientY;
-            cursor.style.left = `${x}px`;
-            cursor.style.top = `${y}px`;
-            cursor.classList.add("trail");
-            clearTimeout(trailTimeout);
-            trailTimeout = setTimeout(() => cursor.classList.remove("trail"), 100);
-            lastX = x;
-            lastY = y;
+    // Ensure content visibility with detailed logging
+    const sections = document.querySelectorAll("main section");
+    sections.forEach(section => {
+        if (!section.offsetHeight) {
+            console.error(`Section #${section.id} has zero height! Forcing visibility with min-height.`);
+            section.style.display = "block";
+            section.style.minHeight = "100px";
         }
-        document.addEventListener("mousemove", (e) => requestAnimationFrame(() => updateCursor(e)));
-        if (window.innerWidth <= 768) cursor.style.display = "none";
+    });
+    if (!sections.length) {
+        console.error("No sections found in main element! Check HTML structure.");
     }
 
-    // Service modals and card hover sync
-    const services = document.querySelectorAll(".service");
-    const modals = document.querySelectorAll(".modal");
-    const closeButtons = document.querySelectorAll(".modal-close");
-    const modalActions = document.querySelectorAll(".modal-action");
+    // Debounce utility
+    function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
 
+    // Header shrink and scroll progress
+    const header = document.querySelector("header");
+    const scrollProgress = document.querySelector(".scroll-progress");
+    const statusBar = document.querySelector(".status-bar");
+    const nav = document.querySelector("nav");
+    const hamburgerBtn = document.querySelector(".hamburger");
+
+    function updateScroll() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrollPercent = (scrollTop / docHeight) * 100;
+        scrollProgress.style.width = `${scrollPercent}%`;
+
+        if (scrollTop > 100) {
+            header.classList.add("shrink");
+            if (statusBar) statusBar.style.display = "none";
+            if (nav) nav.style.display = "none";
+            if (hamburgerBtn) hamburgerBtn.style.display = "none";
+        } else {
+            header.classList.remove("shrink");
+            if (statusBar) statusBar.style.display = "flex";
+            if (nav) nav.style.display = "flex";
+            if (hamburgerBtn) hamburgerBtn.style.display = window.innerWidth <= 768 ? "block" : "none";
+        }
+    }
+    window.addEventListener("scroll", debounce(updateScroll, 10));
+    window.addEventListener("resize", debounce(updateScroll, 100));
+    updateScroll();
+
+    // Service modals with accessibility
+    const services = document.querySelectorAll(".service");
     services.forEach(service => {
         service.addEventListener("click", () => {
             const modalId = service.getAttribute("data-modal") + "-modal";
             const modal = document.getElementById(modalId);
             if (modal) {
                 modal.style.display = "flex";
-                playSound('click');
+                modal.querySelector(".modal-content").focus();
+            } else {
+                console.error(`Modal #${modalId} not found!`);
             }
         });
-
-        service.addEventListener("mouseenter", () => {
-            playSound('hover', 0.3);
+    });
+    document.querySelectorAll(".modal-close").forEach(close => {
+        close.addEventListener("click", () => {
+            close.closest(".modal").style.display = "none";
         });
     });
-
-    closeButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            const modal = button.closest(".modal");
-            modal.style.display = "none";
-            playSound('click');
-        });
-    });
-
-    document.addEventListener("click", (e) => {
-        if (e.target.classList.contains("modal")) {
-            e.target.style.display = "none";
-            playSound('click');
+    document.addEventListener("keydown", e => {
+        if (e.key === "Escape") {
+            document.querySelectorAll(".modal").forEach(modal => {
+                if (modal.style.display === "flex") modal.style.display = "none";
+            });
         }
     });
-
-    modalActions.forEach(action => {
-        action.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const href = action.getAttribute("onclick").match(/location\.href='([^']+)'/)[1];
-            window.location.href = href;
-            playSound('click');
-        });
+    document.addEventListener("click", e => {
+        if (e.target.classList.contains("modal")) e.target.style.display = "none";
     });
 
-    // Scroll animations with GSAP
-    gsap.registerPlugin(ScrollTrigger);
-    const sections = document.querySelectorAll(".parallax, .section-animation");
-    sections.forEach(section => {
-        gsap.fromTo(section, 
-            { opacity: 0, y: 50 },
-            {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                ease: "power2.out",
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top 85%",
-                    toggleActions: "play none none none",
-                    onEnter: () => playSound('beep', 0.2)
-                }
-            }
-        );
-    });
-
-    // Video fallback
-    const heroVideo = document.querySelector(".hero-video");
-    if (heroVideo) {
-        heroVideo.addEventListener("error", () => {
-            heroVideo.style.display = "none";
-            playSound('error');
-        });
-    }
-
-    // Gallery lightbox
+    // Gallery lightbox with zoom and captions
     const galleryItems = document.querySelectorAll(".gallery-item");
     const lightbox = document.querySelector(".lightbox");
     const lightboxImg = lightbox && lightbox.querySelector("img");
     const lightboxClose = lightbox && lightbox.querySelector(".lightbox-close");
 
     if (galleryItems.length && lightbox && lightboxImg && lightboxClose) {
+        let zoomLevel = 1;
         galleryItems.forEach(item => {
             item.addEventListener("click", () => {
                 lightboxImg.src = item.getAttribute("data-src");
+                lightboxImg.alt = item.querySelector("img").alt;
                 lightbox.style.display = "flex";
-                playSound('click');
-            });
-
-            item.addEventListener("mouseover", () => {
-                playSound('hover', 0.3);
+                zoomLevel = 1;
+                lightboxImg.style.transform = `scale(${zoomLevel})`;
+                lightbox.setAttribute("aria-label", lightboxImg.alt);
             });
         });
-
-        lightboxClose.addEventListener("click", () => {
-            lightbox.style.display = "none";
-            playSound('click');
+        lightboxClose.addEventListener("click", () => lightbox.style.display = "none");
+        lightbox.addEventListener("click", e => {
+            if (e.target === lightbox) lightbox.style.display = "none";
         });
-
-        lightbox.addEventListener("click", (e) => {
-            if (e.target === lightbox) {
-                lightbox.style.display = "none";
-                playSound('click');
-            }
+        lightboxImg.addEventListener("wheel", e => {
+            e.preventDefault();
+            zoomLevel += e.deltaY * -0.001;
+            zoomLevel = Math.min(Math.max(1, zoomLevel), 3);
+            lightboxImg.style.transform = `scale(${zoomLevel})`;
         });
     }
 
-    // Throttled scroll progress and header shrink
-    const scrollProgress = document.querySelector(".scroll-progress");
-    const header = document.querySelector("header");
-    const logoContainer = document.querySelector(".header-top .logo-container");
-    function throttle(fn, wait) {
-        let lastTime = 0;
-        return function (...args) {
-            const now = Date.now();
-            if (now - lastTime >= wait) {
-                fn(...args);
-                lastTime = now;
-            }
-        };
-    }
-    if (scrollProgress && header && logoContainer) {
-        let lastScroll = 0;
-        window.addEventListener("scroll", throttle(() => {
-            const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrollPercent = (scrollTop / docHeight) * 100;
-            scrollProgress.style.width = `${scrollPercent}%`;
-
-            if (scrollTop > 100 && scrollTop > lastScroll) {
-                header.classList.add("shrink");
-            } else if (scrollTop <= 100) {
-                header.classList.remove("shrink");
-            }
-            lastScroll = scrollTop;
-        }, 100));
-    }
-
-    // Audio feedback
-    let audioContext;
-    let isMuted = false;
-
-    function playSound(type, volume = 0.5) {
-        if (isMuted) return;
-        if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-
-        oscillator.type = 'sine';
-        oscillator.frequency.value = type === 'click' ? 440 : type === 'hover' ? 330 : type === 'error' ? 200 : type === 'beep' ? 880 : 350;
-        gainNode.gain.value = volume;
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-
-        oscillator.start();
-        setTimeout(() => {
-            oscillator.stop();
-            oscillator.disconnect();
-            gainNode.disconnect();
-        }, 100);
-    }
-
-    document.addEventListener("click", () => {
-        if (audioContext && audioContext.state === "suspended" && !isMuted) audioContext.resume();
-    }, { once: true });
-
-    // Music toggle
-    const musicToggle = document.getElementById("music-toggle");
-    const welcomeMusic = document.getElementById("welcome-music");
-    if (musicToggle && welcomeMusic) {
-        welcomeMusic.volume = 0.5;
-        let isPlaying = false;
-
-        musicToggle.addEventListener("click", () => {
-            if (isPlaying) {
-                welcomeMusic.pause();
-                isMuted = true;
-                musicToggle.classList.add("muted");
-            } else {
-                welcomeMusic.play().catch(() => console.log("Music playback blocked"));
-                isMuted = false;
-                musicToggle.classList.remove("muted");
-            }
-            isPlaying = !isPlaying;
-            playSound('click');
+    // Timeline animation with sound (simulated)
+    const timelineItems = document.querySelectorAll(".timeline-item");
+    if (timelineItems.length && typeof gsap !== "undefined") {
+        timelineItems.forEach((item, i) => {
+            gsap.from(item, {
+                scrollTrigger: {
+                    trigger: item,
+                    start: "top 90%",
+                },
+                opacity: 0,
+                x: i % 2 === 0 ? -50 : 50,
+                duration: 0.8,
+                delay: i * 0.2,
+                ease: "power2.out",
+                onComplete: () => console.log(`Timeline item ${i + 1} animated`)
+            });
         });
-
-        document.addEventListener("click", () => {
-            if (!isPlaying && !isMuted) {
-                welcomeMusic.play().catch(() => {});
-                isPlaying = true;
-                musicToggle.classList.remove("muted");
-            }
-        }, { once: true });
     }
 
-    // Tech tip
-    const techTips = [
-        "Tech Tip: Regular updates keep your systems secure!",
-        "Tech Tip: Back up your data weekly to avoid loss.",
-        "Tech Tip: Use strong passwords for better protection.",
-        "Tech Tip: Restarting can fix many tech glitches.",
-        "Tech Tip: Clear cache to boost browser speed.",
-        "Tech Tip: Keep software patched against vulnerabilities.",
-        "Tech Tip: Monitor your network for unusual activity."
-    ];
+    // Scroll-to-top with animation
+    const scrollTopBtn = document.querySelector(".scroll-top-btn");
+    if (scrollTopBtn) {
+        window.addEventListener("scroll", () => {
+            scrollTopBtn.classList.toggle("visible", window.scrollY > 300);
+        });
+        scrollTopBtn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            if (typeof gsap !== "undefined") {
+                gsap.to(scrollTopBtn, { rotation: 360, duration: 0.5, ease: "power1.out" });
+            }
+        });
+    }
+
+    // Tech tip with local storage and rotation
     const techTipText = document.getElementById("tech-tip-text");
-    const closeTechTip = document.getElementById("close-tech-tip");
-    const stickyNote = document.querySelector(".sticky-note");
+    if (techTipText) {
+        const tips = [
+            "Tech Tip: Regular updates keep your systems secure!",
+            "Tech Tip: Back up your data weekly to avoid loss.",
+            "Tech Tip: Use strong passwords for better protection.",
+            "Tech Tip: Clear cache to boost performance.",
+            "Tech Tip: Enable 2FA for extra security."
+        ];
+        const lastTip = localStorage.getItem("lastTechTip");
+        let tipIndex = lastTip ? (tips.indexOf(lastTip) + 1) % tips.length : Math.floor(Math.random() * tips.length);
+        techTipText.textContent = tips[tipIndex];
+        localStorage.setItem("lastTechTip", tips[tipIndex]);
 
-    if (techTipText && stickyNote) {
-        const randomTip = techTips[Math.floor(Math.random() * techTips.length)];
-        techTipText.textContent = randomTip;
-        gsap.fromTo(".sticky-note", 
-            { opacity: 0, y: -50, rotation: -5 },
-            { opacity: 1, y: 0, rotation: 0, duration: 1, delay: 2, ease: "elastic.out(1, 0.5)" }
-        );
-
-        if (closeTechTip) {
-            closeTechTip.addEventListener("click", () => {
-                gsap.to(".sticky-note", {
-                    opacity: 0,
-                    y: -50,
-                    duration: 0.5,
-                    onComplete: () => stickyNote.style.display = "none"
-                });
-                playSound('click');
-            });
+        document.getElementById("close-tech-tip").addEventListener("click", () => {
+            document.querySelector(".sticky-note").style.display = "none";
+            localStorage.setItem("hideTechTip", "true");
+        });
+        if (localStorage.getItem("hideTechTip") === "true") {
+            document.querySelector(".sticky-note").style.display = "none";
         }
     }
 
-    // Chat bubble
+    // Chat bubble with delay variation
     const chatBubble = document.getElementById("chat-bubble");
     if (chatBubble) {
-        setTimeout(() => chatBubble.classList.add("visible"), 3000);
+        const delay = Math.random() * 2000 + 3000; // 3-5s
+        setTimeout(() => chatBubble.classList.add("visible"), delay);
         chatBubble.addEventListener("click", () => {
             alert("Chat feature coming soon! Contact us at nick@sysfx.net for now.");
-            playSound('beep');
         });
     }
 
-    // Scroll-to-top
-    const scrollTopBtn = document.querySelector(".scroll-top-btn");
-    if (scrollTopBtn) {
-        window.addEventListener("scroll", throttle(() => {
-            scrollTopBtn.classList.toggle("visible", window.scrollY > 300);
-        }, 100));
+    // Music toggle with volume control
+    const musicToggle = document.getElementById("music-toggle");
+    const welcomeMusic = document.getElementById("welcome-music");
+    if (musicToggle && welcomeMusic) {
+        welcomeMusic.volume = parseFloat(localStorage.getItem("musicVolume") || 0.5);
+        let isPlaying = localStorage.getItem("musicPlaying") === "true";
 
-        scrollTopBtn.addEventListener("click", () => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            playSound('click');
+        function updateMusicState() {
+            if (isPlaying) {
+                welcomeMusic.play().catch(() => console.log("Music playback blocked by browser"));
+                musicToggle.classList.remove("muted");
+            } else {
+                welcomeMusic.pause();
+                musicToggle.classList.add("muted");
+            }
+            localStorage.setItem("musicPlaying", isPlaying);
+        }
+
+        musicToggle.addEventListener("click", () => {
+            isPlaying = !isPlaying;
+            updateMusicState();
+        });
+
+        musicToggle.addEventListener("wheel", e => {
+            e.preventDefault();
+            welcomeMusic.volume = Math.min(Math.max(welcomeMusic.volume + (e.deltaY * -0.01), 0), 1);
+            localStorage.setItem("musicVolume", welcomeMusic.volume);
+        });
+
+        document.addEventListener("click", () => {
+            if (!isPlaying) {
+                isPlaying = true;
+                updateMusicState();
+            }
+        }, { once: true });
+
+        updateMusicState();
+    }
+
+    // Contact form handling (assuming a hidden form)
+    const contactSection = document.getElementById("contact");
+    if (contactSection) {
+        let form = contactSection.querySelector("form");
+        if (!form) {
+            form = document.createElement("form");
+            form.innerHTML = `
+                <input type="text" name="name" placeholder="Your Name" required aria-label="Your Name">
+                <input type="email" name="email" placeholder="Your Email" required aria-label="Your Email">
+                <textarea name="message" placeholder="Your Message" required aria-label="Your Message"></textarea>
+                <button type="submit" class="modern-button">Send Message</button>
+            `;
+            contactSection.appendChild(form);
+        }
+        form.addEventListener("submit", e => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            console.log("Form submitted:", data);
+            alert("Message sent! (Simulated - check console for data)");
+            form.reset();
         });
     }
 
-    // Random service highlight
-    const serviceGrid = document.querySelector(".service-grid");
-    if (serviceGrid) {
-        const services = serviceGrid.querySelectorAll(".service");
-        setInterval(() => {
-            const randomIndex = Math.floor(Math.random() * services.length);
-            services.forEach((s, i) => {
-                s.style.border = i === randomIndex ? "2px solid var(--highlight-color)" : "none";
+    // Service request tracker
+    const serviceRequests = {};
+    document.querySelectorAll(".service .modern-button").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const service = btn.closest(".service").querySelector("h3").textContent;
+            serviceRequests[service] = (serviceRequests[service] || 0) + 1;
+            console.log(`Service request for "${service}" logged. Total: ${serviceRequests[service]}`);
+        });
+    });
+
+    // Lazy loading images
+    const images = document.querySelectorAll("img[loading='lazy']");
+    if ("IntersectionObserver" in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.getAttribute("data-src") || img.src;
+                    observer.unobserve(img);
+                }
             });
-        }, 10000);
+        }, { rootMargin: "0px 0px 100px 0px" });
+        images.forEach(img => imageObserver.observe(img));
+    } else {
+        images.forEach(img => img.src = img.getAttribute("data-src") || img.src);
     }
 
-    // Enhanced Easter egg with Quantum Flux burst
+    // Easter egg: Mini-game
     const logo = document.querySelector(".spinning-logo");
     let clickCount = 0;
     if (logo) {
         logo.addEventListener("click", () => {
             clickCount++;
-            if (clickCount === 3) {
-                gsap.to(logo, {
-                    scale: 1.5,
-                    rotation: 360,
-                    duration: 1,
-                    ease: "elastic.out(1, 0.3)",
-                    onComplete: () => {
-                        alert("Quantum Flux Mode Activated! ⚡️");
-                        particlesJS("particles-js", {
-                            particles: {
-                                number: { value: 120, density: { enable: true, value_area: 800 } },
-                                color: { value: "#ffeb3b" },
-                                shape: { type: "star" },
-                                opacity: { value: 0.8, random: true },
-                                size: { value: 4, random: true },
-                                move: { 
-                                    enable: true, 
-                                    speed: 12, 
-                                    direction: "none", 
-                                    random: true, 
-                                    straight: false, 
-                                    out_mode: "out" 
+            if (clickCount === 5) {
+                alert("Tech Invaders Activated! Click particles to score points!");
+                if (typeof particlesJS !== "undefined") {
+                    let score = 0;
+                    particlesJS("particles-js", {
+                        particles: {
+                            number: { value: 50, density: { enable: true, value_area: 800 } },
+                            color: { value: "#ffeb3b" },
+                            shape: { type: "star" },
+                            opacity: { value: 0.8 },
+                            size: { value: 5, random: true },
+                            move: { enable: true, speed: 5, direction: "none", random: true }
+                        },
+                        interactivity: {
+                            events: {
+                                onclick: {
+                                    enable: true,
+                                    mode: "push",
+                                    callback: () => {
+                                        score += 10;
+                                        console.log(`Score: ${score}`);
+                                        if (score >= 100) {
+                                            alert(`Game Over! Final Score: ${score}`);
+                                            updateParticles();
+                                        }
+                                    }
                                 }
-                            },
-                            interactivity: { events: { resize: true } },
-                            retina_detect: true
-                        });
-                        setTimeout(() => {
-                            gsap.to(logo, { scale: 1, rotation: 0, duration: 0.5 });
-                            updateParticles();
-                        }, 2000);
-                    }
-                });
+                            }
+                        }
+                    });
+                    setTimeout(updateParticles, 10000); // Reset after 10s
+                }
                 clickCount = 0;
             }
         });
     }
+
+    // Window resize handler with map fix
+    window.addEventListener("resize", () => {
+        if (mapElement && typeof L !== "undefined") {
+            setTimeout(() => map.invalidateSize(), 200);
+        }
+    });
+
+    // Performance check
+    const loadTime = performance.now();
+    console.log(`Page loaded successfully at ${new Date().toLocaleString()} in ${loadTime.toFixed(2)}ms`);
 });
