@@ -229,6 +229,22 @@ header.shrink {
     min-height: 80px;
 }
 
+header.shrink .logo-container {
+    height: 60px;
+}
+
+header.shrink .flipping-logo {
+    width: 60px;
+}
+
+header.shrink h1 {
+    font-size: 1.5em;
+}
+
+header.shrink #typing-effect {
+    display: none;
+}
+
 header h1 {
     color: #333;
     font-size: 2em;
@@ -328,9 +344,9 @@ body.dark-mode #typing-effect {
     font-weight: 700;
 }
 
-/* Glowing text effect */
+/* Glowing text effect with white outline */
 .glow-text {
-    text-shadow: 0 0 8px var(--primary-color), 0 0 12px var(--secondary-color);
+    text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 8px var(--primary-color), 0 0 12px var(--secondary-color);
 }
 
 /* Centered text */
@@ -512,10 +528,9 @@ h3 { font-size: 1.5em; }
 }
 
 .stats-container {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
     padding: 20px 0;
     max-width: 1200px;
     margin: 0 auto;
@@ -526,7 +541,6 @@ h3 { font-size: 1.5em; }
     transition: transform 0.3s ease;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    min-width: 150px;
 }
 
 .stat-item:hover {
@@ -1243,6 +1257,20 @@ body.dark-mode .blog-preview article {
     cursor: pointer;
 }
 
+/* Navbar buttons */
+.nav-link {
+    background: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.nav-link:hover {
+    background: var(--secondary-color);
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     body {
@@ -1288,15 +1316,8 @@ body.dark-mode .blog-preview article {
         left: 0;
     }
 
-    .nav-link {
-        padding: 12px 24px;
-        font-size: 1.1em;
-        color: #333;
-        background: none;
-    }
-
-    body.dark-mode .nav-link {
-        color: #fff;
+    .stats-container {
+        grid-template-columns: 1fr;
     }
 
     .welcome, .events, .services, .testimonials, .about, .contact, .case-studies, .cta, .blog-teaser, .tech-timeline {
