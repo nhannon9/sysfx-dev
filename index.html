@@ -26,12 +26,15 @@
     <header class="glass-morphism" role="banner">
         <div class="status-bar">
             <div id="current-time" aria-live="polite"></div>
+            <button id="darkModeToggle" class="modern-button mode-button" aria-label="Toggle dark mode">
+                <i class="fas fa-moon" aria-hidden="true"></i> <span class="sr-only">Toggle Dark Mode</span>
+            </button>
         </div>
         
         <div class="logo-container">
             <img src="logo.jpg" alt="sysfx Logo, a symbol of tech expertise" class="flipping-logo" loading="lazy">
         </div>
-        <h1 class="glow-text">sysfx</h1>
+        <h1 class="glow-text centered-text">sysfx</h1>
         <h3 id="typing-effect" class="gradient-text"></h3>
         <button class="hamburger" aria-label="Toggle Navigation" aria-expanded="false"><i class="fas fa-bars"></i></button>
         <nav role="navigation" class="mobile-nav">
@@ -46,9 +49,6 @@
                 <a href="#contact" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
             </div>
         </nav>
-        <button id="darkModeToggle" class="modern-button mode-button" aria-label="Toggle dark mode">
-            <i class="fas fa-moon" aria-hidden="true"></i> <span class="sr-only">Toggle Dark Mode</span>
-        </button>
     </header>
 
     <div class="scrolling-text" role="alert">
@@ -62,7 +62,7 @@
                 Your browser does not support the video tag.
             </video>
             <div class="hero-content glass-morphism">
-                <h2 class="gradient-text glow-text">Welcome to sysfx!</h2>
+                <h2 class="gradient-text glow-text centered-text">Welcome to sysfx!</h2>
                 <p class="hero-text">Unlock cutting-edge technology with Sys Fix—your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support.</p>
                 <div class="button-container">
                     <button class="modern-button primary action-button" onclick="location.href='#contact'">
@@ -76,7 +76,7 @@
         </section>
 
         <section class="welcome glass-morphism parallax">
-            <h2 class="gradient-text glow-text">Why Choose sysfx?</h2>
+            <h2 class="gradient-text glow-text centered-text">Why Choose sysfx?</h2>
             <p>At sysfx, we deliver expert tech solutions tailored to your needs. Our certified technicians specialize in computer repairs, cybersecurity, web development, networking, cloud solutions, and 24/7 IT support, ensuring your business thrives in the digital age.</p>
             <p>With over a decade of experience, Sys Fix is committed to precision, innovation, and customer satisfaction. Contact us today to transform your tech infrastructure!</p>
             <p>Contact us for support at: <span id="email" aria-label="Contact email"></span></p>
@@ -93,7 +93,7 @@
         </section>
 
         <section id="services" class="services glass-morphism parallax bliss-background">
-            <h2 class="gradient-text glow-text">Our Services</h2>
+            <h2 class="gradient-text glow-text centered-text">Our Services</h2>
             <p class="services-text">sysfx offers a comprehensive suite of tech services to empower your business. From hardware fixes to cloud migrations, we’re here to solve your challenges with expertise and efficiency.</p>
             <div class="service-grid">
                 <article class="service card-hover" data-modal="computer-repair">
@@ -147,7 +147,7 @@
         </section>
 
         <section class="gallery">
-            <h2 class="gradient-text glow-text">Our Work</h2>
+            <h2 class="gradient-text glow-text centered-text">Our Work</h2>
             <p>Explore our portfolio of successful projects, showcasing our expertise in tech solutions for businesses like yours.</p>
             <div class="gallery-container">
                 <div class="gallery-item" data-src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
@@ -177,7 +177,7 @@
         </section>
 
         <section class="stats">
-            <h2 class="gradient-text glow-text">Our Impact</h2>
+            <h2 class="gradient-text glow-text centered-text">Our Impact</h2>
             <p>Here’s how sysfx has made a difference for our clients through innovative tech solutions.</p>
             <div class="stats-container">
                 <div class="stat-item"><span class="stat-number" data-count="500">0</span> Clients Served</div>
@@ -191,7 +191,7 @@
         </section>
 
         <section id="events" class="events glass-morphism parallax">
-            <h2 class="gradient-text glow-text">Events & Workshops</h2>
+            <h2 class="gradient-text glow-text centered-text">Events & Workshops</h2>
             <p>Stay ahead in the tech world by joining our upcoming events and workshops on cybersecurity, web development, networking, and more.</p>
             <div class="event-timeline">
                 <article class="event-card">
@@ -226,7 +226,7 @@
         </section>
 
         <section id="case-studies" class="case-studies glass-morphism parallax compact-section">
-            <h2 class="gradient-text glow-text">Case Studies</h2>
+            <h2 class="gradient-text glow-text centered-text">Case Studies</h2>
             <p>Discover how sysfx has transformed businesses with our tailored tech solutions.</p>
             <div class="case-study-grid">
                 <article class="case-study card-hover">
@@ -243,7 +243,7 @@
         </section>
 
         <section id="testimonials" class="testimonials glass-morphism parallax compact-section">
-            <h2 class="gradient-text glow-text">What Our Clients Say</h2>
+            <h2 class="gradient-text glow-text centered-text">What Our Clients Say</h2>
             <p>Hear from businesses like yours who’ve transformed their tech with sysfx’s expertise.</p>
             <div class="testimonial-slider">
                 <article class="testimonial card-hover">
@@ -272,7 +272,7 @@
         </section>
 
         <section id="about" class="about glass-morphism parallax">
-            <h2 class="gradient-text glow-text">About Us</h2>
+            <h2 class="gradient-text glow-text centered-text">About Us</h2>
             <p>sysfx is a team of experienced tech professionals dedicated to delivering top-notch solutions to our clients. With over 15 years of industry expertise, we specialize in computer repairs, cybersecurity, web development, networking, cloud solutions, and 24/7 IT support.</p>
             <p>Our mission is to empower businesses with innovative technology, ensuring precision, reliability, and exceptional customer service. Located in Clinton, CT, we serve clients across the region, helping them thrive in a digital-first world.</p>
             <p>Our core values include innovation, integrity, and client satisfaction, driving us to exceed expectations with every project.</p>
@@ -284,7 +284,7 @@
         </section>
 
         <section id="cta" class="cta glass-morphism parallax compact-section">
-            <h2 class="cta-title glow-text">Ready to Transform Your Tech?</h2>
+            <h2 class="cta-title glow-text centered-text">Ready to Transform Your Tech?</h2>
             <p>Partner with sysfx for innovative solutions that drive your business forward.</p>
             <div class="button-container">
                 <button class="modern-button primary action-button" onclick="location.href='#contact'">
@@ -297,7 +297,7 @@
         </section>
 
         <section class="blog-teaser glass-morphism parallax">
-            <h2 class="gradient-text glow-text">Tech Insights</h2>
+            <h2 class="gradient-text glow-text centered-text">Tech Insights</h2>
             <p>Get a sneak peek at our latest blog posts for tips, tricks, and industry news.</p>
             <div class="blog-preview">
                 <article>
@@ -314,7 +314,7 @@
         </section>
 
         <section class="tech-timeline glass-morphism parallax">
-            <h2 class="gradient-text glow-text">Our Tech Journey</h2>
+            <h2 class="gradient-text glow-text centered-text">Our Tech Journey</h2>
             <p>A brief history of sysfx’s evolution in the tech world.</p>
             <div class="timeline">
                 <div class="timeline-item">
@@ -333,7 +333,7 @@
         </section>
 
         <section id="contact" class="contact glass-morphism parallax tiny-section">
-            <h2 class="gradient-text glow-text">Contact Us</h2>
+            <h2 class="gradient-text glow-text centered-text">Contact Us</h2>
             <p>Ready to elevate your tech with sysfx? Contact our team for a free consultation, quote, or support. We’re here to help 24/7!</p>
             <div class="contact-grid">
                 <div class="contact-info">
