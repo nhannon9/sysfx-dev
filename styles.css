@@ -190,6 +190,30 @@ body.dark-mode .hero-text {
     background-image: url('https://images.unsplash.com/photo-1507679799989-0c83b7a86bb1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
 }
 
+.bliss-background {
+    background-image: url('https://upload.wikimedia.org/wikipedia/en/8/87/Windows_XP_Bliss_wallpaper_%28original%29.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: relative;
+}
+
+.bliss-background::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* Subtle overlay for readability */
+    z-index: 0;
+}
+
+.bliss-background > * {
+    position: relative;
+    z-index: 1;
+}
+
 /* Header styles */
 header {
     background-color: rgba(34, 34, 34, 0.9);
@@ -198,40 +222,39 @@ header {
     position: sticky;
     top: 0;
     z-index: 100;
-    transition: padding 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    min-height: 240px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
 }
 
 header.shrink {
-    padding: 8px 20px;
+    padding: 5px 15px;
+    min-height: 80px; /* Smaller shrink state */
     background-color: rgba(34, 34, 34, 0.95);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
-header .header-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: transform 0.4s ease;
-}
-
-header.shrink .header-content {
-    transform: scale(0.9);
-}
-
-header.shrink nav, header.shrink .status-bar {
+header.shrink nav, header.shrink .status-bar, header.shrink h1, header.shrink #typing-effect {
     display: none;
+}
+
+header.shrink .logo-container {
+    height: 60px;
+}
+
+header.shrink .flipping-logo {
+    width: 60px;
+}
+
+@media (min-width: 769px) {
+    header {
+        padding: 15px 20px;
+    }
 }
 
 header h1 {
     color: #333;
     font-size: 1.5em;
     margin: 5px 0;
-    transition: opacity 0.4s ease;
-}
-
-header.shrink h1 {
-    opacity: 0;
 }
 
 body.dark-mode header h1 {
@@ -241,17 +264,13 @@ body.dark-mode header h1 {
 .status-bar {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding: 5px 10px;
     background: rgba(0, 0, 0, 0.2);
     border-radius: 5px;
     margin-bottom: 10px;
     font-size: 0.8em;
     color: #fff;
-    transition: opacity 0.4s ease;
-}
-
-header.shrink .status-bar {
-    opacity: 0;
 }
 
 /* Logo animation */
@@ -262,30 +281,22 @@ header.shrink .status-bar {
     height: 120px;
     margin-bottom: 5px;
     perspective: 1000px;
-    transition: height 0.4s ease, margin 0.4s ease;
+    transition: height 0.3s ease;
 }
 
-header.shrink .logo-container {
-    height: 80px;
-    margin-bottom: 0;
-}
-
-.spinning-logo {
+.flipping-logo {
     width: 120px;
-    animation: simpleSpin 4s infinite linear;
+    animation: coinFlip 4s infinite ease-in-out;
     border-radius: 50%;
     box-shadow: 0 0 15px var(--highlight-color);
     transform-style: preserve-3d;
-    transition: width 0.4s ease;
+    transition: width 0.3s ease;
 }
 
-header.shrink .spinning-logo {
-    width: 80px;
-}
-
-@keyframes simpleSpin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+@keyframes coinFlip {
+    0% { transform: rotateY(0deg); }
+    50% { transform: rotateY(180deg); }
+    100% { transform: rotateY(360deg); }
 }
 
 /* Typing effect styling */
@@ -294,11 +305,6 @@ header.shrink .spinning-logo {
     display: block;
     opacity: 1;
     color: #333;
-    transition: opacity 0.4s ease;
-}
-
-header.shrink #typing-effect {
-    opacity: 0;
 }
 
 body.dark-mode #typing-effect {
@@ -313,19 +319,11 @@ body.dark-mode #typing-effect {
     color: #fff;
     font-size: 1.5em;
     cursor: pointer;
-    position: fixed;
+    position: absolute;
     top: 15px;
     right: 20px;
     z-index: 101;
-    transition: color 0.3s ease, transform 0.4s ease;
-}
-
-.hamburger:hover {
-    color: var(--highlight-color);
-}
-
-header.shrink .hamburger {
-    transform: scale(1);
+    transition: opacity 0.3s ease;
 }
 
 nav ul {
@@ -386,6 +384,18 @@ body.dark-mode .nav-link {
     color: transparent;
     display: inline-block;
     font-weight: 700;
+}
+
+/* Glowing text effect */
+.glow-text {
+    text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--secondary-color), 0 0 30px var(--highlight-color);
+    animation: glowPulse 2s infinite ease-in-out;
+}
+
+@keyframes glowPulse {
+    0% { text-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--secondary-color), 0 0 15px var(--highlight-color); }
+    50% { text-shadow: 0 0 15px var(--primary-color), 0 0 25px var(--secondary-color), 0 0 35px var(--highlight-color); }
+    100% { text-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--secondary-color), 0 0 15px var(--highlight-color); }
 }
 
 /* Centered text */
@@ -610,7 +620,7 @@ body.dark-mode .nav-link {
     align-items: center;
     gap: 8px;
     font-size: 16px;
-    border-radius: 8px;
+    border-radius: 25px; /* Unified shape for action buttons */
     cursor: pointer;
     transition: all 0.3s ease, transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     position: relative;
@@ -623,13 +633,16 @@ body.dark-mode .nav-link {
     font-size: 14px;
 }
 
+.modern-button.action-button {
+    border-radius: 25px; /* Consistent shape for Get Started and Explore Services */
+}
+
 .modern-button.secondary {
     background: linear-gradient(45deg, #4CAF50, #00a000);
 }
 
 .modern-button.explore-services {
     background: var(--blue-gradient);
-    border-radius: 30px;
 }
 
 .modern-button::before {
@@ -677,26 +690,27 @@ body.dark-mode .nav-link {
     background: linear-gradient(45deg, #00a000, #4CAF50);
 }
 
-#darkModeToggle {
+.modern-button.mode-button {
     background: linear-gradient(45deg, #ff9800, #f57c00);
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
+    padding: 8px 16px;
+    border-radius: 50%; /* Distinct circular shape */
+    width: 40px;
+    height: 40px;
+    justify-content: center;
 }
 
-#darkModeToggle:hover {
+.modern-button.mode-button:hover {
     background: linear-gradient(45deg, #f57c00, #ff9800);
     transform: scale(1.1);
     box-shadow: 0 4px 15px rgba(245, 124, 0, 0.5);
 }
 
-body.dark-mode #darkModeToggle {
+body.dark-mode .modern-button.mode-button {
     background: linear-gradient(45deg, #9C27B0, #673AB7);
 }
 
-body.dark-mode #darkModeToggle:hover {
+body.dark-mode .modern-button.mode-button:hover {
     background: linear-gradient(45deg, #673AB7, #9C27B0);
-    transform: scale(1.1);
     box-shadow: 0 4px 15px rgba(156, 39, 176, 0.5);
 }
 
@@ -723,7 +737,7 @@ body.dark-mode #darkModeToggle:hover {
 }
 
 .music-btn.muted i:before {
-    content: "\f6a9";
+    content: "\f6a9"; /* fa-volume-mute */
 }
 
 /* Tech tip styles */
@@ -997,7 +1011,7 @@ body.dark-mode .testimonial {
     100% { transform: translateY(0); opacity: 1; }
 }
 
-/* New Case Studies Section */
+/* Case Studies Section */
 .case-studies .case-study-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -1018,28 +1032,7 @@ body.dark-mode .case-study {
     color: #fff;
 }
 
-/* New Team Section */
-.team .team-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 25px;
-    padding: 20px 0;
-}
-
-.team-member {
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    transition: all 0.3s ease;
-}
-
-body.dark-mode .team-member {
-    background-color: rgba(51, 51, 51, 0.9);
-    color: #fff;
-}
-
-/* New CTA Section */
+/* CTA Section */
 .cta {
     background: linear-gradient(135deg, #00a000, #4CAF50);
     color: white;
@@ -1172,7 +1165,7 @@ body.dark-mode .social-links a {
     100% { transform: translateX(-100%); }
 }
 
-/* New Feature: Chat Bubble */
+/* Chat Bubble */
 .chat-bubble {
     position: fixed;
     bottom: 80px;
@@ -1197,7 +1190,7 @@ body.dark-mode .social-links a {
     transform: scale(1.1);
 }
 
-/* New Feature: Scroll-to-Top Button */
+/* Scroll-to-Top Button */
 .scroll-top-btn {
     position: fixed;
     bottom: 20px;
@@ -1224,7 +1217,7 @@ body.dark-mode .social-links a {
     box-shadow: 0 0 15px rgba(0, 160, 0, 0.5);
 }
 
-/* New Feature: Tech Trivia */
+/* Tech Trivia */
 .tech-trivia {
     margin-top: 20px;
     padding: 15px;
@@ -1241,7 +1234,7 @@ body.dark-mode .tech-trivia {
     margin-bottom: 10px;
 }
 
-/* New Feature: Blog Teaser */
+/* Blog Teaser */
 .blog-preview {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -1264,7 +1257,7 @@ body.dark-mode .blog-preview article {
     transform: scale(1.05);
 }
 
-/* New Feature: Tech Timeline */
+/* Tech Timeline */
 .tech-timeline .timeline {
     display: flex;
     flex-direction: column;
@@ -1307,7 +1300,7 @@ body.dark-mode .blog-preview article {
     min-width: 60px;
 }
 
-/* New Feature: Easter Egg Trigger */
+/* Easter Egg Trigger */
 .easter-egg-trigger {
     position: fixed;
     top: 50%;
@@ -1326,38 +1319,37 @@ body.dark-mode .blog-preview article {
     }
 
     header {
+        position: relative;
         padding: 15px;
-        z-index: 100;
+        min-height: 220px;
     }
 
     header.shrink {
-        padding: 8px 15px;
+        min-height: 60px; /* Even smaller on mobile */
+        padding: 5px 10px;
     }
 
     .hamburger {
         display: block;
-        position: fixed;
-        top: 15px;
-        right: 15px;
-        z-index: 102;
     }
 
     nav ul {
         display: none;
         flex-direction: column;
         align-items: center;
-        position: fixed;
-        top: 0;
+        position: absolute;
+        top: 100%;
         left: 0;
         width: 100%;
-        height: 100vh;
         background: rgba(34, 34, 34, 0.95);
-        padding: 60px 0 20px;
-        z-index: 101;
+        padding: 20px 0;
+        z-index: 100;
+        transition: opacity 0.3s ease;
     }
 
     nav ul.active {
         display: flex;
+        opacity: 1;
     }
 
     .nav-link {
