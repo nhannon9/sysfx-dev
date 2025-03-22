@@ -100,28 +100,19 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Hamburger menu toggle
+    // Hamburger menu toggle with slight delay for better timing
     const hamburger = document.querySelector(".hamburger");
     const navUl = document.querySelector("nav ul");
     if (hamburger && navUl) {
         hamburger.addEventListener("click", () => {
-            const isActive = navUl.classList.toggle("active");
-            const icon = hamburger.querySelector("i");
-            icon.classList.toggle("fa-bars");
-            icon.classList.toggle("fa-times");
-            hamburger.setAttribute("aria-expanded", isActive ? "true" : "false");
+            const isActive = navUl.classList.contains("active");
+            navUl.classList.toggle("active");
+            hamburger.setAttribute("aria-expanded", !isActive);
+            hamburger.querySelector("i").classList.toggle("fa-bars");
+            hamburger.querySelector("i").classList.toggle("fa-times");
             playSound('click');
-        });
-
-        // Close menu on outside click
-        document.addEventListener("click", (e) => {
-            if (!navUl.contains(e.target) && !hamburger.contains(e.target) && navUl.classList.contains("active")) {
-                navUl.classList.remove("active");
-                hamburger.querySelector("i").classList.remove("fa-times");
-                hamburger.querySelector("i").classList.add("fa-bars");
-                hamburger.setAttribute("aria-expanded", "false");
-                playSound('click');
-            }
+            // Brief delay to sync with CSS transition
+            setTimeout(() => navUl.style.opacity = isActive ? "0" : "1", 50);
         });
     }
 
@@ -157,42 +148,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     updateClock();
     setInterval(updateClock, 1000);
-
-    // Weather widget with OpenWeatherMap API
-    const weatherText = document.getElementById("weather-text");
-    const localWeatherBtn = document.getElementById("local-weather-btn");
-    const apiKey = "YOUR_OPENWEATHERMAP_API_KEY";
-
-    function updateWeather(lat = 41.2788, lon = -72.5276) {
-        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`)
-            .then(response => response.ok ? response.json() : Promise.reject())
-            .then(data => {
-                weatherText.innerHTML = `<i class="fas fa-cloud-sun" aria-hidden="true"></i> ${Math.round(data.main.temp)}°F in ${data.name}`;
-            })
-            .catch(() => {
-                weatherText.innerHTML = "Weather unavailable";
-            });
-    }
-    updateWeather();
-
-    if (localWeatherBtn) {
-        localWeatherBtn.addEventListener("click", () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const { latitude, longitude } = position.coords;
-                        updateWeather(latitude, longitude);
-                    },
-                    () => {
-                        weatherText.innerHTML = "Location access denied";
-                    }
-                );
-            } else {
-                weatherText.innerHTML = "Geolocation not supported";
-            }
-            playSound('click');
-        });
-    }
 
     // Particles.js with dynamic dark mode update
     function updateParticles() {
@@ -478,15 +433,12 @@ document.addEventListener("DOMContentLoaded", function () {
     // Header shrink on scroll
     const header = document.querySelector("header");
     if (header) {
-        let lastScroll = 0;
         window.addEventListener("scroll", () => {
-            const currentScroll = window.scrollY;
-            if (currentScroll > 50 && currentScroll > lastScroll) {
+            if (window.scrollY > 50) {
                 header.classList.add("shrink");
-            } else if (currentScroll <= 50) {
+            } else {
                 header.classList.remove("shrink");
             }
-            lastScroll = currentScroll;
         });
     }
 
