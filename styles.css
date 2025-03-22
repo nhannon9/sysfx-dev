@@ -12,7 +12,7 @@
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    padding: 0;
+    padding-top: 200px; /* Prevents header from covering content */
     background: linear-gradient(135deg, #f4f4f4, #e6e6e6);
     color: #333;
     line-height: 1.6;
@@ -209,13 +209,13 @@ body.dark-mode .hero-text {
 /* Header styles */
 header {
     background: rgba(255, 255, 255, 0.9);
-    padding: 15px 20px;
+    padding: 5px 15px; /* Reduced padding for smaller length */
     text-align: center;
     position: fixed;
     top: 0;
     width: 100%;
     z-index: 100;
-    min-height: 240px;
+    min-height: 150px; /* Smaller initial height */
     transition: all 0.3s ease;
     box-sizing: border-box;
 }
@@ -226,11 +226,10 @@ body.dark-mode header {
 
 header.shrink {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
-    padding: 10px 15px;
-    min-height: 60px;
+    justify-content: center; /* Center logo and text */
+    padding: 5px 10px; /* Even smaller padding when shrunk */
+    min-height: 50px; /* Smaller shrunk height */
 }
 
 header.shrink .status-bar,
@@ -242,6 +241,7 @@ header.shrink nav {
 
 header.shrink .logo-container {
     height: 40px;
+    margin-right: 20px; /* Space between logo and text */
 }
 
 header.shrink .flipping-logo {
@@ -249,8 +249,8 @@ header.shrink .flipping-logo {
 }
 
 header.shrink #typing-effect {
-    font-size: 0.8em;
-    margin-left: 10px;
+    font-size: 1.2em; /* Larger text */
+    color: var(--primary-color); /* Green text */
     display: inline-block;
 }
 
@@ -281,14 +281,14 @@ body.dark-mode header h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 120px;
+    height: 80px; /* Reduced height */
     margin-bottom: 5px;
     perspective: 1000px;
     transition: height 0.3s ease;
 }
 
 .flipping-logo {
-    width: 120px;
+    width: 80px; /* Reduced width */
     animation: coinFlip 4s infinite ease-in-out;
     border-radius: 50%;
     box-shadow: 0 0 15px var(--highlight-color);
@@ -307,7 +307,7 @@ body.dark-mode header h1 {
     min-height: 40px;
     display: block;
     opacity: 1;
-    color: #333;
+    color: var(--primary-color); /* Green text */
 }
 
 body.dark-mode #typing-effect {
@@ -323,8 +323,8 @@ body.dark-mode #typing-effect {
     font-size: 1.5em;
     cursor: pointer;
     position: absolute;
-    top: 15px;
-    right: 20px;
+    top: 10px;
+    right: 15px;
     z-index: 101;
     transition: opacity 0.3s ease;
 }
@@ -338,7 +338,7 @@ body.dark-mode #typing-effect {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
+    gap: 30px; /* Increased spacing between navbar buttons */
     padding: 10px 0;
     transition: transform 0.3s ease;
 }
@@ -659,11 +659,13 @@ h3 { font-size: 1.5em; }
 
 .modern-button.mode-button {
     background: linear-gradient(45deg, #ff9800, #f57c00);
-    padding: 8px;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    justify-content: center;
+    padding: 8px 20px; /* Adjusted for better proportions */
+    border-radius: 25px; /* Oval shape */
+    font-size: 14px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between icon and text */
 }
 
 .modern-button.mode-button:hover {
@@ -1304,18 +1306,18 @@ body.dark-mode .glow-text {
 /* Responsive design */
 @media (max-width: 768px) {
     body {
+        padding-top: 180px; /* Adjusted for smaller header */
         overflow-x: hidden;
     }
 
     header {
-        position: fixed;
-        padding: 15px;
-        min-height: 220px;
+        padding: 5px 10px;
+        min-height: 140px; /* Smaller for mobile */
     }
 
     header.shrink {
-        min-height: 60px;
-        padding: 10px;
+        min-height: 50px;
+        padding: 5px 10px;
     }
 
     .hamburger {
