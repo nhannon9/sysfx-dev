@@ -322,120 +322,79 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // **Scroll Progress and Header Shrink**
-    window.addEventListener("scroll", () => {
-        const scrollProgress = document.querySelector(".scroll-progress");
+    const header = document.querySelector("header");
+    const scrollProgress = document.querySelector(".scroll-progress");
+    function updateScroll() {
         const scrollTop = window.scrollY;
-        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        scrollProgress.style.width = `${(scrollTop / docHeight) * 100}%`;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercent = (scrollTop / docHeight) * 100;
+        scrollProgress.style.width = `${scrollPercent}%`;
 
-        const header = document.querySelector("header");
-        header.classList.toggle("shrink", window.scrollY > 50);
-    });
-
-    // **Audio Context and Sound Effects**
-    let audioContext;
-    let isMuted = false;
-
-    function playSound(type, volume = 0.5) {
-        if (isMuted || !audioContext) return;
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        oscillator.type = "sine";
-        oscillator.frequency.value = { click: 440, hover: 330, error: 200, beep: 880 }[type] || 350;
-        gainNode.gain.value = volume;
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        oscillator.start();
-        setTimeout(() => oscillator.stop(), 100);
+        if (scrollTop > 100) {
+            header.classList.add("shrink");
+        } else {
+            header.classList.remove("shrink");
+        }
     }
+    window.addEventListener("scroll", updateScroll);
+    updateScroll();
 
-    document.addEventListener("click", () => {
-        if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioContext.state === "suspended" && !isMuted) audioContext.resume();
-    }, { once: true });
+    // **Sound Effects**
+    function playSound(type, volume = 1) {
+        const audio = new Audio();
+        audio.volume = volume;
+        switch (type) {
+            case "click":
+                audio.src = "https://freesound.org/data/previews/245/245645_4055516-lq.mp3";
+                break;
+            case "hover":
+                audio.src = "https://freesound.org/data/previews/184/184438_2393279-lq.mp3";
+                break;
+        }
+        audio.play().catch(() => {});
+    }
 
     // **Music Toggle**
     const musicToggle = document.getElementById("music-toggle");
     const welcomeMusic = document.getElementById("welcome-music");
     if (musicToggle && welcomeMusic) {
         welcomeMusic.volume = 0.5;
-        let isPlaying = false;
-
+        welcomeMusic.play().catch(() => {});
         musicToggle.addEventListener("click", () => {
-            if (isPlaying) {
-                welcomeMusic.pause();
-                isMuted = true;
-                musicToggle.classList.add("muted");
+            if (welcomeMusic.paused) {
+                welcomeMusic.play();
+                musicToggle.classList.remove("muted");
             } else {
-                welcomeMusic.play().catch(() => {});
-                isMuted = false;
-                musicToggle.classList.remove("muted");
+                welcomeMusic.pause();
+                musicToggle.classList.add("muted");
             }
-            isPlaying = !isPlaying;
             playSound("click");
         });
-
-        document.addEventListener("click", () => {
-            if (!isPlaying && !isMuted) {
-                welcomeMusic.play().catch(() => {});
-                isPlaying = true;
-                musicToggle.classList.remove("muted");
-            }
-        }, { once: true });
     }
 
-    // **Tech Tips and Trivia**
-    const techTips = [
-        "Tech Tip: Regular updates keep your systems secure!",
-        "Tech Tip: Back up your data weekly to avoid loss.",
-        "Tech Tip: Use strong passwords for better protection.",
-        "Tech Tip: Restarting can fix many tech glitches.",
-        "Tech Tip: Clear cache to boost browser speed.",
-        "Tech Tip: Keep software patched against vulnerabilities.",
-        "Tech Tip: Monitor your network for unusual activity.",
-        "Tech Tip: Enable two-factor authentication for extra security.",
-        "Tech Tip: Avoid public Wi-Fi for sensitive tasks.",
-        "Tech Tip: Use a VPN for secure remote access."
-    ];
-
-    const techTrivia = [
-        "Trivia: The first computer 'bug' was an actual insect!",
-        "Trivia: The internet began with ARPANET in 1969.",
-        "Trivia: A byte is 8 bits, but a nibble is 4!",
-        "Trivia: The first email was sent by Ray Tomlinson in 1971.",
-        "Trivia: Moore’s Law predicts tech doubles every 2 years.",
-        "Trivia: The QWERTY keyboard was designed to slow typing.",
-        "Trivia: The first hard drive held just 5MB in 1956.",
-        "Trivia: Wi-Fi stands for Wireless Fidelity.",
-        "Trivia: The first website went live in 1991.",
-        "Trivia: ENIAC, the first computer, weighed 30 tons!"
-    ];
-
-    const techTipText = document.getElementById("tech-tip-text");
-    const triviaText = document.getElementById("trivia-text");
+    // **Tech Tip**
+    const techTip = document.getElementById("tech-tip-text");
     const closeTechTip = document.getElementById("close-tech-tip");
-    const stickyNote = document.querySelector(".sticky-note");
-
-    if (techTipText && stickyNote) {
-        techTipText.textContent = techTips[Math.floor(Math.random() * techTips.length)];
-        gsap.fromTo(".sticky-note", { opacity: 0, y: -50, rotation: -5 }, { opacity: 1, y: 0, rotation: 0, duration: 1, delay: 2, ease: "elastic.out(1, 0.5)" });
+    if (techTip) {
+        const tips = [
+            "Ctrl + Shift + T reopens the last closed tab.",
+            "Restarting your router can fix most network issues.",
+            "Use strong, unique passwords for better security."
+        ];
+        techTip.textContent = tips[Math.floor(Math.random() * tips.length)];
         closeTechTip.addEventListener("click", () => {
-            gsap.to(".sticky-note", { opacity: 0, y: -50, duration: 0.5, onComplete: () => stickyNote.style.display = "none" });
+            document.querySelector(".sticky-note").style.display = "none";
             playSound("click");
         });
     }
 
-    if (triviaText) {
-        triviaText.textContent = techTrivia[Math.floor(Math.random() * techTrivia.length)];
-    }
-
-    // **Chat Bubble**
+    // **Chat Bubble Visibility**
     const chatBubble = document.getElementById("chat-bubble");
     if (chatBubble) {
         setTimeout(() => chatBubble.classList.add("visible"), 3000);
         chatBubble.addEventListener("click", () => {
-            alert("Chat feature coming soon! Contact us at nick@sysfx.net for now.");
-            playSound("beep");
+            alert("Chat feature coming soon!");
+            playSound("click");
         });
     }
 
@@ -451,14 +410,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // **Service Grid Highlight**
-    const serviceGrid = document.querySelector(".service-grid");
-    if (serviceGrid) {
-        setInterval(() => {
-            const services = serviceGrid.querySelectorAll(".service");
-            const randomIndex = Math.floor(Math.random() * services.length);
-            services.forEach((s, i) => s.style.border = i === randomIndex ? "2px solid var(--highlight-color)" : "none");
-        }, 10000);
+    // **Trivia Update**
+    const triviaText = document.getElementById("trivia-text");
+    if (triviaText) {
+        const trivia = [
+            "The first computer 'bug' was an actual insect stuck in a relay.",
+            "The internet was born in 1969 with ARPANET.",
+            "A byte is 8 bits, but a nibble is 4 bits."
+        ];
+        triviaText.textContent = trivia[Math.floor(Math.random() * trivia.length)];
     }
 
     // **Easter Egg**
@@ -468,13 +428,9 @@ document.addEventListener("DOMContentLoaded", () => {
         easterEggTrigger.addEventListener("click", () => {
             clickCount++;
             if (clickCount === 5) {
-                document.body.style.background = "url('https://media.giphy.com/media/3o6Zt6KHxJTbXCnSso/giphy.gif') no-repeat center center fixed";
-                document.body.style.backgroundSize = "cover";
-                playSound("beep");
-                setTimeout(() => {
-                    document.body.style.background = body.classList.contains("dark-mode") ? "linear-gradient(135deg, #222, #333)" : "linear-gradient(135deg, #f4f4f4, #e6e6e6)";
-                    clickCount = 0;
-                }, 5000);
+                alert("You found the Easter Egg! Enjoy this tech joke: Why do programmers prefer dark mode? The light attracts bugs.");
+                playSound("click");
+                clickCount = 0;
             }
         });
     }
