@@ -26,9 +26,6 @@
     <header class="glass-morphism" role="banner">
         <div class="status-bar">
             <div id="current-time" aria-live="polite"></div>
-            <button id="darkModeToggle" class="modern-button mode-button" aria-label="Toggle dark mode">
-                <i class="fas fa-moon" aria-hidden="true"></i> <span class="sr-only">Toggle Dark Mode</span>
-            </button>
         </div>
         
         <div class="logo-container">
@@ -37,18 +34,21 @@
         <h1 class="glow-text">sysfx</h1>
         <h3 id="typing-effect" class="gradient-text"></h3>
         <button class="hamburger" aria-label="Toggle Navigation" aria-expanded="false"><i class="fas fa-bars"></i></button>
-        <nav role="navigation">
-            <ul>
-                <li><a href="#home" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="#events" class="nav-link"><i class="fas fa-calendar-alt"></i> Events</a></li>
-                <li><a href="#support" class="nav-link"><i class="fas fa-headset"></i> Support</a></li>
-                <li><a href="#community" class="nav-link"><i class="fas fa-users"></i> Community</a></li>
-                <li><a href="#about" class="nav-link"><i class="fas fa-info-circle"></i> About</a></li>
-                <li><a href="#services" class="nav-link"><i class="fas fa-cogs"></i> Services</a></li>
-                <li><a href="#testimonials" class="nav-link"><i class="fas fa-star"></i> Testimonials</a></li>
-                <li><a href="#contact" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
-            </ul>
+        <nav role="navigation" class="mobile-nav">
+            <div class="nav-wrapper">
+                <a href="#home" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="#events" class="nav-link"><i class="fas fa-calendar-alt"></i> Events</a>
+                <a href="#support" class="nav-link"><i class="fas fa-headset"></i> Support</a>
+                <a href="#community" class="nav-link"><i class="fas fa-users"></i> Community</a>
+                <a href="#about" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="#services" class="nav-link"><i class="fas fa-cogs"></i> Services</a>
+                <a href="#testimonials" class="nav-link"><i class="fas fa-star"></i> Testimonials</a>
+                <a href="#contact" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+            </div>
         </nav>
+        <button id="darkModeToggle" class="modern-button mode-button" aria-label="Toggle dark mode">
+            <i class="fas fa-moon" aria-hidden="true"></i> <span class="sr-only">Toggle Dark Mode</span>
+        </button>
     </header>
 
     <div class="scrolling-text" role="alert">
@@ -83,11 +83,13 @@
             <button class="modern-button action-button" onclick="location.href='#contact'">Request a Quote</button>
         </section>
 
-        <section id="location" class="glass-morphism parallax location-section">
-            <h2 class="gradient-text glow-text centered-text">Find Us in Clinton, CT</h2>
-            <p>Visit our headquarters at 123 Main Street, Clinton, CT, or reach out for remote support. We serve clients across the region with top-tier tech solutions.</p>
-            <div id="map" class="map-container" aria-label="Map showing sysfx location in Clinton, CT"></div>
-            <button class="modern-button action-button" onclick="location.href='#contact'">Get Directions</button>
+        <section id="location" class="parallax location-section">
+            <div class="glass-morphism location-content">
+                <h2 class="gradient-text glow-text centered-text">Find Us in Clinton, CT</h2>
+                <p>Visit our headquarters at 123 Main Street, Clinton, CT, or reach out for remote support. We serve clients across the region with top-tier tech solutions.</p>
+                <div id="map" aria-label="Map showing sysfx location in Clinton, CT"></div>
+                <button class="modern-button action-button" onclick="location.href='#contact'">Get Directions</button>
+            </div>
         </section>
 
         <section id="services" class="services glass-morphism parallax bliss-background">
@@ -147,7 +149,7 @@
         <section class="gallery">
             <h2 class="gradient-text glow-text">Our Work</h2>
             <p>Explore our portfolio of successful projects, showcasing our expertise in tech solutions for businesses like yours.</p>
-            <div class="gallery-grid">
+            <div class="gallery-container">
                 <div class="gallery-item" data-src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
                     <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Tech hardware repair project" loading="lazy">
                 </div>
@@ -177,31 +179,13 @@
         <section class="stats">
             <h2 class="gradient-text glow-text">Our Impact</h2>
             <p>Here’s how sysfx has made a difference for our clients through innovative tech solutions.</p>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-number" data-count="500">0</div>
-                    <div class="stat-label">Clients Served</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-count="1000">0</div>
-                    <div class="stat-label">Repairs Completed</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-count="50">0</div>
-                    <div class="stat-label">Websites Built</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-count="200">0</div>
-                    <div class="stat-label">Networks Secured</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-count="150">0</div>
-                    <div class="stat-label">Cloud Migrations</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-count="3000">0</div>
-                    <div class="stat-label">Support Tickets Resolved</div>
-                </div>
+            <div class="stats-container">
+                <div class="stat-item"><span class="stat-number" data-count="500">0</span> Clients Served</div>
+                <div class="stat-item"><span class="stat-number" data-count="1000">0</span> Repairs Completed</div>
+                <div class="stat-item"><span class="stat-number" data-count="50">0</span> Websites Built</div>
+                <div class="stat-item"><span class="stat-number" data-count="200">0</span> Networks Secured</div>
+                <div class="stat-item"><span class="stat-number" data-count="150">0</span> Cloud Migrations</div>
+                <div class="stat-item"><span class="stat-number" data-count="3000">0</span> Support Tickets Resolved</div>
             </div>
             <button class="modern-button action-button" onclick="location.href='#about'">Learn More About Our Impact</button>
         </section>
@@ -295,7 +279,7 @@
             <button class="modern-button action-button" onclick="location.href='#contact'">Contact Us Today</button>
             <div class="tech-trivia">
                 <h3>Tech Trivia</h3>
-                <p>Did you know the first computer "bug" was an actual insect? In 1947, engineers found a malfunction in the Harvard Mark II caused by a moth stuck in a relay!</p>
+                <p id="trivia-text"></p>
             </div>
         </section>
 
