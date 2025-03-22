@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Email configuration and setup
+    // **Email Configuration**
     const emailConfig = {
         user: "nick",
         domain: "sysfx.net",
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Typing effect
+    // **Typing Effect**
     const typingElement = document.getElementById("typing-effect");
     if (typingElement) {
         const phrases = [
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
         typeText();
     }
 
-    // Dark mode toggle
+    // **Dark Mode Toggle**
     const darkModeToggle = document.getElementById("darkModeToggle");
     const body = document.body;
     if (darkModeToggle) {
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Hamburger menu
+    // **Hamburger Menu**
     const hamburger = document.querySelector(".hamburger");
     const navWrapper = document.querySelector(".nav-wrapper");
     if (hamburger && navWrapper) {
@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Smooth scrolling for nav links
+    // **Smooth Scrolling for Nav Links**
     document.querySelectorAll(".nav-link").forEach(anchor => {
         anchor.addEventListener("click", (e) => {
             e.preventDefault();
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Clock update with day, date, and time
+    // **Clock Update**
     function updateClock() {
         const clockElement = document.getElementById("current-time");
         if (clockElement) {
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateClock();
     setInterval(updateClock, 1000);
 
-    // Particles.js configuration
+    // **Particles.js Configuration**
     function updateParticles() {
         const isDarkMode = body.classList.contains("dark-mode");
         particlesJS("particles-js", {
@@ -154,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     updateParticles();
 
-    // Leaflet map setup
+    // **Leaflet Map Setup**
     const mapElement = document.getElementById("map");
     if (mapElement && typeof L !== "undefined") {
         const map = L.map(mapElement, { scrollWheelZoom: false, dragging: !L.Browser.mobile, touchZoom: false })
@@ -179,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Testimonials slider
+    // **Testimonials Slider**
     const testimonials = document.querySelectorAll(".testimonial");
     let currentTestimonial = 0;
     function showTestimonial() {
@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showTestimonial();
     setInterval(showTestimonial, 4000);
 
-    // Stats animation
+    // **Stats Animation**
     const statNumbers = document.querySelectorAll(".stat-number");
     statNumbers.forEach(stat => {
         const target = parseInt(stat.getAttribute("data-count"));
@@ -212,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Custom cursor
+    // **Custom Cursor**
     const cursor = document.querySelector(".cursor");
     if (cursor && window.innerWidth > 768) {
         let trailTimeout;
@@ -229,7 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
         cursor.style.display = "none";
     }
 
-    // Service card interactions
+    // **Service Card Interactions**
     const services = document.querySelectorAll(".service");
     const modals = document.querySelectorAll(".modal");
     services.forEach(service => {
@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Parallax and section animations
+    // **Parallax and Section Animations**
     gsap.registerPlugin(ScrollTrigger);
     document.querySelectorAll(".parallax, .section-animation").forEach(section => {
         gsap.fromTo(section, { opacity: 0, y: 50 }, {
@@ -291,7 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Gallery lightbox
+    // **Gallery Lightbox**
     const galleryItems = document.querySelectorAll(".gallery-item");
     const lightbox = document.querySelector(".lightbox");
     if (lightbox) {
@@ -321,7 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Scroll progress and header shrink
+    // **Scroll Progress and Header Shrink**
     window.addEventListener("scroll", () => {
         const scrollProgress = document.querySelector(".scroll-progress");
         const scrollTop = window.scrollY;
@@ -332,7 +332,7 @@ document.addEventListener("DOMContentLoaded", () => {
         header.classList.toggle("shrink", window.scrollY > 50);
     });
 
-    // Audio context and sound effects
+    // **Audio Context and Sound Effects**
     let audioContext;
     let isMuted = false;
 
@@ -354,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (audioContext.state === "suspended" && !isMuted) audioContext.resume();
     }, { once: true });
 
-    // Music toggle
+    // **Music Toggle**
     const musicToggle = document.getElementById("music-toggle");
     const welcomeMusic = document.getElementById("welcome-music");
     if (musicToggle && welcomeMusic) {
@@ -384,7 +384,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }, { once: true });
     }
 
-    // Tech tips and trivia
+    // **Tech Tips and Trivia**
     const techTips = [
         "Tech Tip: Regular updates keep your systems secure!",
         "Tech Tip: Back up your data weekly to avoid loss.",
@@ -429,7 +429,7 @@ document.addEventListener("DOMContentLoaded", () => {
         triviaText.textContent = techTrivia[Math.floor(Math.random() * techTrivia.length)];
     }
 
-    // Chat bubble
+    // **Chat Bubble**
     const chatBubble = document.getElementById("chat-bubble");
     if (chatBubble) {
         setTimeout(() => chatBubble.classList.add("visible"), 3000);
@@ -439,7 +439,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Scroll-to-top button
+    // **Scroll-to-Top Button**
     const scrollTopBtn = document.querySelector(".scroll-top-btn");
     if (scrollTopBtn) {
         window.addEventListener("scroll", () => {
@@ -451,7 +451,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Service grid highlight
+    // **Service Grid Highlight**
     const serviceGrid = document.querySelector(".service-grid");
     if (serviceGrid) {
         setInterval(() => {
@@ -461,7 +461,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 10000);
     }
 
-    // Easter egg
+    // **Easter Egg**
     const easterEggTrigger = document.querySelector(".easter-egg-trigger");
     if (easterEggTrigger) {
         let clickCount = 0;
