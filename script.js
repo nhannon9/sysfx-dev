@@ -31,35 +31,39 @@ document.addEventListener("DOMContentLoaded", () => {
             "Building the web of tomorrow."
         ];
         let currentPhraseIndex = 0;
+        let charIndex = 0;
+        let isTyping = true;
+        const typingSpeed = 50;
+        const erasingSpeed = 30;
+        const pauseBetweenPhrases = 2000;
 
         function typeText() {
-            const phrase = phrases[currentPhraseIndex];
-            let charIndex = 0;
-            typingElement.textContent = "";
-            const typeInterval = setInterval(() => {
-                if (charIndex < phrase.length) {
-                    typingElement.textContent += phrase[charIndex++];
+            const currentPhrase = phrases[currentPhraseIndex];
+            if (isTyping) {
+                if (charIndex < currentPhrase.length) {
+                    typingElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                    charIndex++;
+                    setTimeout(typeText, typingSpeed);
                 } else {
-                    clearInterval(typeInterval);
-                    setTimeout(eraseText, 2000);
+                    isTyping = false;
+                    setTimeout(eraseText, pauseBetweenPhrases);
                 }
-            }, 50);
+            }
         }
 
         function eraseText() {
-            const text = typingElement.textContent;
-            const eraseInterval = setInterval(() => {
-                if (text.length) {
-                    typingElement.textContent = text.slice(0, -1);
-                } else {
-                    clearInterval(eraseInterval);
-                    currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
-                    setTimeout(typeText, 500);
-                }
-            }, 30);
+            if (typingElement.textContent.length > 0) {
+                typingElement.textContent = typingElement.textContent.slice(0, -1);
+                setTimeout(eraseText, erasingSpeed);
+            } else {
+                isTyping = true;
+                charIndex = 0;
+                currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
+                setTimeout(typeText, 500);
+            }
         }
 
-        typeText();
+        typeText(); // Start the typing effect
     }
 
     // **Dark Mode Toggle**
@@ -69,8 +73,14 @@ document.addEventListener("DOMContentLoaded", () => {
         darkModeToggle.addEventListener("click", () => {
             body.classList.toggle("dark-mode");
             const icon = darkModeToggle.querySelector("i");
-            icon.classList.toggle("fa-moon");
-            icon.classList.toggle("fa-sun");
+            const text = darkModeToggle.querySelector(".mode-text");
+            if (body.classList.contains("dark-mode")) {
+                icon.classList.replace("fa-moon", "fa-sun");
+                text.textContent = "Light Mode";
+            } else {
+                icon.classList.replace("fa-sun", "fa-moon");
+                text.textContent = "Dark Mode";
+            }
             localStorage.setItem("darkMode", body.classList.contains("dark-mode") ? "enabled" : null);
             playSound("click");
             updateParticles();
@@ -78,8 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (localStorage.getItem("darkMode") === "enabled") {
             body.classList.add("dark-mode");
-            const icon = darkModeToggle.querySelector("i");
-            icon.classList.replace("fa-moon", "fa-sun");
+            darkModeToggle.querySelector("i").classList.replace("fa-moon", "fa-sun");
+            darkModeToggle.querySelector(".mode-text").textContent = "Light Mode";
         }
     }
 
@@ -332,8 +342,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (scrollTop > 100) {
             header.classList.add("shrink");
+            body.style.paddingTop = "80px"; /* Adjust padding when header shrinks */
         } else {
             header.classList.remove("shrink");
+            body.style.paddingTop = "200px"; /* Reset padding when header expands */
         }
     }
     window.addEventListener("scroll", updateScroll);
@@ -428,8 +440,7 @@ document.addEventListener("DOMContentLoaded", () => {
         easterEggTrigger.addEventListener("click", () => {
             clickCount++;
             if (clickCount === 5) {
-                alert("You found the Easter Egg! Enjoy this tech joke: Why do programmers prefer dark mode? The light attracts bugs.");
-                playSound("click");
+                alert("You found the Easter Egg! Enjoy a 5% discount on your next service!");
                 clickCount = 0;
             }
         });
