@@ -118,14 +118,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Clock update with date
+    // Clock update with day, date, and time
     function updateClock() {
         const clockElement = document.getElementById("current-time");
         if (clockElement) {
             const now = new Date();
             const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+            const day = now.toLocaleDateString([], { weekday: "short" });
             const date = now.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
-            clockElement.innerHTML = `<i class="fas fa-clock" aria-hidden="true"></i> ${time} | ${date}`;
+            clockElement.innerHTML = `<i class="fas fa-clock" aria-hidden="true"></i> ${time} | ${day}, ${date}`;
         }
     }
     updateClock();
