@@ -225,24 +225,33 @@ body.dark-mode header {
 }
 
 header.shrink {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
     padding: 10px 15px;
-    min-height: 80px;
+    min-height: 60px;
+}
+
+header.shrink .status-bar,
+header.shrink h1,
+header.shrink .hamburger,
+header.shrink nav {
+    display: none;
 }
 
 header.shrink .logo-container {
-    height: 60px;
+    height: 40px;
 }
 
 header.shrink .flipping-logo {
-    width: 60px;
-}
-
-header.shrink h1 {
-    font-size: 1.5em;
+    width: 40px;
 }
 
 header.shrink #typing-effect {
-    display: none;
+    font-size: 0.8em;
+    margin-left: 10px;
+    display: inline-block;
 }
 
 header h1 {
@@ -540,7 +549,7 @@ h3 { font-size: 1.5em; }
     padding: 15px;
     transition: transform 0.3s ease;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    border-radius: 20px;
 }
 
 .stat-item:hover {
@@ -743,7 +752,7 @@ body.dark-mode .modern-button.mode-button:hover {
 .service {
     background-color: rgba(255, 255, 255, 0.9);
     padding: 25px;
-    border-radius: 12px;
+    border-radius: 20px;
     text-align: center;
     transition: all 0.3s ease;
     transform-style: preserve-3d;
@@ -815,7 +824,7 @@ body.dark-mode .extra-info {
 .modal-content {
     background: var(--glass-bg);
     padding: 25px;
-    border-radius: 15px;
+    border-radius: 20px;
     max-width: 500px;
     text-align: center;
     color: #333;
@@ -881,7 +890,7 @@ body.dark-mode .modal-content {
     gap: 15px;
     padding: 15px;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
+    border-radius: 20px;
     transition: transform 0.3s ease;
     position: relative;
     opacity: 0;
@@ -925,7 +934,7 @@ body.dark-mode .event-card {
 .testimonial {
     background-color: rgba(255, 255, 255, 0.9);
     padding: 20px;
-    border-radius: 12px;
+    border-radius: 20px;
     position: absolute;
     width: 100%;
     color: #333;
@@ -970,7 +979,7 @@ body.dark-mode .testimonial {
 .case-study {
     background-color: rgba(255, 255, 255, 0.9);
     padding: 20px;
-    border-radius: 12px;
+    border-radius: 20px;
     text-align: center;
     transition: all 0.3s ease;
 }
@@ -1190,7 +1199,7 @@ body.dark-mode .tech-trivia {
 .blog-preview article {
     padding: 15px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    border-radius: 20px;
     transition: transform 0.3s ease;
 }
 
@@ -1257,18 +1266,39 @@ body.dark-mode .blog-preview article {
     cursor: pointer;
 }
 
-/* Navbar buttons */
+/* Navbar links as text with glow */
 .nav-link {
-    background: var(--primary-color);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
+    color: var(--primary-color);
     text-decoration: none;
-    transition: background 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: text-shadow 0.3s ease;
 }
 
 .nav-link:hover {
-    background: var(--secondary-color);
+    text-shadow: 0 0 5px var(--primary-color);
+}
+
+body.dark-mode .nav-link {
+    color: #fff;
+}
+
+/* Text color and outline for light/dark modes */
+body:not(.dark-mode) {
+    --text-gradient: linear-gradient(45deg, #006400, #228B22);
+}
+
+body.dark-mode {
+    --text-gradient: linear-gradient(45deg, #00a000, #4CAF50);
+}
+
+body:not(.dark-mode) .glow-text {
+    text-shadow: -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333, 0 0 8px var(--primary-color), 0 0 12px var(--secondary-color);
+}
+
+body.dark-mode .glow-text {
+    text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 8px var(--primary-color), 0 0 12px var(--secondary-color);
 }
 
 /* Responsive design */
