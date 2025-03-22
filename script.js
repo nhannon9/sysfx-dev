@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const emailElement = document.getElementById("email");
-    if (emailElement) emailElement.innerHTML = `<a href="mailto:${emailConfig.getEmail()}">${emailConfig.getEmail()}</a>`;
+    if (emailElement) emailElement.innerHTML = `<a href="mailto:${emailConfig.getEmail()}" aria-label="Email sysfx">${emailConfig.getEmail()}</a>`;
 
     const emailLink = document.getElementById("email-link");
     if (emailLink) {
@@ -22,20 +22,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const typingElement = document.getElementById("typing-effect");
     if (typingElement) {
         const phrases = [
-            "Providing next-gen tech solutions.",
-            "Empowering your digital future.",
-            "Precision tech expertise.",
-            "Your IT partner in Clinton, CT.",
-            "Innovating for business success.",
-            "Securing your tech, 24/7.",
-            "Building the web of tomorrow."
+            "Next-gen tech solutions for you.",
+            "Empowering your digital journey.",
+            "Precision IT expertise, always.",
+            "Your Clinton, CT tech partner.",
+            "Innovating for your success.",
+            "Securing your systems 24/7.",
+            "Crafting tomorrow’s web today."
         ];
         let currentPhraseIndex = 0;
         let charIndex = 0;
         let isTyping = true;
-        const typingSpeed = 50;
-        const erasingSpeed = 30;
-        const pauseBetweenPhrases = 2000;
+        const typingSpeed = 60;
+        const erasingSpeed = 40;
+        const pauseBetweenPhrases = 2500;
 
         function typeText() {
             const currentPhrase = phrases[currentPhraseIndex];
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (charIndex < currentPhrase.length) {
                     typingElement.textContent = currentPhrase.substring(0, charIndex + 1);
                     charIndex++;
-                    setTimeout(typeText, typingSpeed);
+                    requestAnimationFrame(() => setTimeout(typeText, typingSpeed));
                 } else {
                     isTyping = false;
                     setTimeout(eraseText, pauseBetweenPhrases);
@@ -54,16 +54,16 @@ document.addEventListener("DOMContentLoaded", () => {
         function eraseText() {
             if (typingElement.textContent.length > 0) {
                 typingElement.textContent = typingElement.textContent.slice(0, -1);
-                setTimeout(eraseText, erasingSpeed);
+                requestAnimationFrame(() => setTimeout(eraseText, erasingSpeed));
             } else {
                 isTyping = true;
                 charIndex = 0;
                 currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
-                setTimeout(typeText, 500);
+                setTimeout(typeText, 600);
             }
         }
 
-        typeText(); // Start the typing effect
+        typeText();
     }
 
     // **Dark Mode Toggle**
@@ -81,12 +81,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 icon.classList.replace("fa-sun", "fa-moon");
                 text.textContent = "Dark Mode";
             }
-            localStorage.setItem("darkMode", body.classList.contains("dark-mode") ? "enabled" : null);
+            localStorage.setItem("darkMode", body.classList.contains("dark-mode") ? "enabled" : "disabled");
             playSound("click");
             updateParticles();
         });
 
-        if (localStorage.getItem("darkMode") === "enabled") {
+        const savedMode = localStorage.getItem("darkMode");
+        if (savedMode === "enabled") {
             body.classList.add("dark-mode");
             darkModeToggle.querySelector("i").classList.replace("fa-moon", "fa-sun");
             darkModeToggle.querySelector(".mode-text").textContent = "Light Mode";
@@ -104,6 +105,18 @@ document.addEventListener("DOMContentLoaded", () => {
             hamburger.querySelector("i").classList.toggle("fa-bars");
             hamburger.querySelector("i").classList.toggle("fa-times");
             playSound("click");
+            document.body.style.overflow = isActive ? "hidden" : ""; // Prevent scroll when open
+        });
+
+        // Close menu on outside click
+        document.addEventListener("click", (e) => {
+            if (!navWrapper.contains(e.target) && !hamburger.contains(e.target) && navWrapper.classList.contains("active")) {
+                navWrapper.classList.remove("active");
+                hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
+                hamburger.setAttribute("aria-expanded", "false");
+                document.body.style.overflow = "";
+                playSound("click");
+            }
         });
     }
 
@@ -115,13 +128,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const targetElement = document.getElementById(targetId);
             if (targetElement) {
                 window.scrollTo({
-                    top: targetElement.offsetTop - 80,
+                    top: targetElement.offsetTop - 100,
                     behavior: "smooth"
                 });
                 if (window.innerWidth <= 768 && navWrapper.classList.contains("active")) {
                     navWrapper.classList.remove("active");
                     hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
                     hamburger.setAttribute("aria-expanded", "false");
+                    document.body.style.overflow = "";
                 }
                 playSound("click");
             }
@@ -147,17 +161,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const isDarkMode = body.classList.contains("dark-mode");
         particlesJS("particles-js", {
             particles: {
-                number: { value: 80, density: { enable: true, value_area: 800 } },
+                number: { value: 100, density: { enable: true, value_area: 900 } },
                 color: { value: isDarkMode ? "#ffffff" : "#00a000" },
                 shape: { type: "polygon", polygon: { nb_sides: 6 } },
-                opacity: { value: isDarkMode ? 0.8 : 0.3, random: true },
-                size: { value: 4, random: true },
-                line_linked: { enable: true, distance: 120, color: isDarkMode ? "#ffffff" : "#00a000", opacity: 0.4, width: 1 },
-                move: { enable: true, speed: 4, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
+                opacity: { value: isDarkMode ? 0.9 : 0.4, random: true },
+                size: { value: 5, random: true },
+                line_linked: { enable: true, distance: 130, color: isDarkMode ? "#ffffff" : "#00a000", opacity: 0.5, width: 1.5 },
+                move: { enable: true, speed: 5, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
             },
             interactivity: {
                 detect_on: "canvas",
-                events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" }, resize: true }
+                events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" }, resize: true },
+                modes: { grab: { distance: 140, line_linked: { opacity: 0.7 } }, push: { particles_nb: 4 } }
             },
             retina_detect: true
         });
@@ -168,10 +183,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const mapElement = document.getElementById("map");
     if (mapElement && typeof L !== "undefined") {
         const map = L.map(mapElement, { scrollWheelZoom: false, dragging: !L.Browser.mobile, touchZoom: false })
-            .setView([41.2788, -72.5276], 13);
+            .setView([41.2788, -72.5276], 14);
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            maxZoom: 18
         }).addTo(map);
+
+        const customIcon = L.divIcon({
+            className: "custom-icon",
+            html: `<div style="background: ${body.classList.contains("dark-mode") ? "#fff" : "#00a000"}; width: 20px; height: 20px; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
 
         const markers = [
             { lat: 41.2788, lon: -72.5276, popup: "sysfx HQ", url: "#contact" },
@@ -180,8 +203,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ];
 
         markers.forEach(({ lat, lon, popup, url }) => {
-            L.marker([lat, lon]).addTo(map)
-                .bindPopup(popup)
+            L.marker([lat, lon], { icon: customIcon }).addTo(map)
+                .bindPopup(`<b>${popup}</b><br><a href="${url}">Visit Section</a>`)
                 .on("click", () => {
                     window.location.href = url;
                     playSound("click");
@@ -195,13 +218,13 @@ document.addEventListener("DOMContentLoaded", () => {
     function showTestimonial() {
         testimonials.forEach((t, i) => {
             t.style.opacity = i === currentTestimonial ? "1" : "0";
-            t.style.transform = i === currentTestimonial ? "scale(1)" : "scale(0.95)";
+            t.style.transform = i === currentTestimonial ? "scale(1)" : "scale(0.9)";
             t.style.position = i === currentTestimonial ? "relative" : "absolute";
         });
         currentTestimonial = (currentTestimonial + 1) % testimonials.length;
     }
     showTestimonial();
-    setInterval(showTestimonial, 4000);
+    setInterval(showTestimonial, 4500);
 
     // **Stats Animation**
     const statNumbers = document.querySelectorAll(".stat-number");
@@ -209,16 +232,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const target = parseInt(stat.getAttribute("data-count"));
         const observer = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting) {
-                gsap.to(stat, { textContent: target, duration: 2, roundProps: "textContent", ease: "power1.out" });
+                gsap.to(stat, { textContent: target, duration: 2.5, roundProps: "textContent", ease: "power2.out" });
                 observer.disconnect();
             }
-        }, { threshold: 0.5 });
+        }, { threshold: 0.6 });
         observer.observe(stat);
 
         gsap.to(stat.closest(".stat-item"), {
-            y: -15,
-            ease: "power1.inOut",
-            scrollTrigger: { trigger: stat.closest(".stat-item"), start: "top 85%", end: "bottom 20%", scrub: true }
+            y: -20,
+            ease: "power2.inOut",
+            scrollTrigger: { trigger: stat.closest(".stat-item"), start: "top 80%", end: "bottom 15%", scrub: true }
         });
     });
 
@@ -232,9 +255,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 cursor.style.top = `${e.clientY}px`;
                 cursor.classList.add("trail");
                 clearTimeout(trailTimeout);
-                trailTimeout = setTimeout(() => cursor.classList.remove("trail"), 100);
+                trailTimeout = setTimeout(() => cursor.classList.remove("trail"), 120);
             });
         });
+        document.addEventListener("mousedown", () => cursor.classList.add("trail"));
+        document.addEventListener("mouseup", () => cursor.classList.remove("trail"));
     } else if (cursor) {
         cursor.style.display = "none";
     }
@@ -248,6 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (modal) {
                 modal.style.display = "flex";
                 playSound("click");
+                gsap.fromTo(modal.querySelector(".modal-content"), { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.7)" });
             }
         });
 
@@ -255,22 +281,39 @@ document.addEventListener("DOMContentLoaded", () => {
             const rect = service.getBoundingClientRect();
             const x = e.clientX - rect.left - rect.width / 2;
             const y = e.clientY - rect.top - rect.height / 2;
-            service.style.transform = `perspective(1000px) rotateX(${y / 20}deg) rotateY(${-x / 20}deg) scale(1.05)`;
+            requestAnimationFrame(() => {
+                service.style.transform = `perspective(1200px) rotateX(${y / 25}deg) rotateY(${-x / 25}deg) scale(1.08)`;
+            });
         });
 
         service.addEventListener("mouseleave", () => {
-            service.style.transform = "perspective(1000px) scale(1)";
+            requestAnimationFrame(() => {
+                service.style.transform = "perspective(1200px) scale(1)";
+            });
         });
     });
 
     modals.forEach(modal => {
-        modal.querySelector(".modal-close").addEventListener("click", () => {
-            modal.style.display = "none";
+        const closeBtn = modal.querySelector(".modal-close");
+        closeBtn.addEventListener("click", () => {
+            gsap.to(modal.querySelector(".modal-content"), {
+                scale: 0.9,
+                opacity: 0,
+                duration: 0.3,
+                ease: "back.in(1.7)",
+                onComplete: () => modal.style.display = "none"
+            });
             playSound("click");
         });
         modal.addEventListener("click", (e) => {
             if (e.target === modal) {
-                modal.style.display = "none";
+                gsap.to(modal.querySelector(".modal-content"), {
+                    scale: 0.9,
+                    opacity: 0,
+                    duration: 0.3,
+                    ease: "back.in(1.7)",
+                    onComplete: () => modal.style.display = "none"
+                });
                 playSound("click");
             }
         });
@@ -284,20 +327,20 @@ document.addEventListener("DOMContentLoaded", () => {
     // **Parallax and Section Animations**
     gsap.registerPlugin(ScrollTrigger);
     document.querySelectorAll(".parallax, .section-animation").forEach(section => {
-        gsap.fromTo(section, { opacity: 0, y: 50 }, {
+        gsap.fromTo(section, { opacity: 0, y: 60 }, {
             opacity: 1,
             y: 0,
-            duration: 0.8,
-            ease: "power2.out",
-            scrollTrigger: { trigger: section, start: "top 85%", toggleActions: "play none none none" }
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: { trigger: section, start: "top 80%", toggleActions: "play none none reset" }
         });
     });
 
     document.querySelectorAll(".testimonial").forEach(testimonial => {
         gsap.to(testimonial, {
-            y: -15,
-            ease: "power1.inOut",
-            scrollTrigger: { trigger: testimonial, start: "top 85%", end: "bottom 20%", scrub: true }
+            y: -20,
+            ease: "power2.inOut",
+            scrollTrigger: { trigger: testimonial, start: "top 80%", end: "bottom 15%", scrub: true }
         });
     });
 
@@ -313,19 +356,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 lightboxImg.src = item.getAttribute("data-src");
                 lightbox.style.display = "flex";
                 playSound("click");
+                gsap.fromTo(lightboxImg, { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.7)" });
             });
 
-            item.addEventListener("mouseover", () => playSound("hover", 0.3));
+            item.addEventListener("mouseover", () => playSound("hover", 0.4));
         });
 
         lightboxClose.addEventListener("click", () => {
-            lightbox.style.display = "none";
+            gsap.to(lightboxImg, {
+                scale: 0.9,
+                opacity: 0,
+                duration: 0.4,
+                ease: "back.in(1.7)",
+                onComplete: () => lightbox.style.display = "none"
+            });
             playSound("click");
         });
 
         lightbox.addEventListener("click", (e) => {
             if (e.target === lightbox) {
-                lightbox.style.display = "none";
+                gsap.to(lightboxImg, {
+                    scale: 0.9,
+                    opacity: 0,
+                    duration: 0.4,
+                    ease: "back.in(1.7)",
+                    onComplete: () => lightbox.style.display = "none"
+                });
                 playSound("click");
             }
         });
@@ -340,45 +396,56 @@ document.addEventListener("DOMContentLoaded", () => {
         const scrollPercent = (scrollTop / docHeight) * 100;
         scrollProgress.style.width = `${scrollPercent}%`;
 
-        if (scrollTop > 100) {
+        if (scrollTop > 120) {
             header.classList.add("shrink");
-            body.style.paddingTop = "80px"; /* Adjust padding when header shrinks */
+            body.style.paddingTop = "100px";
         } else {
             header.classList.remove("shrink");
-            body.style.paddingTop = "200px"; /* Reset padding when header expands */
+            body.style.paddingTop = "180px";
         }
     }
-    window.addEventListener("scroll", updateScroll);
+    window.addEventListener("scroll", debounce(updateScroll, 10));
     updateScroll();
 
     // **Sound Effects**
+    const soundCache = {};
     function playSound(type, volume = 1) {
-        const audio = new Audio();
-        audio.volume = volume;
-        switch (type) {
-            case "click":
-                audio.src = "https://freesound.org/data/previews/245/245645_4055516-lq.mp3";
-                break;
-            case "hover":
-                audio.src = "https://freesound.org/data/previews/184/184438_2393279-lq.mp3";
-                break;
+        if (!soundCache[type]) {
+            soundCache[type] = new Audio();
+            soundCache[type].volume = volume;
+            switch (type) {
+                case "click":
+                    soundCache[type].src = "https://freesound.org/data/previews/245/245645_4055516-lq.mp3";
+                    break;
+                case "hover":
+                    soundCache[type].src = "https://freesound.org/data/previews/184/184438_2393279-lq.mp3";
+                    break;
+            }
         }
-        audio.play().catch(() => {});
+        soundCache[type].play().catch(() => {});
     }
 
     // **Music Toggle**
     const musicToggle = document.getElementById("music-toggle");
     const welcomeMusic = document.getElementById("welcome-music");
     if (musicToggle && welcomeMusic) {
-        welcomeMusic.volume = 0.5;
-        welcomeMusic.play().catch(() => {});
+        welcomeMusic.volume = 0.6;
+        const isMusicPlaying = localStorage.getItem("musicPlaying") === "true";
+        if (isMusicPlaying) {
+            welcomeMusic.play().catch(() => {});
+        } else {
+            musicToggle.classList.add("muted");
+        }
+
         musicToggle.addEventListener("click", () => {
             if (welcomeMusic.paused) {
-                welcomeMusic.play();
+                welcomeMusic.play().catch(() => {});
                 musicToggle.classList.remove("muted");
+                localStorage.setItem("musicPlaying", "true");
             } else {
                 welcomeMusic.pause();
                 musicToggle.classList.add("muted");
+                localStorage.setItem("musicPlaying", "false");
             }
             playSound("click");
         });
@@ -389,13 +456,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeTechTip = document.getElementById("close-tech-tip");
     if (techTip) {
         const tips = [
-            "Ctrl + Shift + T reopens the last closed tab.",
-            "Restarting your router can fix most network issues.",
-            "Use strong, unique passwords for better security."
+            "Ctrl + Shift + T reopens closed tabs instantly.",
+            "Restarting your router fixes 80% of network issues.",
+            "Use 2FA for an extra layer of account security."
         ];
         techTip.textContent = tips[Math.floor(Math.random() * tips.length)];
         closeTechTip.addEventListener("click", () => {
-            document.querySelector(".sticky-note").style.display = "none";
+            gsap.to(".sticky-note", { scale: 0.9, opacity: 0, duration: 0.3, ease: "back.in(1.7)", onComplete: () => document.querySelector(".sticky-note").style.display = "none" });
             playSound("click");
         });
     }
@@ -403,9 +470,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // **Chat Bubble Visibility**
     const chatBubble = document.getElementById("chat-bubble");
     if (chatBubble) {
-        setTimeout(() => chatBubble.classList.add("visible"), 3000);
+        setTimeout(() => {
+            chatBubble.classList.add("visible");
+            gsap.from(chatBubble, { x: 50, opacity: 0, duration: 0.5, ease: "power2.out" });
+        }, 3500);
         chatBubble.addEventListener("click", () => {
-            alert("Chat feature coming soon!");
+            alert("Chat feature coming soon! Contact us at nick@sysfx.net for now.");
             playSound("click");
         });
     }
@@ -414,7 +484,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const scrollTopBtn = document.querySelector(".scroll-top-btn");
     if (scrollTopBtn) {
         window.addEventListener("scroll", () => {
-            scrollTopBtn.classList.toggle("visible", window.scrollY > 300);
+            scrollTopBtn.classList.toggle("visible", window.scrollY > 350);
         });
         scrollTopBtn.addEventListener("click", () => {
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -426,9 +496,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const triviaText = document.getElementById("trivia-text");
     if (triviaText) {
         const trivia = [
-            "The first computer 'bug' was an actual insect stuck in a relay.",
-            "The internet was born in 1969 with ARPANET.",
-            "A byte is 8 bits, but a nibble is 4 bits."
+            "The first 'bug' was an insect in a relay in 1947.",
+            "ARPANET launched the internet in 1969.",
+            "A byte is 8 bits; a nibble is just 4."
         ];
         triviaText.textContent = trivia[Math.floor(Math.random() * trivia.length)];
     }
@@ -440,9 +510,48 @@ document.addEventListener("DOMContentLoaded", () => {
         easterEggTrigger.addEventListener("click", () => {
             clickCount++;
             if (clickCount === 5) {
-                alert("You found the Easter Egg! Enjoy a 5% discount on your next service!");
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+                alert("Easter Egg Unlocked! Enjoy a 5% discount—use code: SYSFX5");
                 clickCount = 0;
             }
         });
     }
+
+    // **Debounce Utility**
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // **Preload Critical Assets**
+    function preloadAssets() {
+        const assets = [
+            "https://freesound.org/data/previews/245/245645_4055516-lq.mp3",
+            "https://freesound.org/data/previews/184/184438_2393279-lq.mp3",
+            "https://ia802208.us.archive.org/30/items/title_20240514_0432/title.mp3"
+        ];
+        assets.forEach(url => {
+            const audio = new Audio();
+            audio.src = url;
+            audio.preload = "auto";
+        });
+    }
+    preloadAssets();
 });
+
+// Load confetti library dynamically for Easter Egg
+const script = document.createElement("script");
+script.src = "https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js";
+script.async = true;
+document.head.appendChild(script);
