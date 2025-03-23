@@ -16,7 +16,7 @@
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    padding-top: 180px; /* Adjusted for smaller header */
+    padding-top: 160px; /* Adjusted to accommodate smaller header */
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     color: #333;
     line-height: 1.6;
@@ -116,7 +116,7 @@ body.dark-mode .glass-morphism {
     color: #fff;
     overflow: hidden;
     background: linear-gradient(135deg, #00a000 0%, #4CAF50 50%, #00a000 100%);
-    min-height: 250px;
+    min-height: 300px; /* Increased for better content visibility */
     animation: heroGradient 15s ease-in-out infinite;
 }
 
@@ -166,6 +166,8 @@ body.dark-mode .hero {
     position: relative;
     z-index: 2;
     padding: 15px;
+    padding-top: 50px; /* Added to push content below header */
+    padding-bottom: 50px; /* Added for balance */
 }
 
 /* Parallax effect */
@@ -216,7 +218,7 @@ header {
     top: 0;
     width: 100%;
     z-index: 100;
-    min-height: 140px; /* Smaller initial height */
+    min-height: 120px; /* Reduced to make header smaller */
     transition: all 0.4s ease;
     box-sizing: border-box;
 }
@@ -230,7 +232,7 @@ header.shrink {
     align-items: center;
     justify-content: center;
     padding: 8px 15px;
-    min-height: 60px; /* Smaller shrunk height */
+    min-height: 50px; /* Reduced for smaller shrink state */
 }
 
 header.shrink .status-bar,
@@ -241,23 +243,23 @@ header.shrink nav {
 }
 
 header.shrink .logo-container {
-    height: 50px;
+    height: 60px; /* Adjusted to match logo size */
     margin-right: 15px;
 }
 
 header.shrink .flipping-logo {
-    width: 50px;
+    width: 60px; /* Slightly bigger in shrink state */
 }
 
 header.shrink #typing-effect {
-    font-size: 1.3em;
+    font-size: 1.1em; /* Smaller text in shrink state */
     color: var(--primary-color);
     display: inline-block;
 }
 
 header h1 {
     color: #333;
-    font-size: 2.2em;
+    font-size: 2em; /* Reduced size */
     margin: 8px 0;
 }
 
@@ -286,14 +288,14 @@ body.dark-mode header h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 70px;
+    height: 80px; /* Adjusted to fit larger logo */
     margin-bottom: 8px;
     perspective: 1200px;
     transition: height 0.4s ease;
 }
 
 .flipping-logo {
-    width: 70px;
+    width: 80px; /* Made slightly bigger as requested */
     animation: coinFlip 3.5s infinite ease-in-out;
     border-radius: 50%;
     box-shadow: 0 0 20px var(--highlight-color);
@@ -309,10 +311,11 @@ body.dark-mode header h1 {
 
 /* Typing effect styling */
 #typing-effect {
-    min-height: 45px;
+    min-height: 35px; /* Reduced slightly */
     display: block;
     opacity: 1;
     color: var(--primary-color);
+    font-size: 1.3em; /* Made smaller as requested */
 }
 
 body.dark-mode #typing-effect {
@@ -343,8 +346,8 @@ body.dark-mode #typing-effect {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 35px;
-    padding: 15px 0;
+    gap: 25px; /* Reduced spacing */
+    padding: 10px 0; /* Reduced padding */
     transition: transform 0.4s ease;
 }
 
@@ -360,11 +363,7 @@ body.dark-mode #typing-effect {
 
 /* Glowing text effect */
 .glow-text {
-    text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 10px var(--primary-color), 0 0 15px var(--secondary-color);
-}
-
-body.dark-mode .glow-text {
-    text-shadow: -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333, 0 0 10px var(--primary-color), 0 0 15px var(--secondary-color);
+    text-shadow: 0 0 10px var(--primary-color), 0 0 15px var(--secondary-color); /* Green glow for both modes */
 }
 
 /* Centered text */
@@ -1008,6 +1007,10 @@ body.dark-mode .case-study {
 }
 
 /* Contact section */
+.contact {
+    text-align: center; /* Added to center the button */
+}
+
 .contact-grid {
     display: grid;
     gap: 20px;
@@ -1296,11 +1299,11 @@ body.dark-mode .nav-link {
 
     header {
         padding: 8px 15px;
-        min-height: 130px;
+        min-height: 120px; /* Matches desktop adjustment */
     }
 
     header.shrink {
-        min-height: 55px;
+        min-height: 50px; /* Matches desktop adjustment */
         padding: 6px 12px;
     }
 
@@ -1401,7 +1404,7 @@ body.dark-mode .nav-link {
 
     .hero {
         padding: 25px 20px;
-        min-height: 220px;
+        min-height: 250px; /* Adjusted for mobile */
     }
 
     .chat-bubble {
