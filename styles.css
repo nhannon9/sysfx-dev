@@ -115,6 +115,36 @@ body.dark-mode .glass-morphism {
     min-height: 160px; /* Matches body padding-top to push content below header */
 }
 
+/* Scrolling text */
+.scrolling-text {
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 12px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+    z-index: 50;
+    margin-top: 160px; /* Ensures it's below the header */
+    animation: scrollTextBg 12s infinite ease-in-out;
+}
+
+@keyframes scrollTextBg {
+    0% { background: rgba(0, 0, 0, 0.85); }
+    50% { background: rgba(0, 0, 0, 0.65); }
+    100% { background: rgba(0, 0, 0, 0.85); }
+}
+
+.scrolling-text span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: scroll-text 18s linear infinite;
+}
+
+@keyframes scroll-text {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
 /* Hero section */
 .hero {
     position: relative;
@@ -1213,35 +1243,6 @@ body.dark-mode .social-links a {
     transform: scale(1.25) rotate(10deg);
 }
 
-/* Scrolling text */
-.scrolling-text {
-    background: rgba(0, 0, 0, 0.85);
-    color: #fff;
-    padding: 12px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    position: relative;
-    z-index: 50;
-    animation: scrollTextBg 12s infinite ease-in-out;
-}
-
-@keyframes scrollTextBg {
-    0% { background: rgba(0, 0, 0, 0.85); }
-    50% { background: rgba(0, 0, 0, 0.65); }
-    100% { background: rgba(0, 0, 0, 0.85); }
-}
-
-.scrolling-text span {
-    display: inline-block;
-    padding-left: 100%;
-    animation: scroll-text 18s linear infinite;
-}
-
-@keyframes scroll-text {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
-}
-
 /* Chat Bubble */
 .chat-bubble {
     position: fixed;
@@ -1437,12 +1438,16 @@ body.dark-mode .nav-link {
 /* Responsive design */
 @media (max-width: 768px) {
     body {
-        padding-top: 160px;
+        padding-top: 120px;
         overflow-x: hidden;
     }
 
     .header-spacer {
-        min-height: 160px; /* Matches mobile padding */
+        min-height: 120px; /* Adjusted for mobile header height */
+    }
+
+    .scrolling-text {
+        margin-top: 120px; /* Adjusted for mobile header height */
     }
 
     header {
@@ -1457,16 +1462,22 @@ body.dark-mode .nav-link {
 
     .hamburger {
         display: block;
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        z-index: 101;
     }
 
     .mobile-nav[data-sticky="true"] {
         position: fixed; /* Overrides sticky on mobile for menu behavior */
+        top: 0;
+        width: 100%;
+        z-index: 99;
     }
 
     .nav-wrapper {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
         position: fixed;
         top: 0;
         left: -100%;
@@ -1475,7 +1486,6 @@ body.dark-mode .nav-link {
         height: 100%;
         background: rgba(255, 255, 255, 0.97);
         padding: 70px 20px 20px;
-        transform: translateX(0);
         transition: left 0.4s ease;
         z-index: 99;
         box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
