@@ -11,9 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const emailLink = document.getElementById("email-link");
     if (emailLink) {
-        emailLink.addEventListener("click", (e) => {
-            e.preventDefault();
-            window.location.href = `mailto:${emailConfig.getEmail()}`;
+        emailLink.href = `mailto:${emailConfig.getEmail()}`;
+        emailLink.addEventListener("click", () => {
             playSound("click");
         });
     }
@@ -105,10 +104,9 @@ document.addEventListener("DOMContentLoaded", () => {
             hamburger.querySelector("i").classList.toggle("fa-bars");
             hamburger.querySelector("i").classList.toggle("fa-times");
             playSound("click");
-            document.body.style.overflow = isActive ? "hidden" : ""; // Prevent scroll when open
+            document.body.style.overflow = isActive ? "hidden" : "";
         });
 
-        // Close menu on outside click
         document.addEventListener("click", (e) => {
             if (!navWrapper.contains(e.target) && !hamburger.contains(e.target) && navWrapper.classList.contains("active")) {
                 navWrapper.classList.remove("active");
@@ -121,23 +119,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // **Smooth Scrolling for Nav Links**
+    function scrollToSection(id) {
+        const targetElement = document.getElementById(id);
+        if (targetElement) {
+            window.scrollTo({
+                top: targetElement.offsetTop - 100,
+                behavior: "smooth"
+            });
+            playSound("click");
+        }
+    }
+
     document.querySelectorAll(".nav-link").forEach(anchor => {
         anchor.addEventListener("click", (e) => {
             e.preventDefault();
             const targetId = anchor.getAttribute("href").slice(1);
-            const targetElement = document.getElementById(targetId);
-            if (targetElement) {
-                window.scrollTo({
-                    top: targetElement.offsetTop - 100,
-                    behavior: "smooth"
-                });
-                if (window.innerWidth <= 768 && navWrapper.classList.contains("active")) {
-                    navWrapper.classList.remove("active");
-                    hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
-                    hamburger.setAttribute("aria-expanded", "false");
-                    document.body.style.overflow = "";
-                }
-                playSound("click");
+            scrollToSection(targetId);
+            if (window.innerWidth <= 768 && navWrapper.classList.contains("active")) {
+                navWrapper.classList.remove("active");
+                hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
+                hamburger.setAttribute("aria-expanded", "false");
+                document.body.style.overflow = "";
             }
         });
     });
@@ -206,8 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
             L.marker([lat, lon], { icon: customIcon }).addTo(map)
                 .bindPopup(`<b>${popup}</b><br><a href="${url}">Visit Section</a>`)
                 .on("click", () => {
-                    window.location.href = url;
-                    playSound("click");
+                    scrollToSection(url.slice(1));
                 });
         });
     }
@@ -319,8 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         modal.querySelector(".modal-action").addEventListener("click", (e) => {
             e.stopPropagation();
-            window.location.href = "#contact";
-            playSound("click");
+            scrollToSection("contact");
         });
     });
 
@@ -345,7 +345,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // **Gallery Lightbox**
-    const galleryItems = document.querySelectorAll(".gallery-item");
+    const galleryItems = document.querySelectorAllчні ".gallery-item");
     const lightbox = document.querySelector(".lightbox");
     if (lightbox) {
         const lightboxImg = lightbox.querySelector("img");
@@ -354,6 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
         galleryItems.forEach(item => {
             item.addEventListener("click", () => {
                 lightboxImg.src = item.getAttribute("data-src");
+                lightboxImg.alt = `Enlarged view of ${item.querySelector("img").alt}`;
                 lightbox.style.display = "flex";
                 playSound("click");
                 gsap.fromTo(lightboxImg, { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.7)" });
@@ -396,12 +397,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const scrollPercent = (scrollTop / docHeight) * 100;
         scrollProgress.style.width = `${scrollPercent}%`;
 
-        if (scrollTop > 120) {
+        if (scrollTop > 100) {
             header.classList.add("shrink");
-            body.style.paddingTop = "100px";
+            body.style.paddingTop = "50px";
         } else {
             header.classList.remove("shrink");
-            body.style.paddingTop = "180px";
+            body.style.paddingTop = "160px";
         }
     }
     window.addEventListener("scroll", debounce(updateScroll, 10));
