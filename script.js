@@ -12,22 +12,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const emailLink = document.getElementById("email-link");
     if (emailLink) {
         emailLink.href = `mailto:${emailConfig.getEmail()}`;
-        emailLink.addEventListener("click", () => {
-            playSound("click");
-        });
+        emailLink.addEventListener("click", () => playSound("click"));
     }
 
     // **Typing Effect with Dynamic Pause**
     const typingElement = document.getElementById("typing-effect");
     if (typingElement) {
         const phrases = [
-            "Next-gen tech solutions for you.",
-            "Empowering your digital journey.",
-            "Precision IT expertise, always.",
-            "Your Clinton, CT tech partner.",
-            "Innovating for your success.",
-            "Securing your systems 24/7.",
-            "Crafting tomorrow’s web today."
+            "Your trusted tech partner.",
+            "Innovative solutions for your business.",
+            "Expert IT support, 24/7.",
+            "Securing your digital future.",
+            "Building tomorrow’s web today."
         ];
         let currentPhraseIndex = 0;
         let charIndex = 0;
@@ -45,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     requestAnimationFrame(() => setTimeout(typeText, typingSpeed));
                 } else {
                     isTyping = false;
-                    setTimeout(eraseText, pauseBetweenPhrases + Math.random() * 500); // Slight variation in pause
+                    setTimeout(eraseText, pauseBetweenPhrases + Math.random() * 500);
                 }
             }
         }
@@ -123,7 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Close menu on Escape key
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape" && navWrapper.classList.contains("active")) {
                 navWrapper.classList.remove("active");
@@ -142,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (targetElement) {
             const headerHeight = document.querySelector("header").offsetHeight;
             window.scrollTo({
-                top: targetElement.offsetTop - (headerHeight > 50 ? 100 : 60), // Adjust offset based on header state
+                top: targetElement.offsetTop - (headerHeight > 50 ? 100 : 60),
                 behavior: "smooth"
             });
             playSound("click");
@@ -200,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
     updateParticles();
-    window.addEventListener("resize", debounce(updateParticles, 200)); // Update on resize
+    window.addEventListener("resize", debounce(updateParticles, 200));
 
     // **Leaflet Map Setup with Dynamic Marker Update**
     const mapElement = document.getElementById("map");
@@ -237,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         updateMarkers();
         body.addEventListener("click", (e) => {
-            if (e.target.id === "darkModeToggle") updateMarkers(); // Update marker color on mode toggle
+            if (e.target.id === "darkModeToggle") updateMarkers();
         });
     }
 
@@ -281,7 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
         playSound("click");
     }
 
-    showTestimonial(currentTestimonial, false); // Initial display without animation
+    showTestimonial(currentTestimonial, false);
     const slideInterval = setInterval(nextTestimonial, 4500);
 
     if (prevBtn && nextBtn) {
@@ -359,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 modal.style.display = "flex";
                 playSound("click");
                 gsap.fromTo(modal.querySelector(".modal-content"), { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.7)" });
-                modal.querySelector(".modal-close").focus(); // Accessibility focus
+                modal.querySelector(".modal-close").focus();
             }
         });
 
@@ -399,16 +394,7 @@ document.addEventListener("DOMContentLoaded", () => {
             playSound("click");
         });
         modal.addEventListener("click", (e) => {
-            if (e.target === modal) {
-                gsap.to(modal.querySelector(".modal-content"), {
-                    scale: 0.9,
-                    opacity: 0,
-                    duration: 0.3,
-                    ease: "back.in(1.7)",
-                    onComplete: () => modal.style.display = "none"
-                });
-                playSound("click");
-            }
+            if (e.target === modal) closeBtn.click();
         });
         modal.querySelector(".modal-action").addEventListener("click", (e) => {
             e.stopPropagation();
@@ -515,7 +501,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function playSound(type, volume = 1) {
         if (!soundCache[type]) {
             soundCache[type] = new Audio();
-            soundCache[type].volume = Math.min(volume, 1); // Cap volume at 1
+            soundCache[type].volume = Math.min(volume, 1);
             soundCache[type].preload = "auto";
             switch (type) {
                 case "click":
@@ -526,7 +512,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     break;
             }
         }
-        soundCache[type].currentTime = 0; // Reset to start for overlap
+        soundCache[type].currentTime = 0;
         soundCache[type].play().catch(() => {});
     }
 
