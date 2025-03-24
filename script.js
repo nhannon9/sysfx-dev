@@ -105,7 +105,11 @@ document.addEventListener("DOMContentLoaded", () => {
             icon.classList.toggle("fa-times");
             playSound("click");
             document.body.style.overflow = isActive ? "hidden" : "";
-            gsap.to(navWrapper, { x: isActive ? 0 : "-100%", duration: 0.4, ease: "power2.out" });
+            gsap.to(navWrapper, { 
+                left: isActive ? "0" : "-80%", // Matches CSS width
+                duration: 0.4, 
+                ease: "power2.out" 
+            });
         });
 
         document.addEventListener("click", (e) => {
@@ -115,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 hamburger.setAttribute("aria-expanded", "false");
                 document.body.style.overflow = "";
                 playSound("click");
-                gsap.to(navWrapper, { x: "-100%", duration: 0.4, ease: "power2.in" });
+                gsap.to(navWrapper, { left: "-80%", duration: 0.4, ease: "power2.in" });
             }
         });
 
@@ -126,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 hamburger.setAttribute("aria-expanded", "false");
                 document.body.style.overflow = "";
                 playSound("click");
-                gsap.to(navWrapper, { x: "-100%", duration: 0.4, ease: "power2.in" });
+                gsap.to(navWrapper, { left: "-80%", duration: 0.4, ease: "power2.in" });
             }
         });
     }
@@ -154,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
                 hamburger.setAttribute("aria-expanded", "false");
                 document.body.style.overflow = "";
-                gsap.to(navWrapper, { x: "-100%", duration: 0.4, ease: "power2.in" });
+                gsap.to(navWrapper, { left: "-80%", duration: 0.4, ease: "power2.in" });
             }
         });
     });
@@ -490,7 +494,7 @@ document.addEventListener("DOMContentLoaded", () => {
             body.style.paddingTop = "50px";
         } else {
             header.classList.remove("shrink");
-            body.style.paddingTop = "160px";
+            body.style.paddingTop = "120px"; // Matches CSS
         }
     }
     window.addEventListener("scroll", debounce(updateScroll, 10));
@@ -520,11 +524,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const musicToggle = document.getElementById("music-toggle");
     const welcomeMusic = document.getElementById("welcome-music");
     if (musicToggle && welcomeMusic) {
-        welcomeMusic.volume = 0.6;
+        // Ensure audio element is correctly initialized
+        welcomeMusic.preload = "auto";
+        welcomeMusic.volume = 0; // Start muted to comply with browser policies
         const isMusicPlaying = localStorage.getItem("musicPlaying") === "true";
+
         if (isMusicPlaying) {
-            welcomeMusic.play().catch(() => {});
+            welcomeMusic.play().catch(() => console.log("Autoplay prevented by browser"));
             gsap.to(welcomeMusic, { volume: 0.6, duration: 1 });
+            musicToggle.classList.remove("muted");
         } else {
             musicToggle.classList.add("muted");
             welcomeMusic.volume = 0;
@@ -532,7 +540,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         musicToggle.addEventListener("click", () => {
             if (welcomeMusic.paused) {
-                welcomeMusic.play().catch(() => {});
+                welcomeMusic.play().catch(() => console.log("Playback failed"));
                 gsap.to(welcomeMusic, { volume: 0.6, duration: 1, onComplete: () => musicToggle.classList.remove("muted") });
                 localStorage.setItem("musicPlaying", "true");
             } else {
