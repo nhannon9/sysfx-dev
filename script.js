@@ -567,10 +567,10 @@ document.addEventListener("DOMContentLoaded", () => {
             soundCache[type].preload = "auto";
             switch (type) {
                 case "click":
-                    soundCache[type].src = "https://freesound.org/data/previews/245/245645_4055516-lq.mp3";
+                    soundCache[type].src = "https://ia802208.us.archive.org/30/items/title_20240514_0432/title.mp3";
                     break;
                 case "hover":
-                    soundCache[type].src = "https://freesound.org/data/previews/184/184438_2393279-lq.mp3";
+                    soundCache[type].src = "https://ia802208.us.archive.org/30/items/title_20240514_0432/title.mp3";
                     break;
             }
         }
