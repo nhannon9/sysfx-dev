@@ -491,10 +491,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (scrollTop > 100) {
             header.classList.add("shrink");
-            body.style.paddingTop = "50px";
+            document.querySelector(".scrolling-text").style.top = "50px"; // Matches shrunk header height
         } else {
             header.classList.remove("shrink");
-            body.style.paddingTop = "120px"; // Matches CSS
+            document.querySelector(".scrolling-text").style.top = "120px"; // Matches full header height
         }
     }
     window.addEventListener("scroll", debounce(updateScroll, 10));
@@ -524,13 +524,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const musicToggle = document.getElementById("music-toggle");
     const welcomeMusic = document.getElementById("welcome-music");
     if (musicToggle && welcomeMusic) {
-        // Ensure audio element is correctly initialized
-        welcomeMusic.preload = "auto";
         welcomeMusic.volume = 0; // Start muted to comply with browser policies
         const isMusicPlaying = localStorage.getItem("musicPlaying") === "true";
 
         if (isMusicPlaying) {
-            welcomeMusic.play().catch(() => console.log("Autoplay prevented by browser"));
+            welcomeMusic.play().catch(err => console.log("Autoplay blocked:", err));
             gsap.to(welcomeMusic, { volume: 0.6, duration: 1 });
             musicToggle.classList.remove("muted");
         } else {
@@ -540,8 +538,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         musicToggle.addEventListener("click", () => {
             if (welcomeMusic.paused) {
-                welcomeMusic.play().catch(() => console.log("Playback failed"));
-                gsap.to(welcomeMusic, { volume: 0.6, duration: 1, onComplete: () => musicToggle.classList.remove("muted") });
+                welcomeMusic.play().catch(err => console.log("Playback failed:", err));
+                gsap.to(welcomeMusic, { 
+                    volume: 0.6, 
+                    duration: 1, 
+                    onComplete: () => musicToggle.classList.remove("muted") 
+                });
                 localStorage.setItem("musicPlaying", "true");
             } else {
                 gsap.to(welcomeMusic, {
@@ -643,64 +645,3 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 alert("Easter Egg Unlocked! Enjoy a 5% discount—use code: SYSFX5");
                 playSound("click");
-                clickCount = 0;
-            }
-        });
-    }
-
-    // **Accessibility Announcement Utility**
-    function announceModeChange(message) {
-        const announcement = document.createElement("div");
-        announcement.setAttribute("aria-live", "polite");
-        announcement.className = "sr-only";
-        announcement.textContent = message;
-        document.body.appendChild(announcement);
-        setTimeout(() => announcement.remove(), 1000);
-    }
-
-    // **Debounce Utility**
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    // **Preload Critical Assets**
-    function preloadAssets() {
-        const assets = [
-            "https://freesound.org/data/previews/245/245645_4055516-lq.mp3",
-            "https://freesound.org/data/previews/184/184438_2393279-lq.mp3",
-            "https://ia802208.us.archive.org/30/items/title_20240514_0432/title.mp3"
-        ];
-        assets.forEach(url => {
-            const audio = new Audio();
-            audio.src = url;
-            audio.preload = "auto";
-        });
-    }
-    preloadAssets();
-
-    // **Lazy Load Sections**
-    const sections = document.querySelectorAll(".parallax, .section-animation");
-    const sectionObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("visible");
-                sectionObserver.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-    sections.forEach(section => sectionObserver.observe(section));
-});
-
-// Load confetti library dynamically for Easter Egg
-const script = document.createElement("script");
-script.src = "https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js";
-script.async = true;
-document.head.appendChild(script);
