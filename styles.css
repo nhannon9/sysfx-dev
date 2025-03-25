@@ -11,13 +11,15 @@
     --orange-yellow-gradient: linear-gradient(45deg, #ff9800, #ffb300);
     --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.25);
     --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.4);
-    --gray-text: #333; /* Added for light mode readability */
+    --gray-text: #333;
+    --header-height: 120px; /* Default header height */
+    --scrolling-text-height: 40px; /* Approximate scrolling text height */
 }
 
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    padding-top: 0; /* Removed padding-top; header spacing handled by absolute positioning */
+    padding-top: 0;
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     color: #333;
     line-height: 1.6;
@@ -31,7 +33,14 @@ body.dark-mode {
     color: #e0e0e0;
     --glass-bg: rgba(40, 40, 40, 0.85);
     --glass-border: rgba(255, 255, 255, 0.1);
-    --gray-text: #e0e0e0; /* Adjusted for dark mode */
+    --gray-text: #e0e0e0;
+}
+
+/* Ensure main content is visible by default */
+main {
+    opacity: 1; /* Fallback for no JS */
+    position: relative;
+    z-index: 1; /* Above particles */
 }
 
 /* Screen-reader-only class */
@@ -103,16 +112,17 @@ body.dark-mode .particles-container {
     border: 1px solid var(--glass-border);
     border-radius: 20px;
     box-shadow: var(--shadow-light);
-    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Added transform transition */
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 body.dark-mode .glass-morphism {
     box-shadow: var(--shadow-dark);
 }
 
-/* Header spacer */
+/* Header spacer with dynamic height */
 .header-spacer {
-    min-height: 160px; /* Accounts for header (120px) + scrolling text (~40px) */
+    height: calc(var(--header-height) + var(--scrolling-text-height));
+    transition: height 0.4s ease; /* Smooth transition when header shrinks */
 }
 
 /* Scrolling text */
@@ -122,8 +132,8 @@ body.dark-mode .glass-morphism {
     padding: 12px 0;
     white-space: nowrap;
     overflow: hidden;
-    position: absolute; /* Positioned directly below header */
-    top: 120px; /* Matches header min-height */
+    position: absolute;
+    top: var(--header-height); /* Aligns below header dynamically */
     left: 0;
     width: 100%;
     z-index: 50;
@@ -210,20 +220,20 @@ body.dark-mode .hero {
 }
 
 .hero-text .hero-text-content {
-    color: var(--gray-text); /* Ensures readability in light mode */
+    color: var(--gray-text);
 }
 
 body.dark-mode .hero-text .hero-text-content {
-    color: #e0e0e0; /* White in dark mode for contrast */
+    color: #e0e0e0;
 }
 
-/* Parallax effect */
+/* Parallax effect with fallback */
 .parallax {
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    opacity: 0;
+    opacity: 1; /* Visible by default */
     transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
@@ -265,7 +275,7 @@ header {
     top: 0;
     width: 100%;
     z-index: 100;
-    min-height: 120px;
+    min-height: var(--header-height); /* Use CSS variable */
     transition: all 0.4s ease;
     box-sizing: border-box;
 }
@@ -393,7 +403,7 @@ body.dark-mode #typing-effect {
     position: sticky;
     top: 0;
     z-index: 99;
-    background: inherit; /* Inherits glass-morphism from header */
+    background: inherit;
 }
 
 .nav-wrapper {
@@ -451,15 +461,16 @@ h3 { font-size: 1.6em; }
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Sections */
+/* Sections with fallback visibility */
 .welcome, .events, .services, .testimonials, .about, .contact, .case-studies, .cta, .blog-teaser, .tech-timeline {
     margin: 40px auto;
     padding: 35px;
     width: 90%;
     transition: transform 0.4s ease;
     position: relative;
-    overflow: hidden;
+    overflow: visible; /* Ensure content isn’t clipped */
     box-sizing: border-box;
+    opacity: 1; /* Visible by default */
 }
 
 .compact-section {
@@ -473,8 +484,8 @@ h3 { font-size: 1.6em; }
 }
 
 .section-animation {
-    opacity: 0;
-    transform: translateY(60px);
+    opacity: 1; /* Visible by default */
+    transform: translateY(0); /* No offset by default */
 }
 
 .section-animation.visible {
@@ -758,11 +769,11 @@ body.dark-mode .modern-button.mode-button:not(.music-note):hover {
 }
 
 .button-text {
-    transition: transform 0.3s ease; /* Added for potential animations */
+    transition: transform 0.3s ease;
 }
 
 .modern-button:hover .button-text {
-    transform: scale(1.05); /* Subtle text pop on hover */
+    transform: scale(1.05);
 }
 
 /* Tech tip styles */
@@ -857,11 +868,11 @@ body.dark-mode .service {
 
 .service-icon {
     display: inline-block;
-    transition: transform 0.3s ease; /* Added for hover effect */
+    transition: transform 0.3s ease;
 }
 
 .service:hover .service-icon {
-    transform: scale(1.2); /* Icon grows on hover */
+    transform: scale(1.2);
 }
 
 @keyframes float {
@@ -1445,7 +1456,7 @@ body.dark-mode .nav-link {
 
     header {
         padding: 8px 15px;
-        min-height: 100px; /* Adjusted for mobile */
+        min-height: 100px;
     }
 
     header.shrink {
@@ -1454,11 +1465,11 @@ body.dark-mode .nav-link {
     }
 
     .header-spacer {
-        min-height: 140px; /* Adjusted for mobile: header (100px) + scrolling text (~40px) */
+        height: calc(var(--header-height) + var(--scrolling-text-height));
     }
 
     .scrolling-text {
-        top: 100px; /* Matches mobile header height */
+        top: var(--header-height);
     }
 
     .hamburger {
@@ -1470,7 +1481,7 @@ body.dark-mode .nav-link {
     }
 
     .mobile-nav[data-sticky="true"] {
-        position: fixed; /* Overrides sticky on mobile for menu behavior */
+        position: fixed;
         top: 0;
         width: 100%;
         z-index: 99;
@@ -1481,13 +1492,13 @@ body.dark-mode .nav-link {
         flex-direction: column;
         position: fixed;
         top: 0;
-        left: -80%; /* Adjusted to match width */
-        width: 80%; /* Consistent width for slide-in */
+        left: -80%;
+        width: 80%;
         max-width: 300px;
         height: 100%;
         background: rgba(255, 255, 255, 0.97);
         padding: 70px 20px 20px;
-        transition: left 0.4s ease; /* Rely on CSS transition for fallback */
+        transition: left 0.4s ease;
         z-index: 99;
         box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
     }
@@ -1497,7 +1508,7 @@ body.dark-mode .nav-link {
     }
 
     .nav-wrapper.active {
-        left: 0; /* Slides to the left edge */
+        left: 0;
     }
 
     .nav-link {
