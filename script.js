@@ -1,11 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
     const body = document.body;
     const main = document.querySelector("main");
+    const preloader = document.getElementById("preloader");
+
+    // Fade in main content and remove preloader
     if (main) {
         main.style.opacity = "1";
         main.style.transition = "opacity 0.5s ease";
     }
+    if (preloader) {
+        setTimeout(() => {
+            preloader.classList.add("fade-out");
+            preloader.addEventListener("transitionend", () => preloader.remove(), { once: true });
+        }, 500);
+    }
     body.classList.remove("js-fallback");
+
     const emailConfig = {
         user: "nick",
         domain: "sysfx.net",
@@ -18,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         emailLink.href = `mailto:${emailConfig.getEmail()}`;
         emailLink.addEventListener("click", () => playSound("click"));
     }
+
     const typingElement = document.getElementById("typing-effect");
     if (typingElement) {
         const phrases = [
@@ -33,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const typingSpeed = 60;
         const erasingSpeed = 40;
         const pauseBetweenPhrases = 2500;
+
         function typeText() {
             const currentPhrase = phrases[currentPhraseIndex];
             if (isTyping) {
@@ -46,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         }
+
         function eraseText() {
             if (typingElement.textContent.length > 0) {
                 typingElement.textContent = typingElement.textContent.slice(0, -1);
@@ -59,6 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         typeText();
     }
+
     const darkModeToggle = document.getElementById("darkModeToggle");
     if (darkModeToggle) {
         darkModeToggle.addEventListener("click", () => {
@@ -86,13 +100,15 @@ document.addEventListener("DOMContentLoaded", () => {
             updateParticles();
         }
     }
+
     const hamburger = document.querySelector(".hamburger");
-    const navWrapper = document.querySelector(".nav-wrapper");
-    if (hamburger && navWrapper) {
+    const navWrapper = document.querySelector(".mobile-nav-wrapper");
+    const navBackdrop = document.querySelector(".nav-backdrop");
+    if (hamburger && navWrapper && navBackdrop) {
         hamburger.addEventListener("click", () => {
-            navWrapper.classList.toggle("active");
-            const isActive = navWrapper.classList.contains("active");
+            const isActive = navWrapper.classList.toggle("active");
             hamburger.setAttribute("aria-expanded", isActive);
+            navBackdrop.classList.toggle("active", isActive);
             const icon = hamburger.querySelector("i");
             icon.classList.toggle("fa-bars");
             icon.classList.toggle("fa-times");
@@ -100,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.body.style.overflow = isActive ? "hidden" : "";
             if (typeof gsap !== "undefined") {
                 gsap.to(navWrapper, { 
-                    left: isActive ? "0" : "-80%",
+                    left: isActive ? "0" : "-80%", 
                     duration: 0.4, 
                     ease: "power2.out" 
                 });
@@ -108,35 +124,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 navWrapper.style.left = isActive ? "0" : "-80%";
             }
         });
+
+        // Close on outside click
         document.addEventListener("click", (e) => {
             if (!navWrapper.contains(e.target) && !hamburger.contains(e.target) && navWrapper.classList.contains("active")) {
-                navWrapper.classList.remove("active");
-                hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
-                hamburger.setAttribute("aria-expanded", "false");
-                document.body.style.overflow = "";
-                playSound("click");
-                if (typeof gsap !== "undefined") {
-                    gsap.to(navWrapper, { left: "-80%", duration: 0.4, ease: "power2.in" });
-                } else {
-                    navWrapper.style.left = "-80%";
-                }
+                closeNav();
             }
         });
+
+        // Close on Escape key
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape" && navWrapper.classList.contains("active")) {
-                navWrapper.classList.remove("active");
-                hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
-                hamburger.setAttribute("aria-expanded", "false");
-                document.body.style.overflow = "";
-                playSound("click");
-                if (typeof gsap !== "undefined") {
-                    gsap.to(navWrapper, { left: "-80%", duration: 0.4, ease: "power2.in" });
-                } else {
-                    navWrapper.style.left = "-80%";
-                }
+                closeNav();
             }
         });
+
+        function closeNav() {
+            navWrapper.classList.remove("active");
+            navBackdrop.classList.remove("active");
+            hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
+            hamburger.setAttribute("aria-expanded", "false");
+            document.body.style.overflow = "";
+            playSound("click");
+            if (typeof gsap !== "undefined") {
+                gsap.to(navWrapper, { left: "-80%", duration: 0.4, ease: "power2.in" });
+            } else {
+                navWrapper.style.left = "-80%";
+            }
+        }
     }
+
     function scrollToSection(id) {
         const targetElement = document.getElementById(id);
         if (targetElement) {
@@ -148,6 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
             playSound("click");
         }
     }
+
     document.querySelectorAll(".nav-link").forEach(anchor => {
         anchor.addEventListener("click", (e) => {
             e.preventDefault();
@@ -155,6 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
             scrollToSection(targetId);
             if (window.innerWidth <= 768 && navWrapper.classList.contains("active")) {
                 navWrapper.classList.remove("active");
+                navBackdrop.classList.remove("active");
                 hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
                 hamburger.setAttribute("aria-expanded", "false");
                 document.body.style.overflow = "";
@@ -166,6 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
+
     function updateClock() {
         const clockElement = document.getElementById("current-time");
         if (clockElement) {
@@ -178,6 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     updateClock();
     setInterval(updateClock, 1000);
+
     function updateParticles() {
         if (typeof particlesJS === "undefined") {
             console.error("particlesJS not loaded");
@@ -208,6 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (e) {
         console.error("Particles initialization failed:", e);
     }
+
     const mapElement = document.getElementById("map");
     if (mapElement && typeof L !== "undefined") {
         const map = L.map(mapElement, { scrollWheelZoom: false, dragging: !L.Browser.mobile, touchZoom: false })
@@ -244,11 +266,13 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (mapElement) {
         console.warn("Leaflet not loaded");
     }
+
     const testimonials = document.querySelectorAll(".testimonial");
     const prevBtn = document.querySelector(".carousel-prev");
     const nextBtn = document.querySelector(".carousel-next");
     let currentTestimonial = 0;
     let autoSlide = true;
+
     function showTestimonial(index, animate = true) {
         testimonials.forEach((t, i) => {
             if (animate && typeof gsap !== "undefined") {
@@ -269,16 +293,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         currentTestimonial = index;
     }
+
     function nextTestimonial() {
         currentTestimonial = (currentTestimonial + 1) % testimonials.length;
         showTestimonial(currentTestimonial);
         if (!autoSlide) playSound("click");
     }
+
     function prevTestimonial() {
         currentTestimonial = (currentTestimonial - 1 + testimonials.length) % testimonials.length;
         showTestimonial(currentTestimonial);
         playSound("click");
     }
+
     if (testimonials.length > 0) {
         showTestimonial(currentTestimonial, false);
         const slideInterval = setInterval(nextTestimonial, 4500);
@@ -299,6 +326,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     }
+
     const statNumbers = document.querySelectorAll(".stat-number");
     statNumbers.forEach(stat => {
         const target = parseInt(stat.getAttribute("data-count"));
@@ -321,6 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     });
+
     const cursor = document.querySelector(".cursor");
     if (cursor && window.innerWidth > 768) {
         let trailTimeout;
@@ -352,6 +381,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (cursor) {
         cursor.style.display = "none";
     }
+
     const services = document.querySelectorAll(".service");
     const modals = document.querySelectorAll(".modal");
     services.forEach(service => {
@@ -386,33 +416,52 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
+
     modals.forEach(modal => {
         const closeBtn = modal.querySelector(".modal-close");
+        const modalAction = modal.querySelector(".modal-action");
+
         closeBtn.addEventListener("click", () => {
+            closeModal(modal);
+        });
+
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) closeBtn.click();
+        });
+
+        modalAction.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const modalId = modalAction.getAttribute("data-close-modal");
+            if (modalId) {
+                const targetModal = document.getElementById(modalId);
+                if (targetModal) closeModal(targetModal);
+            }
+            scrollToSection("contact");
+        });
+
+        modal.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") closeBtn.click();
+        });
+
+        function closeModal(m) {
             if (typeof gsap !== "undefined") {
-                gsap.to(modal.querySelector(".modal-content"), {
+                gsap.to(m.querySelector(".modal-content"), {
                     scale: 0.9,
                     opacity: 0,
                     duration: 0.3,
                     ease: "back.in(1.7)",
-                    onComplete: () => modal.style.display = "none"
+                    onComplete: () => {
+                        m.style.display = "none";
+                        document.querySelector(".service[data-modal]").focus(); // Return focus
+                    }
                 });
             } else {
-                modal.style.display = "none";
+                m.style.display = "none";
             }
             playSound("click");
-        });
-        modal.addEventListener("click", (e) => {
-            if (e.target === modal) closeBtn.click();
-        });
-        modal.querySelector(".modal-action").addEventListener("click", (e) => {
-            e.stopPropagation();
-            scrollToSection("contact");
-        });
-        modal.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") closeBtn.click();
-        });
+        }
     });
+
     if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
         gsap.registerPlugin(ScrollTrigger);
         document.querySelectorAll(".parallax, .section-animation").forEach(section => {
@@ -439,6 +488,7 @@ document.addEventListener("DOMContentLoaded", () => {
             section.style.opacity = "1";
         });
     }
+
     const galleryItems = document.querySelectorAll(".gallery-item");
     const lightbox = document.querySelector(".lightbox");
     if (lightbox) {
@@ -453,6 +503,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (typeof gsap !== "undefined") {
                     gsap.fromTo(lightboxImg, { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.7)" });
                 }
+                lightboxClose.focus();
             });
             item.addEventListener("mouseover", () => playSound("hover", 0.4));
             item.addEventListener("keydown", (e) => {
@@ -489,6 +540,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
     const header = document.querySelector("header");
     const scrollProgress = document.querySelector(".scroll-progress");
     function updateScroll() {
@@ -506,6 +558,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     window.addEventListener("scroll", debounce(updateScroll, 10));
     updateScroll();
+
     const soundCache = {};
     function playSound(type, volume = 1) {
         if (!soundCache[type]) {
@@ -524,6 +577,7 @@ document.addEventListener("DOMContentLoaded", () => {
         soundCache[type].currentTime = 0;
         soundCache[type].play().catch(() => {});
     }
+
     const musicToggle = document.getElementById("music-toggle");
     const welcomeMusic = document.getElementById("welcome-music");
     if (musicToggle && welcomeMusic) {
@@ -576,12 +630,13 @@ document.addEventListener("DOMContentLoaded", () => {
             playSound("click");
         });
     }
+
     const techTip = document.getElementById("tech-tip-text");
     const closeTechTip = document.getElementById("close-tech-tip");
     if (techTip) {
         const tips = [
             "Ctrl + Shift + T reopens closed tabs instantly.",
-            "Restarting your router fixes 80% of network issues.",
+            "Restarting your router can fix common network issues.",
             "Use 2FA for an extra layer of account security."
         ];
         const dismissed = localStorage.getItem("techTipDismissed");
@@ -610,6 +665,7 @@ document.addEventListener("DOMContentLoaded", () => {
             playSound("click");
         });
     }
+
     const chatBubble = document.getElementById("chat-bubble");
     if (chatBubble) {
         setTimeout(() => {
@@ -624,6 +680,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         chatBubble.addEventListener("mouseover", () => playSound("hover", 0.4));
     }
+
     const scrollTopBtn = document.querySelector(".scroll-top-btn");
     if (scrollTopBtn) {
         window.addEventListener("scroll", () => {
@@ -634,6 +691,7 @@ document.addEventListener("DOMContentLoaded", () => {
             playSound("click");
         });
     }
+
     const triviaText = document.getElementById("trivia-text");
     if (triviaText) {
         const trivia = [
@@ -643,6 +701,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ];
         triviaText.textContent = trivia[Math.floor(Math.random() * trivia.length)];
     }
+
     const easterEggTrigger = document.querySelector(".easter-egg-trigger");
     if (easterEggTrigger) {
         let clickCount = 0;
@@ -661,6 +720,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
     function debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -672,6 +732,7 @@ document.addEventListener("DOMContentLoaded", () => {
             timeout = setTimeout(later, wait);
         };
     }
+
     function announceModeChange(message) {
         const announcement = document.createElement("div");
         announcement.setAttribute("aria-live", "polite");
@@ -680,5 +741,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.appendChild(announcement);
         setTimeout(() => announcement.remove(), 1000);
     }
+
     console.log("Script loaded successfully");
 });
