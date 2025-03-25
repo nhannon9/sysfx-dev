@@ -1,30 +1,23 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Ensure main content is visible immediately
     const body = document.body;
     const main = document.querySelector("main");
     if (main) {
-        main.style.opacity = "1"; // Override .js-fallback
+        main.style.opacity = "1";
         main.style.transition = "opacity 0.5s ease";
     }
-    body.classList.remove("js-fallback"); // Remove fallback class
-
-    // **Email Configuration**
+    body.classList.remove("js-fallback");
     const emailConfig = {
         user: "nick",
         domain: "sysfx.net",
         getEmail: function() { return `${this.user}@${this.domain}`; }
     };
-
     const emailElement = document.getElementById("email");
     if (emailElement) emailElement.innerHTML = `<a href="mailto:${emailConfig.getEmail()}" aria-label="Email sysfx">${emailConfig.getEmail()}</a>`;
-
     const emailLink = document.getElementById("email-link");
     if (emailLink) {
         emailLink.href = `mailto:${emailConfig.getEmail()}`;
         emailLink.addEventListener("click", () => playSound("click"));
     }
-
-    // **Typing Effect with Dynamic Pause**
     const typingElement = document.getElementById("typing-effect");
     if (typingElement) {
         const phrases = [
@@ -40,7 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const typingSpeed = 60;
         const erasingSpeed = 40;
         const pauseBetweenPhrases = 2500;
-
         function typeText() {
             const currentPhrase = phrases[currentPhraseIndex];
             if (isTyping) {
@@ -54,7 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         }
-
         function eraseText() {
             if (typingElement.textContent.length > 0) {
                 typingElement.textContent = typingElement.textContent.slice(0, -1);
@@ -66,11 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(typeText, 600);
             }
         }
-
         typeText();
     }
-
-    // **Dark Mode Toggle with Accessibility**
     const darkModeToggle = document.getElementById("darkModeToggle");
     if (darkModeToggle) {
         darkModeToggle.addEventListener("click", () => {
@@ -90,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
             updateParticles();
             announceModeChange(isDarkMode ? "Dark mode enabled" : "Light mode enabled");
         });
-
         const savedMode = localStorage.getItem("darkMode");
         if (savedMode === "enabled") {
             body.classList.add("dark-mode");
@@ -99,8 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
             updateParticles();
         }
     }
-
-    // **Hamburger Menu with Animation**
     const hamburger = document.querySelector(".hamburger");
     const navWrapper = document.querySelector(".nav-wrapper");
     if (hamburger && navWrapper) {
@@ -123,7 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 navWrapper.style.left = isActive ? "0" : "-80%";
             }
         });
-
         document.addEventListener("click", (e) => {
             if (!navWrapper.contains(e.target) && !hamburger.contains(e.target) && navWrapper.classList.contains("active")) {
                 navWrapper.classList.remove("active");
@@ -138,7 +122,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         });
-
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape" && navWrapper.classList.contains("active")) {
                 navWrapper.classList.remove("active");
@@ -154,8 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
-    // **Smooth Scrolling for Nav Links with Offset**
     function scrollToSection(id) {
         const targetElement = document.getElementById(id);
         if (targetElement) {
@@ -167,7 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
             playSound("click");
         }
     }
-
     document.querySelectorAll(".nav-link").forEach(anchor => {
         anchor.addEventListener("click", (e) => {
             e.preventDefault();
@@ -186,8 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
-
-    // **Clock Update with Time Zone**
     function updateClock() {
         const clockElement = document.getElementById("current-time");
         if (clockElement) {
@@ -200,8 +178,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     updateClock();
     setInterval(updateClock, 1000);
-
-    // **Particles.js Configuration with Density Adjustment**
     function updateParticles() {
         if (typeof particlesJS === "undefined") {
             console.error("particlesJS not loaded");
@@ -232,8 +208,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (e) {
         console.error("Particles initialization failed:", e);
     }
-
-    // **Leaflet Map Setup with Dynamic Marker Update**
     const mapElement = document.getElementById("map");
     if (mapElement && typeof L !== "undefined") {
         const map = L.map(mapElement, { scrollWheelZoom: false, dragging: !L.Browser.mobile, touchZoom: false })
@@ -242,20 +216,17 @@ document.addEventListener("DOMContentLoaded", () => {
             attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             maxZoom: 18
         }).addTo(map);
-
         const customIcon = () => L.divIcon({
             className: "custom-icon",
             html: `<div style="background: ${body.classList.contains("dark-mode") ? "#fff" : "#00a000"}; width: 20px; height: 20px; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>`,
             iconSize: [20, 20],
             iconAnchor: [10, 10]
         });
-
         const markers = [
             { lat: 41.2788, lon: -72.5276, popup: "sysfx HQ", url: "#contact" },
             { lat: 41.2800, lon: -72.5300, popup: "Service Center", url: "#services" },
             { lat: 41.2776, lon: -72.5250, popup: "Support Office", url: "#support" }
         ];
-
         const markerLayer = L.layerGroup().addTo(map);
         function updateMarkers() {
             markerLayer.clearLayers();
@@ -273,14 +244,11 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (mapElement) {
         console.warn("Leaflet not loaded");
     }
-
-    // **Testimonials Slider with Manual Controls**
     const testimonials = document.querySelectorAll(".testimonial");
     const prevBtn = document.querySelector(".carousel-prev");
     const nextBtn = document.querySelector(".carousel-next");
     let currentTestimonial = 0;
     let autoSlide = true;
-
     function showTestimonial(index, animate = true) {
         testimonials.forEach((t, i) => {
             if (animate && typeof gsap !== "undefined") {
@@ -301,23 +269,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         currentTestimonial = index;
     }
-
     function nextTestimonial() {
         currentTestimonial = (currentTestimonial + 1) % testimonials.length;
         showTestimonial(currentTestimonial);
         if (!autoSlide) playSound("click");
     }
-
     function prevTestimonial() {
         currentTestimonial = (currentTestimonial - 1 + testimonials.length) % testimonials.length;
         showTestimonial(currentTestimonial);
         playSound("click");
     }
-
     if (testimonials.length > 0) {
         showTestimonial(currentTestimonial, false);
         const slideInterval = setInterval(nextTestimonial, 4500);
-
         if (prevBtn && nextBtn) {
             nextBtn.addEventListener("click", () => {
                 autoSlide = false;
@@ -335,8 +299,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     }
-
-    // **Stats Animation with Intersection Observer**
     const statNumbers = document.querySelectorAll(".stat-number");
     statNumbers.forEach(stat => {
         const target = parseInt(stat.getAttribute("data-count"));
@@ -345,13 +307,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (typeof gsap !== "undefined") {
                     gsap.to(stat, { textContent: target, duration: 2.5, roundProps: "textContent", ease: "power2.out" });
                 } else {
-                    stat.textContent = target; // Fallback
+                    stat.textContent = target;
                 }
                 observer.disconnect();
             }
         }, { threshold: 0.6 });
         observer.observe(stat);
-
         if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
             gsap.to(stat.closest(".stat-item"), {
                 y: -20,
@@ -360,8 +321,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     });
-
-    // **Custom Cursor with Enhanced Effects**
     const cursor = document.querySelector(".cursor");
     if (cursor && window.innerWidth > 768) {
         let trailTimeout;
@@ -393,8 +352,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (cursor) {
         cursor.style.display = "none";
     }
-
-    // **Service Card Interactions with Accessibility**
     const services = document.querySelectorAll(".service");
     const modals = document.querySelectorAll(".modal");
     services.forEach(service => {
@@ -409,7 +366,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 modal.querySelector(".modal-close").focus();
             }
         });
-
         service.addEventListener("mousemove", (e) => {
             const rect = service.getBoundingClientRect();
             const x = e.clientX - rect.left - rect.width / 2;
@@ -418,13 +374,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 service.style.transform = `perspective(1200px) rotateX(${y / 25}deg) rotateY(${-x / 25}deg) scale(1.08)`;
             });
         });
-
         service.addEventListener("mouseleave", () => {
             requestAnimationFrame(() => {
                 service.style.transform = "perspective(1200px) scale(1)";
             });
         });
-
         service.addEventListener("keydown", (e) => {
             if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
@@ -432,7 +386,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
-
     modals.forEach(modal => {
         const closeBtn = modal.querySelector(".modal-close");
         closeBtn.addEventListener("click", () => {
@@ -460,22 +413,19 @@ document.addEventListener("DOMContentLoaded", () => {
             if (e.key === "Escape") closeBtn.click();
         });
     });
-
-    // **Parallax and Section Animations**
     if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
         gsap.registerPlugin(ScrollTrigger);
         document.querySelectorAll(".parallax, .section-animation").forEach(section => {
-            section.style.opacity = "1"; // Ensure visible even if ScrollTrigger fails
+            section.style.opacity = "1";
             gsap.fromTo(section, { opacity: 0, y: 60 }, {
                 opacity: 1,
                 y: 0,
                 duration: 1,
                 ease: "power3.out",
-                scrollTrigger: { trigger: section, start: "top 80%", toggleActions: "play none none reset" },
+                scrollTrigger: { trigger: section, start: "top 80%", toggleActions: "play none none none" },
                 onComplete: () => section.classList.add("visible")
             });
         });
-
         document.querySelectorAll(".testimonial").forEach(testimonial => {
             gsap.to(testimonial, {
                 y: -20,
@@ -486,17 +436,14 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         console.warn("GSAP or ScrollTrigger not loaded; animations skipped");
         document.querySelectorAll(".parallax, .section-animation").forEach(section => {
-            section.style.opacity = "1"; // Fallback visibility
+            section.style.opacity = "1";
         });
     }
-
-    // **Gallery Lightbox with Zoom**
     const galleryItems = document.querySelectorAll(".gallery-item");
     const lightbox = document.querySelector(".lightbox");
     if (lightbox) {
         const lightboxImg = lightbox.querySelector("img");
         const lightboxClose = lightbox.querySelector(".lightbox-close");
-
         galleryItems.forEach(item => {
             item.addEventListener("click", () => {
                 lightboxImg.src = item.getAttribute("data-src");
@@ -507,7 +454,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     gsap.fromTo(lightboxImg, { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.7)" });
                 }
             });
-
             item.addEventListener("mouseover", () => playSound("hover", 0.4));
             item.addEventListener("keydown", (e) => {
                 if (e.key === "Enter" || e.key === " ") {
@@ -516,7 +462,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
         });
-
         lightboxClose.addEventListener("click", () => {
             if (typeof gsap !== "undefined") {
                 gsap.to(lightboxImg, {
@@ -531,15 +476,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             playSound("click");
         });
-
         lightbox.addEventListener("click", (e) => {
             if (e.target === lightbox) lightboxClose.click();
         });
-
         lightbox.addEventListener("keydown", (e) => {
             if (e.key === "Escape") lightboxClose.click();
         });
-
         lightboxImg.addEventListener("click", () => {
             if (typeof gsap !== "undefined") {
                 const currentScale = gsap.getProperty(lightboxImg, "scale");
@@ -547,8 +489,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
-    // **Scroll Progress and Header Shrink**
     const header = document.querySelector("header");
     const scrollProgress = document.querySelector(".scroll-progress");
     function updateScroll() {
@@ -556,10 +496,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const docHeight = document.documentElement.scrollHeight - window.innerHeight;
         const scrollPercent = (scrollTop / docHeight) * 100;
         scrollProgress.style.width = `${scrollPercent}%`;
-
         const headerHeight = header.offsetHeight;
         document.documentElement.style.setProperty("--header-height", `${headerHeight}px`);
-
         if (scrollTop > 100) {
             header.classList.add("shrink");
         } else {
@@ -568,8 +506,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     window.addEventListener("scroll", debounce(updateScroll, 10));
     updateScroll();
-
-    // **Sound Effects with Preload**
     const soundCache = {};
     function playSound(type, volume = 1) {
         if (!soundCache[type]) {
@@ -588,14 +524,11 @@ document.addEventListener("DOMContentLoaded", () => {
         soundCache[type].currentTime = 0;
         soundCache[type].play().catch(() => {});
     }
-
-    // **Music Toggle with Fade**
     const musicToggle = document.getElementById("music-toggle");
     const welcomeMusic = document.getElementById("welcome-music");
     if (musicToggle && welcomeMusic) {
         welcomeMusic.volume = 0;
         const isMusicPlaying = localStorage.getItem("musicPlaying") === "true";
-
         if (isMusicPlaying) {
             welcomeMusic.play().catch(err => console.log("Autoplay blocked:", err));
             if (typeof gsap !== "undefined") {
@@ -608,7 +541,6 @@ document.addEventListener("DOMContentLoaded", () => {
             musicToggle.classList.add("muted");
             welcomeMusic.volume = 0;
         }
-
         musicToggle.addEventListener("click", () => {
             if (welcomeMusic.paused) {
                 welcomeMusic.play().catch(err => console.log("Playback failed:", err));
@@ -644,8 +576,6 @@ document.addEventListener("DOMContentLoaded", () => {
             playSound("click");
         });
     }
-
-    // **Tech Tip with Dismiss Persistence**
     const techTip = document.getElementById("tech-tip-text");
     const closeTechTip = document.getElementById("close-tech-tip");
     if (techTip) {
@@ -661,7 +591,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             document.querySelector(".sticky-note").style.display = "none";
         }
-
         closeTechTip.addEventListener("click", () => {
             if (typeof gsap !== "undefined") {
                 gsap.to(".sticky-note", {
@@ -681,8 +610,6 @@ document.addEventListener("DOMContentLoaded", () => {
             playSound("click");
         });
     }
-
-    // **Chat Bubble Visibility with Animation**
     const chatBubble = document.getElementById("chat-bubble");
     if (chatBubble) {
         setTimeout(() => {
@@ -697,8 +624,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         chatBubble.addEventListener("mouseover", () => playSound("hover", 0.4));
     }
-
-    // **Scroll-to-Top Button**
     const scrollTopBtn = document.querySelector(".scroll-top-btn");
     if (scrollTopBtn) {
         window.addEventListener("scroll", () => {
@@ -709,8 +634,6 @@ document.addEventListener("DOMContentLoaded", () => {
             playSound("click");
         });
     }
-
-    // **Trivia Update**
     const triviaText = document.getElementById("trivia-text");
     if (triviaText) {
         const trivia = [
@@ -720,8 +643,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ];
         triviaText.textContent = trivia[Math.floor(Math.random() * trivia.length)];
     }
-
-    // **Easter Egg with Enhanced Confetti**
     const easterEggTrigger = document.querySelector(".easter-egg-trigger");
     if (easterEggTrigger) {
         let clickCount = 0;
@@ -740,8 +661,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
-    // **Debounce Function (Added to Avoid Undefined Error)**
     function debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -753,8 +672,6 @@ document.addEventListener("DOMContentLoaded", () => {
             timeout = setTimeout(later, wait);
         };
     }
-
-    // **Accessibility Announcement Function**
     function announceModeChange(message) {
         const announcement = document.createElement("div");
         announcement.setAttribute("aria-live", "polite");
@@ -763,7 +680,5 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.appendChild(announcement);
         setTimeout(() => announcement.remove(), 1000);
     }
-
-    // Debugging log
     console.log("Script loaded successfully");
 });
