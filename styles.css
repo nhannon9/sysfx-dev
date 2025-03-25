@@ -31,7 +31,7 @@ body {
 body.dark-mode {
     background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
     color: #e0e0e0;
-    --glass-bg: rgba(40, 40, 40, 0.85);
+    --glass-bg: rgba(40, 40, 40, 0.9); /* Increased opacity for better contrast */
     --glass-border: rgba(255, 255, 255, 0.1);
     --gray-text: #e0e0e0;
 }
@@ -41,6 +41,39 @@ main {
     opacity: 1; /* Fallback for no JS */
     position: relative;
     z-index: 1; /* Above particles */
+}
+
+/* Preloader */
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #f8f9fa;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease;
+}
+
+body.dark-mode #preloader {
+    background: #1a1a1a;
+}
+
+#preloader.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#preloader .spinner {
+    border: 4px solid var(--primary-color);
+    border-top: 4px solid transparent;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
 }
 
 /* Screen-reader-only class */
@@ -123,6 +156,7 @@ body.dark-mode .glass-morphism {
 .header-spacer {
     height: calc(var(--header-height) + var(--scrolling-text-height));
     transition: height 0.4s ease; /* Smooth transition when header shrinks */
+    min-height: 160px; /* Ensure enough space by default */
 }
 
 /* Scrolling text */
@@ -391,7 +425,30 @@ body.dark-mode #typing-effect {
     top: 12px;
     right: 20px;
     z-index: 101;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.hamburger:hover,
+.hamburger:focus-visible {
+    opacity: 0.8;
+    transform: scale(1.1);
+    outline: none;
+}
+
+.nav-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 98;
+    transition: opacity 0.4s ease;
+}
+
+.nav-backdrop.active {
+    display: block;
 }
 
 .mobile-nav {
@@ -406,7 +463,7 @@ body.dark-mode #typing-effect {
     background: inherit;
 }
 
-.nav-wrapper {
+.mobile-nav-wrapper {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -596,8 +653,10 @@ h3 { font-size: 1.6em; }
     transition: color 0.3s ease;
 }
 
-.lightbox-close:hover {
+.lightbox-close:hover,
+.lightbox-close:focus-visible {
     color: var(--highlight-color);
+    outline: none;
 }
 
 /* Stats section */
@@ -710,7 +769,7 @@ h3 { font-size: 1.6em; }
     box-shadow: 0 8px 25px rgba(30, 144, 255, 0.6);
 }
 
-.modern-button:focus {
+.modern-button:focus-visible {
     outline: 3px solid var(--primary-color);
     outline-offset: 3px;
 }
@@ -811,8 +870,10 @@ body.dark-mode .modern-button.mode-button:not(.music-note):hover {
     transition: color 0.3s ease;
 }
 
-.close-btn:hover {
+.close-btn:hover,
+.close-btn:focus-visible {
     color: var(--primary-color);
+    outline: none;
 }
 
 /* Service grid */
@@ -912,6 +973,7 @@ body.dark-mode .extra-info {
     text-align: center;
     color: #333;
     animation: slideIn 0.6s ease-out;
+    position: relative;
 }
 
 @keyframes slideIn {
@@ -932,8 +994,14 @@ body.dark-mode .modal-content {
     transition: color 0.3s ease;
 }
 
-.modal-close:hover {
+.modal-close:hover,
+.modal-close:focus-visible {
     color: var(--highlight-color);
+    outline: none;
+}
+
+.modal-action:hover {
+    transform: scale(1.05);
 }
 
 /* Event timeline */
@@ -1077,9 +1145,11 @@ body.dark-mode .testimonial {
     right: 10px;
 }
 
-.carousel-prev:hover, .carousel-next:hover {
+.carousel-prev:hover, .carousel-next:hover,
+.carousel-prev:focus-visible, .carousel-next:focus-visible {
     background: var(--secondary-color);
     transform: translateY(-50%) scale(1.1);
+    outline: none;
 }
 
 /* Case Studies Section */
@@ -1149,7 +1219,7 @@ body.dark-mode .case-study {
 }
 
 .email-link:hover,
-.email-link:focus {
+.email-link:focus-visible {
     text-decoration: underline;
     color: var(--highlight-color);
     outline: none;
@@ -1161,9 +1231,10 @@ body.dark-mode .case-study {
 }
 
 #email a:hover,
-#email a:focus {
+#email a:focus-visible {
     text-decoration: underline;
     color: var(--highlight-color);
+    outline: none;
 }
 
 .contact-form {
@@ -1199,7 +1270,7 @@ body.dark-mode .contact-form label {
 
 body.dark-mode .contact-form input,
 body.dark-mode .contact-form textarea {
-    background: rgba(40, 40, 40, 0.85);
+    background: rgba(40, 40, 40, 0.9);
     color: #e0e0e0;
 }
 
@@ -1251,9 +1322,11 @@ body.dark-mode .social-links a {
     color: #e0e0e0;
 }
 
-.social-links a:hover {
+.social-links a:hover,
+.social-links a:focus-visible {
     color: var(--highlight-color);
     transform: scale(1.25) rotate(10deg);
+    outline: none;
 }
 
 /* Chat Bubble */
@@ -1436,12 +1509,15 @@ body.dark-mode .blog-preview article {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    transition: text-shadow 0.3s ease, color 0.3s ease;
+    transition: text-shadow 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-link:focus-visible {
     text-shadow: 0 0 8px var(--primary-color);
     color: var(--secondary-color);
+    transform: scale(1.05);
+    outline: none;
 }
 
 body.dark-mode .nav-link {
@@ -1470,6 +1546,7 @@ body.dark-mode .nav-link {
 
     .scrolling-text {
         top: var(--header-height);
+        font-size: 0.9em;
     }
 
     .hamburger {
@@ -1487,7 +1564,7 @@ body.dark-mode .nav-link {
         z-index: 99;
     }
 
-    .nav-wrapper {
+    .mobile-nav-wrapper {
         display: flex;
         flex-direction: column;
         position: fixed;
@@ -1503,18 +1580,19 @@ body.dark-mode .nav-link {
         box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
     }
 
-    body.dark-mode .nav-wrapper {
-        background: rgba(30, 30, 30, 0.97);
+    .mobile-nav-wrapper.active {
+        left: 0;
     }
 
-    .nav-wrapper.active {
-        left: 0;
+    body.dark-mode .mobile-nav-wrapper {
+        background: rgba(30, 30, 30, 0.97);
     }
 
     .nav-link {
         padding: 12px 15px;
         width: 100%;
         justify-content: flex-start;
+        font-size: 1.1em;
     }
 
     .stats-container {
@@ -1523,18 +1601,18 @@ body.dark-mode .nav-link {
 
     .welcome, .events, .services, .testimonials, .about, .contact, .case-studies, .cta, .blog-teaser, .tech-timeline {
         width: 100%;
-        padding: 25px;
-        margin: 20px 0;
+        padding: 20px;
+        margin: 15px 0;
     }
 
     .compact-section {
         width: 95%;
-        padding: 20px;
+        padding: 15px;
     }
 
     .tiny-section {
         width: 90%;
-        padding: 15px;
+        padding: 12px;
     }
 
     .service-grid, .case-study-grid, .blog-preview, .timeline {
@@ -1543,7 +1621,7 @@ body.dark-mode .nav-link {
 
     .event-card {
         grid-template-columns: 80px 1fr;
-        text-align: center;
+        text-align: left;
     }
 
     .event-timeline {
@@ -1568,16 +1646,17 @@ body.dark-mode .nav-link {
 
     .button-container {
         flex-direction: column;
+        gap: 15px;
     }
 
     .status-bar {
         flex-direction: row;
-        gap: 15px;
+        gap: 10px;
         flex-wrap: wrap;
     }
 
     .hero {
-        padding: 25px 20px;
+        padding: 20px 15px;
         min-height: 250px;
     }
 
@@ -1600,11 +1679,11 @@ body.dark-mode .nav-link {
     }
 
     .location-section {
-        padding: 20px 0;
+        padding: 15px 0;
     }
 
     .supported-badges {
-        gap: 20px;
+        gap: 15px;
     }
 
     .badge {
@@ -1630,8 +1709,8 @@ body.dark-mode .nav-link {
     }
 
     .stats-container {
-        gap: 20px;
-        padding: 20px 0;
+        gap: 15px;
+        padding: 15px 0;
     }
 
     .carousel-prev, .carousel-next {
@@ -1642,4 +1721,44 @@ body.dark-mode .nav-link {
     h1.glow-text { font-size: 2.2em; }
     h2.glow-text { font-size: 2em; }
     h3 { font-size: 1.4em; }
+}
+
+@media (max-width: 480px) {
+    .hero {
+        padding: 15px 10px;
+        min-height: 200px;
+    }
+
+    .status-bar {
+        font-size: 0.85em;
+    }
+
+    .hamburger {
+        top: 10px;
+        right: 10px;
+        font-size: 1.6em;
+    }
+
+    .mobile-nav-wrapper {
+        padding: 60px 15px 15px;
+    }
+
+    .nav-link {
+        font-size: 1em;
+    }
+
+    .chat-bubble {
+        font-size: 12px;
+        padding: 8px 15px;
+    }
+
+    .floating-buttons {
+        gap: 8px;
+    }
+
+    .scroll-top-btn, .floating-music-button {
+        width: 45px;
+        height: 45px;
+        font-size: 1.5em;
+    }
 }
