@@ -597,5 +597,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function updateScroll() {
+        const header = document.querySelector("header");
+        const scrollTop = window.scrollY;
+        header.classList.toggle("shrink", scrollTop > 100);
+        document.documentElement.style.setProperty(
+            "--effective-header-height",
+            `${header.offsetHeight}px`
+        );
+        }
+        window.addEventListener("scroll", updateScroll);
+        updateScroll(); // Initial call
+
     console.log("Script loaded successfully");
 });
