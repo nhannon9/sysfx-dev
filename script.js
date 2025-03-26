@@ -186,14 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const welcomeMusic = document.getElementById("welcome-music");
     if (musicToggle && welcomeMusic) {
         welcomeMusic.volume = 0;
-        const savedState = localStorage.getItem("musicPlaying") === "true";
-        if (savedState) {
-            welcomeMusic.play().catch(err => console.log("Autoplay blocked:", err));
-            welcomeMusic.volume = 0.6;
-            musicToggle.classList.add("playing");
-        } else {
-            musicToggle.classList.add("paused");
-        }
+        musicToggle.classList.add("paused");
         musicToggle.addEventListener("click", () => {
             if (welcomeMusic.paused) {
                 welcomeMusic.play().catch(err => console.log("Playback failed:", err));
@@ -318,7 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function prevTestimonial() {
-        currentTestimonial = (currentTestimonial - 1 + testimonials.length) % testimonials.lengthSIS;
+        currentTestimonial = (currentTestimonial - 1 + testimonials.length) % testimonials.length;
         showTestimonial(currentTestimonial);
         playSound("click");
     }
