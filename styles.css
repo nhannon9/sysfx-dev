@@ -11,15 +11,13 @@
     --orange-yellow-gradient: linear-gradient(45deg, #ff9800, #ffb300);
     --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.25);
     --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.4);
-    --gray-text: #333;
-    --header-height: 120px; /* Default header height */
-    --scrolling-text-height: 40px; /* Approximate scrolling text height */
+    --gray-text: #333; /* Added for light mode readability */
 }
 
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    padding-top: 0;
+    padding-top: 160px;
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     color: #333;
     line-height: 1.6;
@@ -31,49 +29,9 @@ body {
 body.dark-mode {
     background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
     color: #e0e0e0;
-    --glass-bg: rgba(40, 40, 40, 0.9); /* Increased opacity for better contrast */
+    --glass-bg: rgba(40, 40, 40, 0.85);
     --glass-border: rgba(255, 255, 255, 0.1);
-    --gray-text: #e0e0e0;
-}
-
-/* Ensure main content is visible by default */
-main {
-    opacity: 1; /* Fallback for no JS */
-    position: relative;
-    z-index: 1; /* Above particles */
-}
-
-/* Preloader */
-#preloader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #f8f9fa;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.5s ease;
-}
-
-body.dark-mode #preloader {
-    background: #1a1a1a;
-}
-
-#preloader.fade-out {
-    opacity: 0;
-    pointer-events: none;
-}
-
-#preloader .spinner {
-    border: 4px solid var(--primary-color);
-    border-top: 4px solid transparent;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
+    --gray-text: #e0e0e0; /* Adjusted for dark mode */
 }
 
 /* Screen-reader-only class */
@@ -145,50 +103,16 @@ body.dark-mode .particles-container {
     border: 1px solid var(--glass-border);
     border-radius: 20px;
     box-shadow: var(--shadow-light);
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Added transform transition */
 }
 
 body.dark-mode .glass-morphism {
     box-shadow: var(--shadow-dark);
 }
 
-/* Header spacer with dynamic height */
+/* Header spacer */
 .header-spacer {
-    height: calc(var(--header-height) + var(--scrolling-text-height));
-    transition: height 0.4s ease; /* Smooth transition when header shrinks */
-    min-height: 160px; /* Ensure enough space by default */
-}
-
-/* Scrolling text */
-.scrolling-text {
-    background: rgba(0, 0, 0, 0.85);
-    color: #fff;
-    padding: 12px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    position: absolute;
-    top: var(--header-height); /* Aligns below header dynamically */
-    left: 0;
-    width: 100%;
-    z-index: 50;
-    animation: scrollTextBg 12s infinite ease-in-out;
-}
-
-@keyframes scrollTextBg {
-    0% { background: rgba(0, 0, 0, 0.85); }
-    50% { background: rgba(0, 0, 0, 0.65); }
-    100% { background: rgba(0, 0, 0, 0.85); }
-}
-
-.scrolling-text span {
-    display: inline-block;
-    padding-left: 100%;
-    animation: scroll-text 18s linear infinite;
-}
-
-@keyframes scroll-text {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
+    min-height: 160px; /* Matches body padding-top to push content below header */
 }
 
 /* Hero section */
@@ -254,20 +178,20 @@ body.dark-mode .hero {
 }
 
 .hero-text .hero-text-content {
-    color: var(--gray-text);
+    color: var(--gray-text); /* Ensures readability in light mode */
 }
 
 body.dark-mode .hero-text .hero-text-content {
-    color: #e0e0e0;
+    color: #e0e0e0; /* White in dark mode for contrast */
 }
 
-/* Parallax effect with fallback */
+/* Parallax effect */
 .parallax {
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    opacity: 1; /* Visible by default */
+    opacity: 0;
     transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
@@ -309,7 +233,7 @@ header {
     top: 0;
     width: 100%;
     z-index: 100;
-    min-height: var(--header-height); /* Use CSS variable */
+    min-height: 120px;
     transition: all 0.4s ease;
     box-sizing: border-box;
 }
@@ -425,30 +349,7 @@ body.dark-mode #typing-effect {
     top: 12px;
     right: 20px;
     z-index: 101;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.hamburger:hover,
-.hamburger:focus-visible {
-    opacity: 0.8;
-    transform: scale(1.1);
-    outline: none;
-}
-
-.nav-backdrop {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 98;
-    transition: opacity 0.4s ease;
-}
-
-.nav-backdrop.active {
-    display: block;
+    transition: opacity 0.3s ease;
 }
 
 .mobile-nav {
@@ -460,10 +361,10 @@ body.dark-mode #typing-effect {
     position: sticky;
     top: 0;
     z-index: 99;
-    background: inherit;
+    background: inherit; /* Inherits glass-morphism from header */
 }
 
-.mobile-nav-wrapper {
+.nav-wrapper {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -518,16 +419,15 @@ h3 { font-size: 1.6em; }
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Sections with fallback visibility */
+/* Sections */
 .welcome, .events, .services, .testimonials, .about, .contact, .case-studies, .cta, .blog-teaser, .tech-timeline {
     margin: 40px auto;
     padding: 35px;
     width: 90%;
     transition: transform 0.4s ease;
     position: relative;
-    overflow: visible; /* Ensure content isn’t clipped */
+    overflow: hidden;
     box-sizing: border-box;
-    opacity: 1; /* Visible by default */
 }
 
 .compact-section {
@@ -541,8 +441,8 @@ h3 { font-size: 1.6em; }
 }
 
 .section-animation {
-    opacity: 1; /* Visible by default */
-    transform: translateY(0); /* No offset by default */
+    opacity: 0;
+    transform: translateY(60px);
 }
 
 .section-animation.visible {
@@ -653,10 +553,8 @@ h3 { font-size: 1.6em; }
     transition: color 0.3s ease;
 }
 
-.lightbox-close:hover,
-.lightbox-close:focus-visible {
+.lightbox-close:hover {
     color: var(--highlight-color);
-    outline: none;
 }
 
 /* Stats section */
@@ -769,7 +667,7 @@ h3 { font-size: 1.6em; }
     box-shadow: 0 8px 25px rgba(30, 144, 255, 0.6);
 }
 
-.modern-button:focus-visible {
+.modern-button:focus {
     outline: 3px solid var(--primary-color);
     outline-offset: 3px;
 }
@@ -828,11 +726,11 @@ body.dark-mode .modern-button.mode-button:not(.music-note):hover {
 }
 
 .button-text {
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease; /* Added for potential animations */
 }
 
 .modern-button:hover .button-text {
-    transform: scale(1.05);
+    transform: scale(1.05); /* Subtle text pop on hover */
 }
 
 /* Tech tip styles */
@@ -870,10 +768,8 @@ body.dark-mode .modern-button.mode-button:not(.music-note):hover {
     transition: color 0.3s ease;
 }
 
-.close-btn:hover,
-.close-btn:focus-visible {
+.close-btn:hover {
     color: var(--primary-color);
-    outline: none;
 }
 
 /* Service grid */
@@ -929,11 +825,11 @@ body.dark-mode .service {
 
 .service-icon {
     display: inline-block;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease; /* Added for hover effect */
 }
 
 .service:hover .service-icon {
-    transform: scale(1.2);
+    transform: scale(1.2); /* Icon grows on hover */
 }
 
 @keyframes float {
@@ -973,7 +869,6 @@ body.dark-mode .extra-info {
     text-align: center;
     color: #333;
     animation: slideIn 0.6s ease-out;
-    position: relative;
 }
 
 @keyframes slideIn {
@@ -994,14 +889,8 @@ body.dark-mode .modal-content {
     transition: color 0.3s ease;
 }
 
-.modal-close:hover,
-.modal-close:focus-visible {
+.modal-close:hover {
     color: var(--highlight-color);
-    outline: none;
-}
-
-.modal-action:hover {
-    transform: scale(1.05);
 }
 
 /* Event timeline */
@@ -1145,11 +1034,9 @@ body.dark-mode .testimonial {
     right: 10px;
 }
 
-.carousel-prev:hover, .carousel-next:hover,
-.carousel-prev:focus-visible, .carousel-next:focus-visible {
+.carousel-prev:hover, .carousel-next:hover {
     background: var(--secondary-color);
     transform: translateY(-50%) scale(1.1);
-    outline: none;
 }
 
 /* Case Studies Section */
@@ -1219,7 +1106,7 @@ body.dark-mode .case-study {
 }
 
 .email-link:hover,
-.email-link:focus-visible {
+.email-link:focus {
     text-decoration: underline;
     color: var(--highlight-color);
     outline: none;
@@ -1231,10 +1118,9 @@ body.dark-mode .case-study {
 }
 
 #email a:hover,
-#email a:focus-visible {
+#email a:focus {
     text-decoration: underline;
     color: var(--highlight-color);
-    outline: none;
 }
 
 .contact-form {
@@ -1270,7 +1156,7 @@ body.dark-mode .contact-form label {
 
 body.dark-mode .contact-form input,
 body.dark-mode .contact-form textarea {
-    background: rgba(40, 40, 40, 0.9);
+    background: rgba(40, 40, 40, 0.85);
     color: #e0e0e0;
 }
 
@@ -1322,11 +1208,38 @@ body.dark-mode .social-links a {
     color: #e0e0e0;
 }
 
-.social-links a:hover,
-.social-links a:focus-visible {
+.social-links a:hover {
     color: var(--highlight-color);
     transform: scale(1.25) rotate(10deg);
-    outline: none;
+}
+
+/* Scrolling text */
+.scrolling-text {
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 12px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+    z-index: 50;
+    animation: scrollTextBg 12s infinite ease-in-out;
+}
+
+@keyframes scrollTextBg {
+    0% { background: rgba(0, 0, 0, 0.85); }
+    50% { background: rgba(0, 0, 0, 0.65); }
+    100% { background: rgba(0, 0, 0, 0.85); }
+}
+
+.scrolling-text span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: scroll-text 18s linear infinite;
+}
+
+@keyframes scroll-text {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
 }
 
 /* Chat Bubble */
@@ -1509,15 +1422,12 @@ body.dark-mode .blog-preview article {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    transition: text-shadow 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    transition: text-shadow 0.3s ease, color 0.3s ease;
 }
 
-.nav-link:hover,
-.nav-link:focus-visible {
+.nav-link:hover {
     text-shadow: 0 0 8px var(--primary-color);
     color: var(--secondary-color);
-    transform: scale(1.05);
-    outline: none;
 }
 
 body.dark-mode .nav-link {
@@ -1527,12 +1437,17 @@ body.dark-mode .nav-link {
 /* Responsive design */
 @media (max-width: 768px) {
     body {
+        padding-top: 160px;
         overflow-x: hidden;
+    }
+
+    .header-spacer {
+        min-height: 160px; /* Matches mobile padding */
     }
 
     header {
         padding: 8px 15px;
-        min-height: 100px;
+        min-height: 120px;
     }
 
     header.shrink {
@@ -1540,59 +1455,44 @@ body.dark-mode .nav-link {
         padding: 6px 12px;
     }
 
-    .header-spacer {
-        height: calc(var(--header-height) + var(--scrolling-text-height));
-    }
-
-    .scrolling-text {
-        top: var(--header-height);
-        font-size: 0.9em;
-    }
-
     .hamburger {
         display: block;
-        position: fixed;
-        top: 15px;
-        right: 15px;
-        z-index: 101;
     }
 
     .mobile-nav[data-sticky="true"] {
-        position: fixed;
-        top: 0;
-        width: 100%;
-        z-index: 99;
+        position: fixed; /* Overrides sticky on mobile for menu behavior */
     }
 
-    .mobile-nav-wrapper {
+    .nav-wrapper {
         display: flex;
         flex-direction: column;
+        align-items: flex-start;
         position: fixed;
         top: 0;
-        left: -80%;
+        left: -100%;
         width: 80%;
         max-width: 300px;
         height: 100%;
         background: rgba(255, 255, 255, 0.97);
         padding: 70px 20px 20px;
+        transform: translateX(0);
         transition: left 0.4s ease;
         z-index: 99;
         box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
     }
 
-    .mobile-nav-wrapper.active {
-        left: 0;
+    body.dark-mode .nav-wrapper {
+        background: rgba(30, 30, 30, 0.97);
     }
 
-    body.dark-mode .mobile-nav-wrapper {
-        background: rgba(30, 30, 30, 0.97);
+    .nav-wrapper.active {
+        left: 0;
     }
 
     .nav-link {
         padding: 12px 15px;
         width: 100%;
         justify-content: flex-start;
-        font-size: 1.1em;
     }
 
     .stats-container {
@@ -1601,18 +1501,18 @@ body.dark-mode .nav-link {
 
     .welcome, .events, .services, .testimonials, .about, .contact, .case-studies, .cta, .blog-teaser, .tech-timeline {
         width: 100%;
-        padding: 20px;
-        margin: 15px 0;
+        padding: 25px;
+        margin: 20px 0;
     }
 
     .compact-section {
         width: 95%;
-        padding: 15px;
+        padding: 20px;
     }
 
     .tiny-section {
         width: 90%;
-        padding: 12px;
+        padding: 15px;
     }
 
     .service-grid, .case-study-grid, .blog-preview, .timeline {
@@ -1621,7 +1521,7 @@ body.dark-mode .nav-link {
 
     .event-card {
         grid-template-columns: 80px 1fr;
-        text-align: left;
+        text-align: center;
     }
 
     .event-timeline {
@@ -1646,17 +1546,16 @@ body.dark-mode .nav-link {
 
     .button-container {
         flex-direction: column;
-        gap: 15px;
     }
 
     .status-bar {
         flex-direction: row;
-        gap: 10px;
+        gap: 15px;
         flex-wrap: wrap;
     }
 
     .hero {
-        padding: 20px 15px;
+        padding: 25px 20px;
         min-height: 250px;
     }
 
@@ -1679,11 +1578,11 @@ body.dark-mode .nav-link {
     }
 
     .location-section {
-        padding: 15px 0;
+        padding: 20px 0;
     }
 
     .supported-badges {
-        gap: 15px;
+        gap: 20px;
     }
 
     .badge {
@@ -1709,8 +1608,8 @@ body.dark-mode .nav-link {
     }
 
     .stats-container {
-        gap: 15px;
-        padding: 15px 0;
+        gap: 20px;
+        padding: 20px 0;
     }
 
     .carousel-prev, .carousel-next {
@@ -1721,44 +1620,4 @@ body.dark-mode .nav-link {
     h1.glow-text { font-size: 2.2em; }
     h2.glow-text { font-size: 2em; }
     h3 { font-size: 1.4em; }
-}
-
-@media (max-width: 480px) {
-    .hero {
-        padding: 15px 10px;
-        min-height: 200px;
-    }
-
-    .status-bar {
-        font-size: 0.85em;
-    }
-
-    .hamburger {
-        top: 10px;
-        right: 10px;
-        font-size: 1.6em;
-    }
-
-    .mobile-nav-wrapper {
-        padding: 60px 15px 15px;
-    }
-
-    .nav-link {
-        font-size: 1em;
-    }
-
-    .chat-bubble {
-        font-size: 12px;
-        padding: 8px 15px;
-    }
-
-    .floating-buttons {
-        gap: 8px;
-    }
-
-    .scroll-top-btn, .floating-music-button {
-        width: 45px;
-        height: 45px;
-        font-size: 1.5em;
-    }
 }
