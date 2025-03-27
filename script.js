@@ -59,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(typeText, 600);
             }
         }
-
         typeText();
     }
 
@@ -523,22 +522,22 @@ document.addEventListener("DOMContentLoaded", () => {
             "Restarting your router fixes 80% of network issues.",
             "Use 2FA for an extra layer of account security."
         ];
-        const dismissed = localStorage.getItem("techTipDismissed");
-        if (!dismissed) {
+        const stickyNote = document.querySelector(".sticky-note");
+        if (localStorage.getItem("techTipDismissed") !== "true") {
             techTip.textContent = tips[Math.floor(Math.random() * tips.length)];
-            document.querySelector(".sticky-note").style.display = "flex";
+            setTimeout(() => stickyNote.classList.add("visible"), 2000);
         } else {
-            document.querySelector(".sticky-note").style.display = "none";
+            stickyNote.classList.remove("visible");
         }
 
         closeTechTip.addEventListener("click", () => {
-            gsap.to(".sticky-note", {
+            gsap.to(stickyNote, {
                 scale: 0.9,
                 opacity: 0,
                 duration: 0.3,
                 ease: "back.in(1.7)",
                 onComplete: () => {
-                    document.querySelector(".sticky-note").style.display = "none";
+                    stickyNote.classList.remove("visible");
                     localStorage.setItem("techTipDismissed", "true");
                 }
             });
