@@ -138,7 +138,7 @@ body.dark-mode .glass-morphism {
 
 .scrolling-text {
     position: fixed;
-    top: 0;
+    top: var(--effective-header-height);
     left: 0;
     width: 100%;
     background: rgba(0, 0, 0, 0.85);
@@ -168,7 +168,7 @@ body.dark-mode .glass-morphism {
 
 header {
     position: fixed;
-    top: var(--scrolling-text-height);
+    top: 0;
     left: 0;
     width: 100%;
     background: var(--glass-bg);
