@@ -65,7 +65,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const darkModeToggle = document.getElementById("darkModeToggle");
     const body = document.body;
     if (darkModeToggle) {
-        darkModeToggle.addEventListener("click", () => {
+        body.classList.remove("dark-mode"); // Reset state to avoid cache stickiness
+        const savedMode = localStorage.getItem("darkMode");
+        if (savedMode === "enabled") {
+            body.classList.add("dark-mode");
+            darkModeToggle.querySelector("i").classList.replace("fa-moon", "fa-sun");
+            darkModeToggle.querySelector(".mode-text").textContent = "Light Mode";
+            updateParticles();
+            updateMarkers();
+        }
+
+        darkModeToggle.removeEventListener("click", toggleDarkMode); // Prevent duplicate listeners
+        darkModeToggle.addEventListener("click", toggleDarkMode);
+
+        function toggleDarkMode() {
             body.classList.toggle("dark-mode");
             const icon = darkModeToggle.querySelector("i");
             const text = darkModeToggle.querySelector(".mode-text");
@@ -77,22 +90,16 @@ document.addEventListener("DOMContentLoaded", () => {
             updateParticles();
             updateMarkers();
             announceModeChange(isDarkMode ? "Dark mode enabled" : "Light mode enabled");
-        });
-
-        const savedMode = localStorage.getItem("darkMode");
-        if (savedMode === "enabled") {
-            body.classList.add("dark-mode");
-            darkModeToggle.querySelector("i").classList.replace("fa-moon", "fa-sun");
-            darkModeToggle.querySelector(".mode-text").textContent = "Light Mode";
-            updateParticles();
-            updateMarkers();
         }
     }
 
     const hamburger = document.querySelector(".hamburger");
     const navWrapper = document.querySelector(".nav-wrapper");
     if (hamburger && navWrapper) {
-        hamburger.addEventListener("click", () => {
+        hamburger.removeEventListener("click", toggleNav); // Clean up
+        hamburger.addEventListener("click", toggleNav);
+
+        function toggleNav() {
             navWrapper.classList.toggle("active");
             const isActive = navWrapper.classList.contains("active");
             hamburger.setAttribute("aria-expanded", isActive);
@@ -102,19 +109,24 @@ document.addEventListener("DOMContentLoaded", () => {
             playSound("click");
             document.body.style.overflow = isActive ? "hidden" : "";
             gsap.to(navWrapper, { x: isActive ? 0 : "-100%", duration: 0.4, ease: "power2.out" });
-        });
+        }
 
-        document.addEventListener("click", (e) => {
+        document.removeEventListener("click", closeNavOutside); // Clean up
+        document.addEventListener("click", closeNavOutside);
+        document.removeEventListener("keydown", closeNavEscape);
+        document.addEventListener("keydown", closeNavEscape);
+
+        function closeNavOutside(e) {
             if (!navWrapper.contains(e.target) && !hamburger.contains(e.target) && navWrapper.classList.contains("active")) {
                 closeNav();
             }
-        });
+        }
 
-        document.addEventListener("keydown", (e) => {
+        function closeNavEscape(e) {
             if (e.key === "Escape" && navWrapper.classList.contains("active")) {
                 closeNav();
             }
-        });
+        }
 
         function closeNav() {
             navWrapper.classList.remove("active");
@@ -139,19 +151,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     document.querySelectorAll(".nav-link").forEach(anchor => {
-        anchor.addEventListener("click", (e) => {
-            e.preventDefault();
-            const targetId = anchor.getAttribute("href").slice(1);
-            scrollToSection(targetId);
-            if (window.innerWidth <= 768 && navWrapper.classList.contains("active")) {
-                navWrapper.classList.remove("active");
-                hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
-                hamburger.setAttribute("aria-expanded", "false");
-                document.body.style.overflow = "";
-                gsap.to(navWrapper, { x: "-100%", duration: 0.4, ease: "power2.in" });
-            }
-        });
+        anchor.removeEventListener("click", navLinkClick); // Clean up
+        anchor.addEventListener("click", navLinkClick);
     });
+
+    function navLinkClick(e) {
+        e.preventDefault();
+        const targetId = e.currentTarget.getAttribute("href").slice(1);
+        scrollToSection(targetId);
+        if (window.innerWidth <= 768 && navWrapper.classList.contains("active")) {
+            navWrapper.classList.remove("active");
+            hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
+            hamburger.setAttribute("aria-expanded", "false");
+            document.body.style.overflow = "";
+            gsap.to(navWrapper, { x: "-100%", duration: 0.4, ease: "power2.in" });
+        }
+    }
 
     function updateClock() {
         const clockElement = document.getElementById("current-time");
@@ -176,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 opacity: { value: isDarkMode ? 0.9 : 0.4, random: true },
                 size: { value: 5, random: true },
                 line_linked: { enable: true, distance: 130, color: isDarkMode ? "#ffffff" : "#00a000", opacity: 0.5, width: 1.5 },
-                move: { enable: true, speed: 5, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
+                move: { enable: true, speed: 5, direction: "none", random: true, straight: false, out_mode: "out" }
             },
             interactivity: {
                 detect_on: "canvas",
@@ -187,7 +202,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
     updateParticles();
-    window.addEventListener("resize", debounce(updateParticles, 200));
+    window.removeEventListener("resize", resizeParticles); // Clean up
+    window.addEventListener("resize", resizeParticles);
+    function resizeParticles() { debounce(updateParticles, 200)(); }
 
     const mapElement = document.getElementById("map");
     if (mapElement && typeof L !== "undefined") {
@@ -235,9 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     scale: i === index ? 1 : 0.9,
                     duration: 0.6,
                     ease: "power2.inOut",
-                    onComplete: () => {
-                        t.style.position = i === index ? "relative" : "absolute";
-                    }
+                    onComplete: () => { t.style.position = i === index ? "relative" : "absolute"; }
                 });
             } else {
                 t.style.opacity = i === index ? "1" : "0";
@@ -264,21 +279,22 @@ document.addEventListener("DOMContentLoaded", () => {
     let slideInterval = setInterval(nextTestimonial, 4500);
 
     if (prevBtn && nextBtn) {
-        nextBtn.addEventListener("click", () => {
-            clearInterval(slideInterval);
-            nextTestimonial();
-            slideInterval = setInterval(nextTestimonial, 4500);
-        });
-        prevBtn.addEventListener("click", () => {
-            clearInterval(slideInterval);
-            prevTestimonial();
-            slideInterval = setInterval(nextTestimonial, 4500);
-        });
+        nextBtn.removeEventListener("click", nextClick); // Clean up
+        nextBtn.addEventListener("click", nextClick);
+        prevBtn.removeEventListener("click", prevClick);
+        prevBtn.addEventListener("click", prevClick);
         [prevBtn, nextBtn].forEach(btn => {
-            btn.addEventListener("mouseover", () => clearInterval(slideInterval));
-            btn.addEventListener("mouseleave", () => slideInterval = setInterval(nextTestimonial, 4500));
+            btn.removeEventListener("mouseover", stopSlide);
+            btn.addEventListener("mouseover", stopSlide);
+            btn.removeEventListener("mouseleave", startSlide);
+            btn.addEventListener("mouseleave", startSlide);
         });
     }
+
+    function nextClick() { clearInterval(slideInterval); nextTestimonial(); slideInterval = setInterval(nextTestimonial, 4500); }
+    function prevClick() { clearInterval(slideInterval); prevTestimonial(); slideInterval = setInterval(nextTestimonial, 4500); }
+    function stopSlide() { clearInterval(slideInterval); }
+    function startSlide() { slideInterval = setInterval(nextTestimonial, 4500); }
 
     const statNumbers = document.querySelectorAll(".stat-number");
     statNumbers.forEach(stat => {
@@ -300,26 +316,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const cursor = document.querySelector(".cursor");
     if (cursor && window.innerWidth > 768) {
-        document.addEventListener("mousemove", (e) => {
+        document.removeEventListener("mousemove", moveCursor); // Clean up
+        document.addEventListener("mousemove", moveCursor);
+        document.removeEventListener("mousedown", pressCursor);
+        document.addEventListener("mousedown", pressCursor);
+        document.removeEventListener("mouseup", releaseCursor);
+        document.addEventListener("mouseup", releaseCursor);
+
+        function moveCursor(e) {
             requestAnimationFrame(() => {
                 cursor.style.left = `${e.clientX}px`;
                 cursor.style.top = `${e.clientY}px`;
                 cursor.classList.add("trail");
                 setTimeout(() => cursor.classList.remove("trail"), 120);
             });
-        });
-        document.addEventListener("mousedown", () => {
+        }
+
+        function pressCursor() {
             cursor.classList.add("trail");
             gsap.to(cursor, { scale: 1.8, duration: 0.2, ease: "power2.out" });
-        });
-        document.addEventListener("mouseup", () => {
+        }
+
+        function releaseCursor() {
             cursor.classList.remove("trail");
             gsap.to(cursor, { scale: 1, duration: 0.2, ease: "power2.in" });
-        });
+        }
+
         document.querySelectorAll(".modern-button, .nav-link, .service").forEach(el => {
-            el.addEventListener("mouseenter", () => gsap.to(cursor, { scale: 1.4, duration: 0.3 }));
-            el.addEventListener("mouseleave", () => gsap.to(cursor, { scale: 1, duration: 0.3 }));
+            el.removeEventListener("mouseenter", hoverCursor);
+            el.addEventListener("mouseenter", hoverCursor);
+            el.removeEventListener("mouseleave", resetCursor);
+            el.addEventListener("mouseleave", resetCursor);
         });
+
+        function hoverCursor() { gsap.to(cursor, { scale: 1.4, duration: 0.3 }); }
+        function resetCursor() { gsap.to(cursor, { scale: 1, duration: 0.3 }); }
     } else if (cursor) {
         cursor.style.display = "none";
     }
@@ -327,7 +358,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const services = document.querySelectorAll(".service");
     const modals = document.querySelectorAll(".modal");
     services.forEach(service => {
-        service.addEventListener("click", () => {
+        service.removeEventListener("click", openModal);
+        service.addEventListener("click", openModal);
+        service.removeEventListener("mousemove", tiltService);
+        service.addEventListener("mousemove", tiltService);
+        service.removeEventListener("mouseleave", resetTilt);
+        service.addEventListener("mouseleave", resetTilt);
+        service.removeEventListener("keydown", keyOpenModal);
+        service.addEventListener("keydown", keyOpenModal);
+
+        function openModal() {
             const modal = document.getElementById(`${service.getAttribute("data-modal")}-modal`);
             if (modal) {
                 modal.style.display = "flex";
@@ -335,34 +375,43 @@ document.addEventListener("DOMContentLoaded", () => {
                 gsap.fromTo(modal.querySelector(".modal-content"), { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.7)" });
                 modal.querySelector(".modal-close").focus();
             }
-        });
+        }
 
-        service.addEventListener("mousemove", (e) => {
+        function tiltService(e) {
             const rect = service.getBoundingClientRect();
             const x = e.clientX - rect.left - rect.width / 2;
             const y = e.clientY - rect.top - rect.height / 2;
             requestAnimationFrame(() => {
                 service.style.transform = `perspective(1200px) rotateX(${y / 25}deg) rotateY(${-x / 25}deg) scale(1.08)`;
             });
-        });
+        }
 
-        service.addEventListener("mouseleave", () => {
+        function resetTilt() {
             requestAnimationFrame(() => {
                 service.style.transform = "perspective(1200px) scale(1)";
             });
-        });
+        }
 
-        service.addEventListener("keydown", (e) => {
+        function keyOpenModal(e) {
             if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 service.click();
             }
-        });
+        }
     });
 
     modals.forEach(modal => {
         const closeBtn = modal.querySelector(".modal-close");
-        closeBtn.addEventListener("click", () => {
+        closeBtn.removeEventListener("click", closeModal);
+        closeBtn.addEventListener("click", closeModal);
+        modal.removeEventListener("click", closeModalOutside);
+        modal.addEventListener("click", closeModalOutside);
+        modal.querySelector(".modal-action").removeEventListener("click", modalAction);
+        modal.querySelector(".modal-action").addEventListener("click", modalAction);
+        modal.removeEventListener("keydown", closeModalEscape);
+        modal.addEventListener("keydown", closeModalEscape);
+
+        function closeModal() {
             gsap.to(modal.querySelector(".modal-content"), {
                 scale: 0.9,
                 opacity: 0,
@@ -371,18 +420,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 onComplete: () => modal.style.display = "none"
             });
             playSound("click");
-        });
-        modal.addEventListener("click", (e) => {
+        }
+
+        function closeModalOutside(e) {
             if (e.target === modal) closeBtn.click();
-        });
-        modal.querySelector(".modal-action").addEventListener("click", (e) => {
+        }
+
+        function modalAction(e) {
             e.stopPropagation();
             scrollToSection("contact");
             closeBtn.click();
-        });
-        modal.addEventListener("keydown", (e) => {
+        }
+
+        function closeModalEscape(e) {
             if (e.key === "Escape") closeBtn.click();
-        });
+        }
     });
 
     gsap.registerPlugin(ScrollTrigger);
@@ -412,24 +464,41 @@ document.addEventListener("DOMContentLoaded", () => {
         const lightboxClose = lightbox.querySelector(".lightbox-close");
 
         galleryItems.forEach(item => {
-            item.addEventListener("click", () => {
+            item.removeEventListener("click", openLightbox);
+            item.addEventListener("click", openLightbox);
+            item.removeEventListener("mouseover", hoverSound);
+            item.addEventListener("mouseover", hoverSound);
+            item.removeEventListener("keydown", keyOpenLightbox);
+            item.addEventListener("keydown", keyOpenLightbox);
+
+            function openLightbox() {
                 lightboxImg.src = item.getAttribute("data-src");
                 lightboxImg.alt = `Enlarged view of ${item.querySelector("img").alt}`;
                 lightbox.style.display = "flex";
                 playSound("click");
                 gsap.fromTo(lightboxImg, { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.7)" });
-            });
+            }
 
-            item.addEventListener("mouseover", () => playSound("hover", 0.4));
-            item.addEventListener("keydown", (e) => {
+            function hoverSound() { playSound("hover", 0.4); }
+
+            function keyOpenLightbox(e) {
                 if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     item.click();
                 }
-            });
+            }
         });
 
-        lightboxClose.addEventListener("click", () => {
+        lightboxClose.removeEventListener("click", closeLightbox);
+        lightboxClose.addEventListener("click", closeLightbox);
+        lightbox.removeEventListener("click", closeLightboxOutside);
+        lightbox.addEventListener("click", closeLightboxOutside);
+        lightbox.removeEventListener("keydown", closeLightboxEscape);
+        lightbox.addEventListener("keydown", closeLightboxEscape);
+        lightboxImg.removeEventListener("click", zoomLightbox);
+        lightboxImg.addEventListener("click", zoomLightbox);
+
+        function closeLightbox() {
             gsap.to(lightboxImg, {
                 scale: 0.9,
                 opacity: 0,
@@ -438,20 +507,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 onComplete: () => lightbox.style.display = "none"
             });
             playSound("click");
-        });
+        }
 
-        lightbox.addEventListener("click", (e) => {
+        function closeLightboxOutside(e) {
             if (e.target === lightbox) lightboxClose.click();
-        });
+        }
 
-        lightbox.addEventListener("keydown", (e) => {
+        function closeLightboxEscape(e) {
             if (e.key === "Escape") lightboxClose.click();
-        });
+        }
 
-        lightboxImg.addEventListener("click", () => {
+        function zoomLightbox() {
             const currentScale = gsap.getProperty(lightboxImg, "scale");
             gsap.to(lightboxImg, { scale: currentScale === 1 ? 1.5 : 1, duration: 0.3, ease: "power2.inOut" });
-        });
+        }
     }
 
     const header = document.querySelector("header");
@@ -463,6 +532,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scrollProgress.style.width = `${scrollPercent}%`;
         header.classList.toggle("shrink", scrollTop > 100);
     }
+    window.removeEventListener("scroll", debounce(updateScroll, 10));
     window.addEventListener("scroll", debounce(updateScroll, 10));
     updateScroll();
 
@@ -481,18 +551,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const musicToggle = document.getElementById("music-toggle");
     const welcomeMusic = document.getElementById("welcome-music");
     if (musicToggle && welcomeMusic) {
+        welcomeMusic.pause(); // Reset state
         welcomeMusic.volume = 0;
+        musicToggle.classList.add("muted");
         const isMusicPlaying = localStorage.getItem("musicPlaying") === "true";
         if (isMusicPlaying) {
             welcomeMusic.play().then(() => {
                 gsap.to(welcomeMusic, { volume: 0.6, duration: 1 });
                 musicToggle.classList.remove("muted");
             }).catch(() => {});
-        } else {
-            musicToggle.classList.add("muted");
         }
 
-        musicToggle.addEventListener("click", () => {
+        musicToggle.removeEventListener("click", toggleMusic);
+        musicToggle.addEventListener("click", toggleMusic);
+
+        function toggleMusic() {
             if (welcomeMusic.paused) {
                 welcomeMusic.play().then(() => {
                     gsap.to(welcomeMusic, { volume: 0.6, duration: 1 });
@@ -511,7 +584,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             }
             playSound("click");
-        });
+        }
     }
 
     const techTip = document.getElementById("tech-tip-text");
@@ -523,14 +596,16 @@ document.addEventListener("DOMContentLoaded", () => {
             "Use 2FA for an extra layer of account security."
         ];
         const stickyNote = document.querySelector(".sticky-note");
+        stickyNote.classList.remove("visible"); // Reset state
         if (localStorage.getItem("techTipDismissed") !== "true") {
             techTip.textContent = tips[Math.floor(Math.random() * tips.length)];
             setTimeout(() => stickyNote.classList.add("visible"), 2000);
-        } else {
-            stickyNote.classList.remove("visible");
         }
 
-        closeTechTip.addEventListener("click", () => {
+        closeTechTip.removeEventListener("click", closeTechTipHandler);
+        closeTechTip.addEventListener("click", closeTechTipHandler);
+
+        function closeTechTipHandler() {
             gsap.to(stickyNote, {
                 scale: 0.9,
                 opacity: 0,
@@ -542,31 +617,44 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
             playSound("click");
-        });
+        }
     }
 
     const chatBubble = document.getElementById("chat-bubble");
     if (chatBubble) {
+        chatBubble.classList.remove("visible"); // Reset state
         setTimeout(() => {
             chatBubble.classList.add("visible");
             gsap.from(chatBubble, { x: 50, opacity: 0, duration: 0.5, ease: "power2.out" });
         }, 3500);
-        chatBubble.addEventListener("click", () => {
+        chatBubble.removeEventListener("click", chatClick);
+        chatBubble.addEventListener("click", chatClick);
+        chatBubble.removeEventListener("mouseover", chatHover);
+        chatBubble.addEventListener("mouseover", chatHover);
+
+        function chatClick() {
             alert("Chat feature coming soon! Contact us at nick@sysfx.net for now.");
             playSound("click");
-        });
-        chatBubble.addEventListener("mouseover", () => playSound("hover", 0.4));
+        }
+
+        function chatHover() { playSound("hover", 0.4); }
     }
 
     const scrollTopBtn = document.querySelector(".scroll-top-btn");
     if (scrollTopBtn) {
-        window.addEventListener("scroll", () => {
+        window.removeEventListener("scroll", toggleScrollTop);
+        window.addEventListener("scroll", toggleScrollTop);
+        scrollTopBtn.removeEventListener("click", scrollToTop);
+        scrollTopBtn.addEventListener("click", scrollToTop);
+
+        function toggleScrollTop() {
             scrollTopBtn.classList.toggle("visible", window.scrollY > 350);
-        });
-        scrollTopBtn.addEventListener("click", () => {
+        }
+
+        function scrollToTop() {
             window.scrollTo({ top: 0, behavior: "smooth" });
             playSound("click");
-        });
+        }
     }
 
     const triviaText = document.getElementById("trivia-text");
@@ -582,7 +670,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const easterEggTrigger = document.querySelector(".easter-egg-trigger");
     if (easterEggTrigger) {
         let clickCount = 0;
-        easterEggTrigger.addEventListener("click", () => {
+        easterEggTrigger.removeEventListener("click", easterEggClick);
+        easterEggTrigger.addEventListener("click", easterEggClick);
+
+        function easterEggClick() {
             clickCount++;
             if (clickCount === 5) {
                 confetti({
@@ -596,7 +687,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 playSound("click");
                 clickCount = 0;
             }
-        });
+        }
     }
 
     function announceModeChange(message) {
@@ -619,27 +710,6 @@ document.addEventListener("DOMContentLoaded", () => {
             timeout = setTimeout(later, wait);
         };
     }
-
-    function preloadAssets() {
-        const assets = ["https://ia802208.us.archive.org/30/items/title_20240514_0432/title.mp3"];
-        assets.forEach(url => {
-            const audio = new Audio();
-            audio.src = url;
-            audio.preload = "auto";
-        });
-    }
-    preloadAssets();
-
-    const sections = document.querySelectorAll(".parallax, .section-animation");
-    const sectionObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("visible");
-                sectionObserver.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-    sections.forEach(section => sectionObserver.observe(section));
 });
 
 const script = document.createElement("script");
