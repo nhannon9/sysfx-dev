@@ -1061,7 +1061,7 @@ body.dark-mode .testimonial {
 
 .carousel-prev:hover, .carousel-next:hover {
     background: var(--secondary-color);
-    transform: translateY(-50%) scale(1.1);
+    transform: translateY(-50%) scale(1.0);
 }
 
 /* Case Studies Section */
