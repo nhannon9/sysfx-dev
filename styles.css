@@ -17,7 +17,7 @@
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    padding-top: 0; /* Removed padding-top; header spacing handled by absolute positioning */
+    padding-top: 160px;
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     color: #333;
     line-height: 1.6;
@@ -112,7 +112,7 @@ body.dark-mode .glass-morphism {
 
 /* Header spacer */
 .header-spacer {
-    min-height: 160px; /* Accounts for header (120px) + scrolling text (~40px) */
+    min-height: 160px; /* Matches body padding-top to push content below header */
 }
 
 /* Scrolling text */
@@ -122,11 +122,9 @@ body.dark-mode .glass-morphism {
     padding: 12px 0;
     white-space: nowrap;
     overflow: hidden;
-    position: absolute; /* Positioned directly below header */
-    top: 120px; /* Matches header min-height */
-    left: 0;
-    width: 100%;
+    position: relative;
     z-index: 50;
+    margin-top: 160px; /* Ensures it's below the header */
     animation: scrollTextBg 12s infinite ease-in-out;
 }
 
@@ -1440,25 +1438,26 @@ body.dark-mode .nav-link {
 /* Responsive design */
 @media (max-width: 768px) {
     body {
+        padding-top: 120px;
         overflow-x: hidden;
+    }
+
+    .header-spacer {
+        min-height: 120px; /* Adjusted for mobile header height */
+    }
+
+    .scrolling-text {
+        margin-top: 120px; /* Adjusted for mobile header height */
     }
 
     header {
         padding: 8px 15px;
-        min-height: 100px; /* Adjusted for mobile */
+        min-height: 120px;
     }
 
     header.shrink {
         min-height: 50px;
         padding: 6px 12px;
-    }
-
-    .header-spacer {
-        min-height: 140px; /* Adjusted for mobile: header (100px) + scrolling text (~40px) */
-    }
-
-    .scrolling-text {
-        top: 100px; /* Matches mobile header height */
     }
 
     .hamburger {
@@ -1481,13 +1480,13 @@ body.dark-mode .nav-link {
         flex-direction: column;
         position: fixed;
         top: 0;
-        left: -80%; /* Adjusted to match width */
-        width: 80%; /* Consistent width for slide-in */
+        left: -100%;
+        width: 80%;
         max-width: 300px;
         height: 100%;
         background: rgba(255, 255, 255, 0.97);
         padding: 70px 20px 20px;
-        transition: left 0.4s ease; /* Rely on CSS transition for fallback */
+        transition: left 0.4s ease;
         z-index: 99;
         box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
     }
@@ -1497,7 +1496,7 @@ body.dark-mode .nav-link {
     }
 
     .nav-wrapper.active {
-        left: 0; /* Slides to the left edge */
+        left: 0;
     }
 
     .nav-link {
