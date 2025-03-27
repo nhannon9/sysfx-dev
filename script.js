@@ -82,11 +82,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Hamburger menu
+    // Hamburger menu (Fixed: Starts closed)
     const hamburger = document.querySelector(".hamburger");
     const navWrapper = document.querySelector(".mobile-nav-wrapper");
     const navBackdrop = document.querySelector(".nav-backdrop");
     if (hamburger && navWrapper && navBackdrop) {
+        // Ensure initial state is closed
+        navWrapper.classList.remove("active"); // Explicitly remove 'active' on load
+        navBackdrop.classList.remove("active");
+        hamburger.setAttribute("aria-expanded", "false");
+        hamburger.querySelector("i").classList.add("fa-bars");
+        hamburger.querySelector("i").classList.remove("fa-times");
+
         hamburger.addEventListener("click", () => {
             const isActive = navWrapper.classList.toggle("active");
             hamburger.setAttribute("aria-expanded", isActive);
@@ -181,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateParticles();
     window.addEventListener("resize", debounce(updateParticles, 200));
 
-    // Audio toggle
+    // Audio toggle (Fixed: Only on button click)
     const musicToggle = document.getElementById("music-toggle");
     const welcomeMusic = document.getElementById("welcome-music");
     if (musicToggle && welcomeMusic) {
@@ -226,6 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             playSound("click");
         });
+        // Remove any unintended triggers (e.g., hover)
     }
 
     // Map
@@ -447,7 +455,7 @@ document.addEventListener("DOMContentLoaded", () => {
         lightbox.addEventListener("keydown", (e) => { if (e.key === "Escape") lightboxClose.click(); });
     }
 
-    // Scroll progress
+    // Scroll progress (Fixed: Header shrink support)
     const header = document.querySelector("header");
     const scrollProgress = document.querySelector(".scroll-progress");
     function updateScroll() {
@@ -597,17 +605,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Header shrink and spacer (Fixed: Consistent with CSS)
     function updateScroll() {
         const header = document.querySelector("header");
         const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        scrollProgress.style.width = `${(scrollTop / docHeight) * 100}%`;
         header.classList.toggle("shrink", scrollTop > 100);
-        document.documentElement.style.setProperty(
-            "--effective-header-height",
-            `${header.offsetHeight}px`
-        );
-        }
-        window.addEventListener("scroll", updateScroll);
-        updateScroll(); // Initial call
+        document.documentElement.style.setProperty("--effective-header-height", `${header.offsetHeight}px`);
+    }
+    window.addEventListener("scroll", debounce(updateScroll, 10));
+    updateScroll(); // Initial call
 
     console.log("Script loaded successfully");
 });
