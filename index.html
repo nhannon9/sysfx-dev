@@ -35,7 +35,7 @@
         <div class="logo-container">
             <img src="logo.jpg" alt="sysfx Logo, a symbol of tech expertise" class="flipping-logo" loading="lazy">
         </div>
-        <h1 class="glow-text centered-text sysfx-green">sysfx</h1>
+        <h1 class="glow-text centered-text sysfx-green outlined-text">sysfx</h1>
         <h3 id="typing-effect" class="gradient-text"></h3>
         <button class="hamburger" aria-label="Toggle Navigation" aria-expanded="false"><i class="fas fa-bars"></i></button>
         <nav role="navigation" class="mobile-nav" data-sticky="true">
@@ -52,8 +52,6 @@
         </nav>
     </header>
 
-    <div class="header-spacer"></div>
-
     <div class="scrolling-text" role="alert">
         <span>N-TEC is now sysfx! Discover cutting-edge tech solutions today!</span>
     </div>
@@ -65,7 +63,7 @@
                 Your browser does not support the video tag.
             </video>
             <div class="hero-content glass-morphism">
-                <h2 class="gradient-text glow-text centered-text">Welcome to sysfx!</h2>
+                <h2 class="gradient-text glow-text centered-text outlined-text">Welcome to sysfx!</h2>
                 <p class="hero-text"><span class="hero-text-content">Unlock cutting-edge technology with Sys Fix—your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support.</span></p>
                 <div class="button-container">
                     <button class="modern-button primary action-button" onclick="location.href='#contact'" aria-label="Get started with sysfx">
@@ -79,7 +77,7 @@
         </section>
 
         <section class="welcome glass-morphism parallax">
-            <h2 class="gradient-text glow-text centered-text">Why Choose sysfx?</h2>
+            <h2 class="gradient-text glow-text centered-text outlined-text">Why Choose sysfx?</h2>
             <p>At sysfx, we deliver expert tech solutions tailored to your needs. Our certified technicians specialize in computer repairs, cybersecurity, web development, networking, cloud solutions, and 24/7 IT support, ensuring your business thrives in the digital age.</p>
             <p>With over a decade of experience, Sys Fix is committed to precision, innovation, and customer satisfaction. Contact us today to transform your tech infrastructure!</p>
             <p>Contact us for support at: <span id="email" aria-label="Contact email"></span></p>
@@ -379,7 +377,6 @@
         </div>
     </footer>
 
-    <!-- Service Modals -->
     <div id="computer-repair-modal" class="modal">
         <div class="modal-content">
             <span class="modal-close">×</span>
@@ -429,30 +426,25 @@
         </div>
     </div>
 
-    <!-- Audio Player -->
-    <div id="welcome-music" preload="auto">
+    <audio id="welcome-music" preload="auto">
         <source src="https://ia802208.us.archive.org/30/items/title_20240514_0432/title.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
-    </div>
+    </audio>
 
-    <!-- Tech Tip Container with Close Button -->
     <div class="sticky-note">
         <span id="tech-tip-text"></span>
         <button id="close-tech-tip" class="close-btn" aria-label="Close Tech Tip">×</button>
     </div>
 
-    <!-- Floating Chat Bubble -->
     <div class="chat-bubble" id="chat-bubble">
         <span>Need help? Chat with us!</span>
     </div>
 
-    <!-- Floating Buttons Container -->
     <div class="floating-buttons">
         <button class="scroll-top-btn" aria-label="Scroll to Top"><i class="fas fa-arrow-up"></i></button>
         <button id="music-toggle" class="floating-music-button" aria-label="Toggle background music"><i class="fas fa-music"></i></button>
     </div>
 
-    <!-- Easter Egg Trigger -->
     <div class="easter-egg-trigger" aria-hidden="true"></div>
 </body>
 </html>
