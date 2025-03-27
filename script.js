@@ -20,10 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typingElement) {
         const phrases = [
             "Your trusted tech partner.",
-            "Innovative solutions for your business.",
-            "Expert IT support, 24/7.",
             "Securing your digital future.",
-            "Building tomorrow’s web today."
+            "Providing next-gen tech solutions.",
+            "Is this thing on?",
+            "Precision tech expertise.",
+            "Your IT partner in Clinton, CT.",
+            "Innovating for business success.",
+            "Securing your tech, 24/7.",
+            "Building the web of tomorrow."
         ];
         let currentPhraseIndex = 0;
         let charIndex = 0;
@@ -216,8 +220,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const markers = [
             { lat: 41.2788, lon: -72.5276, popup: "sysfx HQ", url: "#contact" },
-            { lat: 41.2800, lon: -72.5300, popup: "Service Center", url: "#services" },
-            { lat: 41.2776, lon: -72.5250, popup: "Support Office", url: "#support" }
         ];
 
         const markerLayer = L.layerGroup().addTo(map);
@@ -666,8 +668,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // **Preload Critical Assets**
     function preloadAssets() {
         const assets = [
-            "https://freesound.org/data/previews/245/245645_4055516-lq.mp3",
-            "https://freesound.org/data/previews/184/184438_2393279-lq.mp3",
             "https://ia802208.us.archive.org/30/items/title_20240514_0432/title.mp3"
         ];
         assets.forEach(url => {
