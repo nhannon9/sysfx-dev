@@ -11,13 +11,12 @@
     --orange-yellow-gradient: linear-gradient(45deg, #ff9800, #ffb300);
     --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.25);
     --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.4);
-    --gray-text: #333; /* Added for light mode readability */
 }
 
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    padding-top: 160px;
+    padding-top: 180px; /* Adjusted for smaller header */
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     color: #333;
     line-height: 1.6;
@@ -31,7 +30,6 @@ body.dark-mode {
     color: #e0e0e0;
     --glass-bg: rgba(40, 40, 40, 0.85);
     --glass-border: rgba(255, 255, 255, 0.1);
-    --gray-text: #e0e0e0; /* Adjusted for dark mode */
 }
 
 /* Screen-reader-only class */
@@ -103,16 +101,11 @@ body.dark-mode .particles-container {
     border: 1px solid var(--glass-border);
     border-radius: 20px;
     box-shadow: var(--shadow-light);
-    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Added transform transition */
+    transition: box-shadow 0.3s ease;
 }
 
 body.dark-mode .glass-morphism {
     box-shadow: var(--shadow-dark);
-}
-
-/* Header spacer */
-.header-spacer {
-    min-height: 160px; /* Matches body padding-top to push content below header */
 }
 
 /* Hero section */
@@ -123,7 +116,7 @@ body.dark-mode .glass-morphism {
     color: #fff;
     overflow: hidden;
     background: linear-gradient(135deg, #00a000 0%, #4CAF50 50%, #00a000 100%);
-    min-height: 300px;
+    min-height: 250px;
     animation: heroGradient 15s ease-in-out infinite;
 }
 
@@ -173,16 +166,6 @@ body.dark-mode .hero {
     position: relative;
     z-index: 2;
     padding: 15px;
-    padding-top: 50px;
-    padding-bottom: 50px;
-}
-
-.hero-text .hero-text-content {
-    color: var(--gray-text); /* Ensures readability in light mode */
-}
-
-body.dark-mode .hero-text .hero-text-content {
-    color: #e0e0e0; /* White in dark mode for contrast */
 }
 
 /* Parallax effect */
@@ -233,7 +216,7 @@ header {
     top: 0;
     width: 100%;
     z-index: 100;
-    min-height: 120px;
+    min-height: 140px; /* Smaller initial height */
     transition: all 0.4s ease;
     box-sizing: border-box;
 }
@@ -247,7 +230,7 @@ header.shrink {
     align-items: center;
     justify-content: center;
     padding: 8px 15px;
-    min-height: 50px;
+    min-height: 60px; /* Smaller shrunk height */
 }
 
 header.shrink .status-bar,
@@ -258,23 +241,23 @@ header.shrink nav {
 }
 
 header.shrink .logo-container {
-    height: 60px;
+    height: 50px;
     margin-right: 15px;
 }
 
 header.shrink .flipping-logo {
-    width: 60px;
+    width: 50px;
 }
 
 header.shrink #typing-effect {
-    font-size: 1.1em;
+    font-size: 1.3em;
     color: var(--primary-color);
     display: inline-block;
 }
 
 header h1 {
     color: #333;
-    font-size: 2em;
+    font-size: 2.2em;
     margin: 8px 0;
 }
 
@@ -283,7 +266,7 @@ body.dark-mode header h1 {
 }
 
 .sysfx-green {
-    color: var(--primary-color) !important;
+    color: var(--primary-color) !important; /* Always green */
 }
 
 .status-bar {
@@ -303,14 +286,14 @@ body.dark-mode header h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 80px;
+    height: 70px;
     margin-bottom: 8px;
     perspective: 1200px;
     transition: height 0.4s ease;
 }
 
 .flipping-logo {
-    width: 80px;
+    width: 70px;
     animation: coinFlip 3.5s infinite ease-in-out;
     border-radius: 50%;
     box-shadow: 0 0 20px var(--highlight-color);
@@ -326,11 +309,10 @@ body.dark-mode header h1 {
 
 /* Typing effect styling */
 #typing-effect {
-    min-height: 35px;
+    min-height: 45px;
     display: block;
     opacity: 1;
     color: var(--primary-color);
-    font-size: 1.3em;
 }
 
 body.dark-mode #typing-effect {
@@ -357,19 +339,12 @@ body.dark-mode #typing-effect {
     transition: all 0.4s ease;
 }
 
-.mobile-nav[data-sticky="true"] {
-    position: sticky;
-    top: 0;
-    z-index: 99;
-    background: inherit; /* Inherits glass-morphism from header */
-}
-
 .nav-wrapper {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 25px;
-    padding: 10px 0;
+    gap: 35px;
+    padding: 15px 0;
     transition: transform 0.4s ease;
 }
 
@@ -385,7 +360,11 @@ body.dark-mode #typing-effect {
 
 /* Glowing text effect */
 .glow-text {
-    text-shadow: 0 0 10px var(--primary-color), 0 0 15px var(--secondary-color);
+    text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 10px var(--primary-color), 0 0 15px var(--secondary-color);
+}
+
+body.dark-mode .glow-text {
+    text-shadow: -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333, 0 0 10px var(--primary-color), 0 0 15px var(--secondary-color);
 }
 
 /* Centered text */
@@ -725,14 +704,6 @@ body.dark-mode .modern-button.mode-button:not(.music-note):hover {
     box-shadow: 0 5px 20px rgba(0, 160, 0, 0.6);
 }
 
-.button-text {
-    transition: transform 0.3s ease; /* Added for potential animations */
-}
-
-.modern-button:hover .button-text {
-    transform: scale(1.05); /* Subtle text pop on hover */
-}
-
 /* Tech tip styles */
 .sticky-note {
     position: fixed;
@@ -821,15 +792,6 @@ body.dark-mode .service {
     margin-bottom: 20px;
     color: var(--primary-color);
     animation: float 3.5s infinite ease-in-out;
-}
-
-.service-icon {
-    display: inline-block;
-    transition: transform 0.3s ease; /* Added for hover effect */
-}
-
-.service:hover .service-icon {
-    transform: scale(1.2); /* Icon grows on hover */
 }
 
 @keyframes float {
@@ -962,14 +924,10 @@ body.dark-mode .event-card {
 }
 
 /* Testimonials */
-.carousel-container {
-    position: relative;
-    margin-top: 25px;
-}
-
 .testimonial-slider {
     display: grid;
     gap: 25px;
+    margin-top: 25px;
     position: relative;
     overflow: hidden;
     height: 260px;
@@ -1012,33 +970,6 @@ body.dark-mode .testimonial {
     100% { transform: translateY(0); opacity: 1; }
 }
 
-.carousel-prev, .carousel-next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--primary-color);
-    border: none;
-    color: #fff;
-    padding: 10px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.3s ease;
-    z-index: 10;
-}
-
-.carousel-prev {
-    left: 10px;
-}
-
-.carousel-next {
-    right: 10px;
-}
-
-.carousel-prev:hover, .carousel-next:hover {
-    background: var(--secondary-color);
-    transform: translateY(-50%) scale(1.1);
-}
-
 /* Case Studies Section */
 .case-study-grid {
     display: grid;
@@ -1077,10 +1008,6 @@ body.dark-mode .case-study {
 }
 
 /* Contact section */
-.contact {
-    text-align: center;
-}
-
 .contact-grid {
     display: grid;
     gap: 20px;
@@ -1121,54 +1048,6 @@ body.dark-mode .case-study {
 #email a:focus {
     text-decoration: underline;
     color: var(--highlight-color);
-}
-
-.contact-form {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.contact-form label {
-    text-align: left;
-    font-weight: 500;
-    color: var(--gray-text);
-}
-
-body.dark-mode .contact-form label {
-    color: #e0e0e0;
-}
-
-.contact-form input,
-.contact-form textarea {
-    padding: 10px;
-    border: 1px solid var(--glass-border);
-    border-radius: 8px;
-    font-size: 16px;
-    background: var(--glass-bg);
-    color: var(--gray-text);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-body.dark-mode .contact-form input,
-body.dark-mode .contact-form textarea {
-    background: rgba(40, 40, 40, 0.85);
-    color: #e0e0e0;
-}
-
-.contact-form input:focus,
-.contact-form textarea:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 8px rgba(0, 160, 0, 0.5);
-    outline: none;
-}
-
-.contact-form textarea {
-    resize: vertical;
 }
 
 /* Footer */
@@ -1267,17 +1146,11 @@ body.dark-mode .social-links a {
     transform: scale(1.12);
 }
 
-/* Floating Buttons */
-.floating-buttons {
+/* Scroll-to-Top Button */
+.scroll-top-btn {
     position: fixed;
     bottom: 25px;
-    right: 25px;
-    display: flex;
-    gap: 15px;
-    z-index: 1000;
-}
-
-.scroll-top-btn {
+    right: 90px;
     background: var(--secondary-color);
     color: #fff;
     border: none;
@@ -1287,6 +1160,7 @@ body.dark-mode .social-links a {
     font-size: 1.8em;
     cursor: pointer;
     transition: all 0.4s ease, opacity 0.4s ease;
+    z-index: 1000;
     opacity: 0;
 }
 
@@ -1297,27 +1171,6 @@ body.dark-mode .social-links a {
 .scroll-top-btn:hover {
     transform: scale(1.12);
     box-shadow: 0 0 20px rgba(0, 160, 0, 0.6);
-}
-
-.floating-music-button {
-    background: var(--primary-color);
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    width: 55px;
-    height: 55px;
-    font-size: 1.8em;
-    cursor: pointer;
-    transition: all 0.4s ease;
-}
-
-.floating-music-button:hover {
-    transform: scale(1.12);
-    box-shadow: 0 0 20px rgba(0, 160, 0, 0.6);
-}
-
-.floating-music-button.muted {
-    background: #666;
 }
 
 /* Tech trivia */
@@ -1441,26 +1294,18 @@ body.dark-mode .nav-link {
         overflow-x: hidden;
     }
 
-    .header-spacer {
-        min-height: 160px; /* Matches mobile padding */
-    }
-
     header {
         padding: 8px 15px;
-        min-height: 120px;
+        min-height: 130px;
     }
 
     header.shrink {
-        min-height: 50px;
+        min-height: 55px;
         padding: 6px 12px;
     }
 
     .hamburger {
         display: block;
-    }
-
-    .mobile-nav[data-sticky="true"] {
-        position: fixed; /* Overrides sticky on mobile for menu behavior */
     }
 
     .nav-wrapper {
@@ -1556,7 +1401,7 @@ body.dark-mode .nav-link {
 
     .hero {
         padding: 25px 20px;
-        min-height: 250px;
+        min-height: 220px;
     }
 
     .chat-bubble {
@@ -1566,11 +1411,9 @@ body.dark-mode .nav-link {
         padding: 10px 20px;
     }
 
-    .floating-buttons {
+    .scroll-top-btn {
         bottom: 15px;
-        right: 15px;
-        flex-direction: row;
-        gap: 10px;
+        right: 80px;
     }
 
     #map {
@@ -1610,11 +1453,6 @@ body.dark-mode .nav-link {
     .stats-container {
         gap: 20px;
         padding: 20px 0;
-    }
-
-    .carousel-prev, .carousel-next {
-        padding: 8px;
-        font-size: 1.2em;
     }
 
     h1.glow-text { font-size: 2.2em; }
