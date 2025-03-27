@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // **Email Configuration**
     const emailConfig = {
         user: "nick",
         domain: "sysfx.net",
@@ -15,7 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
         emailLink.addEventListener("click", () => playSound("click"));
     }
 
-    // **Typing Effect with Dynamic Pause**
     const typingElement = document.getElementById("typing-effect");
     if (typingElement) {
         const phrases = [
@@ -65,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
         typeText();
     }
 
-    // **Dark Mode Toggle with Accessibility**
     const darkModeToggle = document.getElementById("darkModeToggle");
     const body = document.body;
     if (darkModeToggle) {
@@ -74,16 +71,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const icon = darkModeToggle.querySelector("i");
             const text = darkModeToggle.querySelector(".mode-text");
             const isDarkMode = body.classList.contains("dark-mode");
-            if (isDarkMode) {
-                icon.classList.replace("fa-moon", "fa-sun");
-                text.textContent = "Light Mode";
-            } else {
-                icon.classList.replace("fa-sun", "fa-moon");
-                text.textContent = "Dark Mode";
-            }
+            icon.classList.replace(isDarkMode ? "fa-moon" : "fa-sun", isDarkMode ? "fa-sun" : "fa-moon");
+            text.textContent = isDarkMode ? "Light Mode" : "Dark Mode";
             localStorage.setItem("darkMode", isDarkMode ? "enabled" : "disabled");
             playSound("click");
             updateParticles();
+            updateMarkers();
             announceModeChange(isDarkMode ? "Dark mode enabled" : "Light mode enabled");
         });
 
@@ -93,10 +86,10 @@ document.addEventListener("DOMContentLoaded", () => {
             darkModeToggle.querySelector("i").classList.replace("fa-moon", "fa-sun");
             darkModeToggle.querySelector(".mode-text").textContent = "Light Mode";
             updateParticles();
+            updateMarkers();
         }
     }
 
-    // **Hamburger Menu with Animation**
     const hamburger = document.querySelector(".hamburger");
     const navWrapper = document.querySelector(".nav-wrapper");
     if (hamburger && navWrapper) {
@@ -114,34 +107,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.addEventListener("click", (e) => {
             if (!navWrapper.contains(e.target) && !hamburger.contains(e.target) && navWrapper.classList.contains("active")) {
-                navWrapper.classList.remove("active");
-                hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
-                hamburger.setAttribute("aria-expanded", "false");
-                document.body.style.overflow = "";
-                playSound("click");
-                gsap.to(navWrapper, { x: "-100%", duration: 0.4, ease: "power2.in" });
+                closeNav();
             }
         });
 
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape" && navWrapper.classList.contains("active")) {
-                navWrapper.classList.remove("active");
-                hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
-                hamburger.setAttribute("aria-expanded", "false");
-                document.body.style.overflow = "";
-                playSound("click");
-                gsap.to(navWrapper, { x: "-100%", duration: 0.4, ease: "power2.in" });
+                closeNav();
             }
         });
+
+        function closeNav() {
+            navWrapper.classList.remove("active");
+            hamburger.querySelector("i").classList.replace("fa-times", "fa-bars");
+            hamburger.setAttribute("aria-expanded", "false");
+            document.body.style.overflow = "";
+            playSound("click");
+            gsap.to(navWrapper, { x: "-100%", duration: 0.4, ease: "power2.in" });
+        }
     }
 
-    // **Smooth Scrolling for Nav Links with Offset**
     function scrollToSection(id) {
         const targetElement = document.getElementById(id);
         if (targetElement) {
             const headerHeight = document.querySelector("header").offsetHeight;
             window.scrollTo({
-                top: targetElement.offsetTop - (headerHeight > 50 ? 100 : 60),
+                top: targetElement.offsetTop - (headerHeight > 50 ? 80 : 50),
                 behavior: "smooth"
             });
             playSound("click");
@@ -163,7 +154,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // **Clock Update with Time Zone**
     function updateClock() {
         const clockElement = document.getElementById("current-time");
         if (clockElement) {
@@ -177,7 +167,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateClock();
     setInterval(updateClock, 1000);
 
-    // **Particles.js Configuration with Density Adjustment**
     function updateParticles() {
         const isDarkMode = body.classList.contains("dark-mode");
         particlesJS("particles-js", {
@@ -201,7 +190,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateParticles();
     window.addEventListener("resize", debounce(updateParticles, 200));
 
-    // **Leaflet Map Setup with Dynamic Marker Update**
     const mapElement = document.getElementById("map");
     if (mapElement && typeof L !== "undefined") {
         const map = L.map(mapElement, { scrollWheelZoom: false, dragging: !L.Browser.mobile, touchZoom: false })
@@ -233,17 +221,12 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
         updateMarkers();
-        body.addEventListener("click", (e) => {
-            if (e.target.id === "darkModeToggle") updateMarkers();
-        });
     }
 
-    // **Testimonials Slider with Manual Controls**
     const testimonials = document.querySelectorAll(".testimonial");
     const prevBtn = document.querySelector(".carousel-prev");
     const nextBtn = document.querySelector(".carousel-next");
     let currentTestimonial = 0;
-    let autoSlide = true;
 
     function showTestimonial(index, animate = true) {
         testimonials.forEach((t, i) => {
@@ -269,7 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function nextTestimonial() {
         currentTestimonial = (currentTestimonial + 1) % testimonials.length;
         showTestimonial(currentTestimonial);
-        if (!autoSlide) playSound("click");
+        playSound("click");
     }
 
     function prevTestimonial() {
@@ -279,26 +262,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     showTestimonial(currentTestimonial, false);
-    const slideInterval = setInterval(nextTestimonial, 4500);
+    let slideInterval = setInterval(nextTestimonial, 4500);
 
     if (prevBtn && nextBtn) {
         nextBtn.addEventListener("click", () => {
-            autoSlide = false;
             clearInterval(slideInterval);
             nextTestimonial();
+            slideInterval = setInterval(nextTestimonial, 4500);
         });
         prevBtn.addEventListener("click", () => {
-            autoSlide = false;
             clearInterval(slideInterval);
             prevTestimonial();
+            slideInterval = setInterval(nextTestimonial, 4500);
         });
         [prevBtn, nextBtn].forEach(btn => {
-            btn.addEventListener("mouseover", () => autoSlide && clearInterval(slideInterval));
-            btn.addEventListener("mouseleave", () => autoSlide && (slideInterval = setInterval(nextTestimonial, 4500)));
+            btn.addEventListener("mouseover", () => clearInterval(slideInterval));
+            btn.addEventListener("mouseleave", () => slideInterval = setInterval(nextTestimonial, 4500));
         });
     }
 
-    // **Stats Animation with Intersection Observer**
     const statNumbers = document.querySelectorAll(".stat-number");
     statNumbers.forEach(stat => {
         const target = parseInt(stat.getAttribute("data-count"));
@@ -317,17 +299,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // **Custom Cursor with Enhanced Effects**
     const cursor = document.querySelector(".cursor");
     if (cursor && window.innerWidth > 768) {
-        let trailTimeout;
         document.addEventListener("mousemove", (e) => {
             requestAnimationFrame(() => {
                 cursor.style.left = `${e.clientX}px`;
                 cursor.style.top = `${e.clientY}px`;
                 cursor.classList.add("trail");
-                clearTimeout(trailTimeout);
-                trailTimeout = setTimeout(() => cursor.classList.remove("trail"), 120);
+                setTimeout(() => cursor.classList.remove("trail"), 120);
             });
         });
         document.addEventListener("mousedown", () => {
@@ -346,7 +325,6 @@ document.addEventListener("DOMContentLoaded", () => {
         cursor.style.display = "none";
     }
 
-    // **Service Card Interactions with Accessibility**
     const services = document.querySelectorAll(".service");
     const modals = document.querySelectorAll(".modal");
     services.forEach(service => {
@@ -401,13 +379,13 @@ document.addEventListener("DOMContentLoaded", () => {
         modal.querySelector(".modal-action").addEventListener("click", (e) => {
             e.stopPropagation();
             scrollToSection("contact");
+            closeBtn.click();
         });
         modal.addEventListener("keydown", (e) => {
             if (e.key === "Escape") closeBtn.click();
         });
     });
 
-    // **Parallax and Section Animations**
     gsap.registerPlugin(ScrollTrigger);
     document.querySelectorAll(".parallax, .section-animation").forEach(section => {
         gsap.fromTo(section, { opacity: 0, y: 60 }, {
@@ -428,7 +406,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // **Gallery Lightbox with Zoom**
     const galleryItems = document.querySelectorAll(".gallery-item");
     const lightbox = document.querySelector(".lightbox");
     if (lightbox) {
@@ -478,7 +455,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // **Scroll Progress and Header Shrink**
     const header = document.querySelector("header");
     const scrollProgress = document.querySelector(".scroll-progress");
     function updateScroll() {
@@ -486,57 +462,44 @@ document.addEventListener("DOMContentLoaded", () => {
         const docHeight = document.documentElement.scrollHeight - window.innerHeight;
         const scrollPercent = (scrollTop / docHeight) * 100;
         scrollProgress.style.width = `${scrollPercent}%`;
-
-        if (scrollTop > 100) {
-            header.classList.add("shrink");
-            body.style.paddingTop = "50px";
-        } else {
-            header.classList.remove("shrink");
-            body.style.paddingTop = "160px";
-        }
+        header.classList.toggle("shrink", scrollTop > 100);
     }
     window.addEventListener("scroll", debounce(updateScroll, 10));
     updateScroll();
 
-    // **Sound Effects with Preload**
     const soundCache = {};
     function playSound(type, volume = 1) {
         if (!soundCache[type]) {
             soundCache[type] = new Audio();
             soundCache[type].volume = Math.min(volume, 1);
             soundCache[type].preload = "auto";
-            switch (type) {
-                case "click":
-                    soundCache[type].src = "https://freesound.org/data/previews/245/245645_4055516-lq.mp3";
-                    break;
-                case "hover":
-                    soundCache[type].src = "https://freesound.org/data/previews/184/184438_2393279-lq.mp3";
-                    break;
-            }
+            soundCache[type].src = type === "click" ? "https://freesound.org/data/previews/245/245645_4055516-lq.mp3" : "https://freesound.org/data/previews/184/184438_2393279-lq.mp3";
         }
         soundCache[type].currentTime = 0;
         soundCache[type].play().catch(() => {});
     }
 
-    // **Music Toggle with Fade**
     const musicToggle = document.getElementById("music-toggle");
     const welcomeMusic = document.getElementById("welcome-music");
     if (musicToggle && welcomeMusic) {
-        welcomeMusic.volume = 0.6;
+        welcomeMusic.volume = 0;
         const isMusicPlaying = localStorage.getItem("musicPlaying") === "true";
         if (isMusicPlaying) {
-            welcomeMusic.play().catch(() => {});
-            gsap.to(welcomeMusic, { volume: 0.6, duration: 1 });
+            welcomeMusic.play().then(() => {
+                gsap.to(welcomeMusic, { volume: 0.6, duration: 1 });
+                musicToggle.classList.remove("muted");
+            }).catch(() => {});
         } else {
             musicToggle.classList.add("muted");
-            welcomeMusic.volume = 0;
         }
 
         musicToggle.addEventListener("click", () => {
             if (welcomeMusic.paused) {
-                welcomeMusic.play().catch(() => {});
-                gsap.to(welcomeMusic, { volume: 0.6, duration: 1, onComplete: () => musicToggle.classList.remove("muted") });
-                localStorage.setItem("musicPlaying", "true");
+                welcomeMusic.play().then(() => {
+                    gsap.to(welcomeMusic, { volume: 0.6, duration: 1 });
+                    musicToggle.classList.remove("muted");
+                    localStorage.setItem("musicPlaying", "true");
+                }).catch(() => {});
             } else {
                 gsap.to(welcomeMusic, {
                     volume: 0,
@@ -552,7 +515,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // **Tech Tip with Dismiss Persistence**
     const techTip = document.getElementById("tech-tip-text");
     const closeTechTip = document.getElementById("close-tech-tip");
     if (techTip) {
@@ -584,7 +546,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // **Chat Bubble Visibility with Animation**
     const chatBubble = document.getElementById("chat-bubble");
     if (chatBubble) {
         setTimeout(() => {
@@ -598,7 +559,6 @@ document.addEventListener("DOMContentLoaded", () => {
         chatBubble.addEventListener("mouseover", () => playSound("hover", 0.4));
     }
 
-    // **Scroll-to-Top Button**
     const scrollTopBtn = document.querySelector(".scroll-top-btn");
     if (scrollTopBtn) {
         window.addEventListener("scroll", () => {
@@ -610,7 +570,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // **Trivia Update**
     const triviaText = document.getElementById("trivia-text");
     if (triviaText) {
         const trivia = [
@@ -621,7 +580,6 @@ document.addEventListener("DOMContentLoaded", () => {
         triviaText.textContent = trivia[Math.floor(Math.random() * trivia.length)];
     }
 
-    // **Easter Egg with Enhanced Confetti**
     const easterEggTrigger = document.querySelector(".easter-egg-trigger");
     if (easterEggTrigger) {
         let clickCount = 0;
@@ -642,7 +600,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // **Accessibility Announcement Utility**
     function announceModeChange(message) {
         const announcement = document.createElement("div");
         announcement.setAttribute("aria-live", "polite");
@@ -652,7 +609,6 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => announcement.remove(), 1000);
     }
 
-    // **Debounce Utility**
     function debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -665,11 +621,8 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // **Preload Critical Assets**
     function preloadAssets() {
-        const assets = [
-            "https://ia802208.us.archive.org/30/items/title_20240514_0432/title.mp3"
-        ];
+        const assets = ["https://ia802208.us.archive.org/30/items/title_20240514_0432/title.mp3"];
         assets.forEach(url => {
             const audio = new Audio();
             audio.src = url;
@@ -678,7 +631,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     preloadAssets();
 
-    // **Lazy Load Sections**
     const sections = document.querySelectorAll(".parallax, .section-animation");
     const sectionObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -691,7 +643,6 @@ document.addEventListener("DOMContentLoaded", () => {
     sections.forEach(section => sectionObserver.observe(section));
 });
 
-// Load confetti library dynamically for Easter Egg
 const script = document.createElement("script");
 script.src = "https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js";
 script.async = true;
