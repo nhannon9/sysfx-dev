@@ -6,6 +6,7 @@
     <meta name="description" content="sysfx - Professional tech solutions including repairs, security, web development, networking, cloud solutions, and IT support in Clinton, CT">
     <meta name="keywords" content="tech solutions, computer repair, cybersecurity, web development, networking, cloud solutions, IT support, Clinton CT">
     <meta name="author" content="sysfx">
+    <meta name="robots" content="index, follow">
     <title>sysfx - Sys Fix Tech Solutions</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -17,6 +18,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
     <script src="script.js" defer></script>
+    <style>
+        /* Fallback for main content visibility */
+        main { opacity: 1; transition: opacity 0.5s ease; }
+        .js-fallback main { opacity: 0; } /* Hide if JS loads successfully */
+    </style>
 </head>
 
 <body>
@@ -29,9 +35,6 @@
             <button id="darkModeToggle" class="mode-button" aria-label="Toggle dark mode">
                 <i class="fas fa-moon" aria-hidden="true"></i> <span class="mode-text">Dark Mode</span>
             </button>
-            <button id="music-toggle" class="mode-button music-note" aria-label="Toggle background music">
-                <i class="fas fa-music" aria-hidden="true"></i> <span class="mode-text">Music</span>
-            </button>
         </div>
         
         <div class="logo-container">
@@ -40,7 +43,7 @@
         <h1 class="glow-text centered-text sysfx-green">sysfx</h1>
         <h3 id="typing-effect" class="gradient-text"></h3>
         <button class="hamburger" aria-label="Toggle Navigation" aria-expanded="false"><i class="fas fa-bars"></i></button>
-        <nav role="navigation" class="mobile-nav">
+        <nav role="navigation" class="mobile-nav" data-sticky="true">
             <div class="nav-wrapper">
                 <a href="#home" class="nav-link"><i class="fas fa-home"></i> Home</a>
                 <a href="#events" class="nav-link"><i class="fas fa-calendar-alt"></i> Events</a>
@@ -54,6 +57,8 @@
         </nav>
     </header>
 
+    <div class="header-spacer"></div>
+
     <div class="scrolling-text" role="alert">
         <span>N-TEC is now sysfx! Discover cutting-edge tech solutions today!</span>
     </div>
@@ -66,13 +71,13 @@
             </video>
             <div class="hero-content glass-morphism">
                 <h2 class="gradient-text glow-text centered-text">Welcome to sysfx!</h2>
-                <p class="hero-text">Unlock cutting-edge technology with Sys Fix—your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support.</p>
+                <p class="hero-text"><span class="hero-text-content">Unlock cutting-edge technology with Sys Fix—your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support.</span></p>
                 <div class="button-container">
-                    <button class="modern-button primary action-button" onclick="location.href='#contact'">
-                        <i class="fas fa-paper-plane" aria-hidden="true"></i> Get Started
+                    <button class="modern-button primary action-button" onclick="location.href='#contact'" aria-label="Get started with sysfx">
+                        <i class="fas fa-paper-plane" aria-hidden="true"></i> <span class="button-text">Get Started</span>
                     </button>
-                    <button class="modern-button secondary action-button explore-services" onclick="location.href='#services'">
-                        <i class="fas fa-cogs"></i> Explore Services
+                    <button class="modern-button secondary action-button explore-services" onclick="location.href='#services'" aria-label="Explore sysfx services">
+                        <i class="fas fa-cogs"></i> <span class="button-text">Explore Services</span>
                     </button>
                 </div>
             </div>
@@ -83,7 +88,7 @@
             <p>At sysfx, we deliver expert tech solutions tailored to your needs. Our certified technicians specialize in computer repairs, cybersecurity, web development, networking, cloud solutions, and 24/7 IT support, ensuring your business thrives in the digital age.</p>
             <p>With over a decade of experience, Sys Fix is committed to precision, innovation, and customer satisfaction. Contact us today to transform your tech infrastructure!</p>
             <p>Contact us for support at: <span id="email" aria-label="Contact email"></span></p>
-            <button class="modern-button action-button" onclick="location.href='#contact'">Request a Quote</button>
+            <button class="modern-button action-button" onclick="location.href='#contact'" aria-label="Request a quote from sysfx"><span class="button-text">Request a Quote</span></button>
         </section>
 
         <section id="location" class="parallax location-section">
@@ -91,7 +96,7 @@
                 <h2 class="gradient-text glow-text centered-text">Find Us in Clinton, CT</h2>
                 <p>Visit our headquarters at 123 Main Street, Clinton, CT, or reach out for remote support. We serve clients across the region with top-tier tech solutions.</p>
                 <div id="map" aria-label="Map showing sysfx location in Clinton, CT"></div>
-                <button class="modern-button action-button" onclick="location.href='#contact'">Get Directions</button>
+                <button class="modern-button action-button" onclick="location.href='#contact'" aria-label="Get directions to sysfx"><span class="button-text">Get Directions</span></button>
             </div>
         </section>
 
@@ -100,46 +105,46 @@
             <p class="services-text">sysfx offers a comprehensive suite of tech services to empower your business. From hardware fixes to cloud migrations, we’re here to solve your challenges with expertise and efficiency.</p>
             <div class="service-grid">
                 <article class="service card-hover" data-modal="computer-repair">
-                    <i class="fas fa-laptop" aria-hidden="true"></i>
+                    <span class="service-icon"><i class="fas fa-laptop" aria-hidden="true"></i></span>
                     <h3>Computer Repair</h3>
                     <p>Fast, reliable repairs for desktops, laptops, and more. We fix hardware issues, optimize software, and ensure same-day service for urgent needs.</p>
                     <p class="extra-info">Our certified technicians use state-of-the-art tools to restore your devices to peak performance.</p>
-                    <button class="modern-button small action-button" onclick="location.href='#contact'">Learn More</button>
+                    <button class="modern-button small action-button" onclick="location.href='#contact'" aria-label="Learn more about computer repair"><span class="button-text">Learn More</span></button>
                 </article>
                 <article class="service card-hover" data-modal="cybersecurity">
-                    <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                    <span class="service-icon"><i class="fas fa-shield-alt" aria-hidden="true"></i></span>
                     <h3>Cybersecurity</h3>
                     <p>Protect your data with advanced security solutions, including threat detection, firewalls, and monitoring to safeguard against cyber threats.</p>
                     <p class="extra-info">We provide customized plans to secure your business from evolving digital risks, ensuring peace of mind.</p>
-                    <button class="modern-button small action-button" onclick="location.href='#contact'">Get Protected</button>
+                    <button class="modern-button small action-button" onclick="location.href='#contact'" aria-label="Get cybersecurity protection"><span class="button-text">Get Protected</span></button>
                 </article>
                 <article class="service card-hover" data-modal="web-development">
-                    <i class="fas fa-code" aria-hidden="true"></i>
+                    <span class="service-icon"><i class="fas fa-code" aria-hidden="true"></i></span>
                     <h3>Web Development</h3>
                     <p>Build a stunning online presence with custom websites tailored to your brand, featuring responsive designs and e-commerce capabilities.</p>
                     <p class="extra-info">Our developers create fast, SEO-optimized sites that drive traffic and conversions for your business.</p>
-                    <button class="modern-button small action-button" onclick="location.href='#contact'">Request a Site</button>
+                    <button class="modern-button small action-button" onclick="location.href='#contact'" aria-label="Request web development services"><span class="button-text">Request a Site</span></button>
                 </article>
                 <article class="service card-hover" data-modal="networking">
-                    <i class="fas fa-network-wired" aria-hidden="true"></i>
+                    <span class="service-icon"><i class="fas fa-network-wired" aria-hidden="true"></i></span>
                     <h3>Networking</h3>
                     <p>Set up and maintain secure, robust networks for seamless connectivity, optimized for small businesses to large enterprises.</p>
                     <p class="extra-info">We specialize in enterprise-grade solutions to ensure speed, reliability, and security.</p>
-                    <button class="modern-button small action-button" onclick="location.href='#contact'">Improve Connectivity</button>
+                    <button class="modern-button small action-button" onclick="location.href='#contact'" aria-label="Improve your networking"><span class="button-text">Improve Connectivity</span></button>
                 </article>
                 <article class="service card-hover" data-modal="cloud-solutions">
-                    <i class="fas fa-cloud" aria-hidden="true"></i>
+                    <span class="service-icon"><i class="fas fa-cloud" aria-hidden="true"></i></span>
                     <h3>Cloud Solutions</h3>
                     <p>Migrate to the cloud with scalable, secure systems to optimize your IT infrastructure and boost efficiency.</p>
                     <p class="extra-info">Our experts streamline your workflow with cutting-edge cloud technology for growth and flexibility.</p>
-                    <button class="modern-button small action-button" onclick="location.href='#contact'">Go Cloud</button>
+                    <button class="modern-button small action-button" onclick="location.href='#contact'" aria-label="Get cloud solutions"><span class="button-text">Go Cloud</span></button>
                 </article>
                 <article class="service card-hover" data-modal="it-support">
-                    <i class="fas fa-phone" aria-hidden="true"></i>
+                    <span class="service-icon"><i class="fas fa-phone" aria-hidden="true"></i></span>
                     <h3>IT Support</h3>
                     <p>24/7 IT support to keep your systems running smoothly, with proactive maintenance and remote/on-site assistance.</p>
                     <p class="extra-info">Our team is available anytime, anywhere, to resolve issues and maintain peak performance.</p>
-                    <button class="modern-button small action-button" onclick="location.href='#contact'">Get Support</button>
+                    <button class="modern-button small action-button" onclick="location.href='#contact'" aria-label="Get IT support"><span class="button-text">Get Support</span></button>
                 </article>
             </div>
             <div class="supported-badges">
@@ -172,7 +177,7 @@
                     <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="IT support session" loading="lazy">
                 </div>
             </div>
-            <button class="modern-button action-button" onclick="location.href='#contact'">View Full Portfolio</button>
+            <button class="modern-button action-button" onclick="location.href='#contact'" aria-label="View full portfolio"><span class="button-text">View Full Portfolio</span></button>
             <div class="lightbox">
                 <span class="lightbox-close">×</span>
                 <img src="" alt="Enlarged image">
@@ -190,7 +195,7 @@
                 <div class="stat-item"><span class="stat-number" data-count="150">0</span> Cloud Migrations</div>
                 <div class="stat-item"><span class="stat-number" data-count="3000">0</span> Support Tickets Resolved</div>
             </div>
-            <button class="modern-button action-button" onclick="location.href='#about'">Learn More About Our Impact</button>
+            <button class="modern-button action-button" onclick="location.href='#about'" aria-label="Learn more about our impact"><span class="button-text">Learn More About Our Impact</span></button>
         </section>
 
         <section id="events" class="events glass-morphism parallax">
@@ -203,7 +208,7 @@
                         <h3>Cybersecurity 101</h3>
                         <p>Learn the basics of protecting your digital assets in this beginner-friendly workshop.</p>
                         <p class="extra-info">Includes hands-on demos, Q&A with experts, and a certificate of completion.</p>
-                        <button class="modern-button small action-button" onclick="location.href='#contact'">Register Now</button>
+                        <button class="modern-button small action-button" onclick="location.href='#contact'" aria-label="Register for Cybersecurity 101"><span class="button-text">Register Now</span></button>
                     </div>
                 </article>
                 <article class="event-card">
@@ -212,7 +217,7 @@
                         <h3>Intro to Web Development</h3>
                         <p>Start your journey in web development with practical coding exercises and real-world applications.</p>
                         <p class="extra-info">Perfect for beginners—bring your laptop for hands-on learning.</p>
-                        <button class="modern-button small action-button" onclick="location.href='#contact'">Sign Up</button>
+                        <button class="modern-button small action-button" onclick="location.href='#contact'" aria-label="Sign up for Intro to Web Development"><span class="button-text">Sign Up</span></button>
                     </div>
                 </article>
                 <article class="event-card">
@@ -221,11 +226,11 @@
                         <h3>Networking Essentials</h3>
                         <p>Master the fundamentals of networking with real-world applications for business success.</p>
                         <p class="extra-info">Covers routers, switches, and network security basics with expert guidance.</p>
-                        <button class="modern-button small action-button" onclick="location.href='#contact'">Join Event</button>
+                        <button class="modern-button small action-button" onclick="location.href='#contact'" aria-label="Join Networking Essentials event"><span class="button-text">Join Event</span></button>
                     </div>
                 </article>
             </div>
-            <button class="modern-button action-button" onclick="location.href='#contact'">View All Events</button>
+            <button class="modern-button action-button" onclick="location.href='#contact'" aria-label="View all events"><span class="button-text">View All Events</span></button>
         </section>
 
         <section id="case-studies" class="case-studies glass-morphism parallax compact-section">
@@ -235,12 +240,12 @@
                 <article class="case-study card-hover">
                     <h3>Retail Chain Upgrade</h3>
                     <p>Revamped a retail chain's network infrastructure, reducing downtime by 40%.</p>
-                    <button class="modern-button small action-button" onclick="location.href='#contact'">Read More</button>
+                    <button class="modern-button small action-button" onclick="location.href='#contact'" aria-label="Read more about Retail Chain Upgrade"><span class="button-text">Read More</span></button>
                 </article>
                 <article class="case-study card-hover">
                     <h3>E-commerce Platform</h3>
                     <p>Built a scalable e-commerce site, boosting sales by 25% in 3 months.</p>
-                    <button class="modern-button small action-button" onclick="location.href='#contact'">Read More</button>
+                    <button class="modern-button small action-button" onclick="location.href='#contact'" aria-label="Read more about E-commerce Platform"><span class="button-text">Read More</span></button>
                 </article>
             </div>
         </section>
@@ -248,30 +253,34 @@
         <section id="testimonials" class="testimonials glass-morphism parallax compact-section">
             <h2 class="gradient-text glow-text centered-text">What Our Clients Say</h2>
             <p>Hear from businesses like yours who’ve transformed their tech with sysfx’s expertise.</p>
-            <div class="testimonial-slider">
-                <article class="testimonial card-hover">
-                    <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
-                    <blockquote>
-                        <p>"Sysfx provided excellent service. They fixed my computer quickly and efficiently, saving our business downtime."</p>
-                        <footer class="testimonial-author">- John Doe, CEO of TechTrend Solutions</footer>
-                    </blockquote>
-                </article>
-                <article class="testimonial card-hover">
-                    <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
-                    <blockquote>
-                        <p>"I’m very happy with the website they built for my business. It’s modern, fast, and drives more traffic than ever."</p>
-                        <footer class="testimonial-author">- Jane Smith, Founder of WebWise Co.</footer>
-                    </blockquote>
-                </article>
-                <article class="testimonial card-hover">
-                    <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
-                    <blockquote>
-                        <p>"Their cybersecurity solutions gave us peace of mind. Our data is now secure from threats we didn’t even know existed."</p>
-                        <footer class="testimonial-author">- Michael Johnson, IT Director at NetSecure Inc.</footer>
-                    </blockquote>
-                </article>
+            <div class="carousel-container">
+                <div class="testimonial-slider">
+                    <article class="testimonial card-hover">
+                        <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
+                        <blockquote>
+                            <p>"Sysfx provided excellent service. They fixed my computer quickly and efficiently, saving our business downtime."</p>
+                            <footer class="testimonial-author">- John Doe, CEO of TechTrend Solutions</footer>
+                        </blockquote>
+                    </article>
+                    <article class="testimonial card-hover">
+                        <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
+                        <blockquote>
+                            <p>"I’m very happy with the website they built for my business. It’s modern, fast, and drives more traffic than ever."</p>
+                            <footer class="testimonial-author">- Jane Smith, Founder of WebWise Co.</footer>
+                        </blockquote>
+                    </article>
+                    <article class="testimonial card-hover">
+                        <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
+                        <blockquote>
+                            <p>"Their cybersecurity solutions gave us peace of mind. Our data is now secure from threats we didn’t even know existed."</p>
+                            <footer class="testimonial-author">- Michael Johnson, IT Director at NetSecure Inc.</footer>
+                        </blockquote>
+                    </article>
+                </div>
+                <button class="carousel-prev" aria-label="Previous testimonial"><i class="fas fa-chevron-left"></i></button>
+                <button class="carousel-next" aria-label="Next testimonial"><i class="fas fa-chevron-right"></i></button>
             </div>
-            <button class="modern-button action-button" onclick="location.href='#contact'">Share Your Story</button>
+            <button class="modern-button action-button" onclick="location.href='#contact'" aria-label="Share your testimonial"><span class="button-text">Share Your Story</span></button>
         </section>
 
         <section id="about" class="about glass-morphism parallax">
@@ -279,7 +288,7 @@
             <p>sysfx is a team of experienced tech professionals dedicated to delivering top-notch solutions to our clients. With over 15 years of industry expertise, we specialize in computer repairs, cybersecurity, web development, networking, cloud solutions, and 24/7 IT support.</p>
             <p>Our mission is to empower businesses with innovative technology, ensuring precision, reliability, and exceptional customer service. Located in Clinton, CT, we serve clients across the region, helping them thrive in a digital-first world.</p>
             <p>Our core values include innovation, integrity, and client satisfaction, driving us to exceed expectations with every project.</p>
-            <button class="modern-button action-button" onclick="location.href='#contact'">Contact Us Today</button>
+            <button class="modern-button action-button" onclick="location.href='#contact'" aria-label="Contact us today"><span class="button-text">Contact Us Today</span></button>
             <div class="tech-trivia">
                 <h3>Tech Trivia</h3>
                 <p id="trivia-text"></p>
@@ -290,11 +299,11 @@
             <h2 class="cta-title glow-text centered-text">Ready to Transform Your Tech?</h2>
             <p>Partner with sysfx for innovative solutions that drive your business forward.</p>
             <div class="button-container">
-                <button class="modern-button primary action-button" onclick="location.href='#contact'">
-                    <i class="fas fa-rocket" aria-hidden="true"></i> Start Now
+                <button class="modern-button primary action-button" onclick="location.href='#contact'" aria-label="Start now with sysfx">
+                    <i class="fas fa-rocket" aria-hidden="true"></i> <span class="button-text">Start Now</span>
                 </button>
-                <button class="modern-button secondary action-button" onclick="location.href='#services'">
-                    <i class="fas fa-info-circle"></i> Learn More
+                <button class="modern-button secondary action-button" onclick="location.href='#services'" aria-label="Learn more about sysfx services">
+                    <i class="fas fa-info-circle"></i> <span class="button-text">Learn More</span>
                 </button>
             </div>
         </section>
@@ -306,12 +315,12 @@
                 <article>
                     <h3>5 Ways to Boost Your Network Speed</h3>
                     <p>Learn simple tweaks to optimize your network performance, from QoS settings to hardware upgrades.</p>
-                    <button class="modern-button small action-button" onclick="alert('Blog coming soon!')">Read More</button>
+                    <button class="modern-button small action-button" onclick="alert('Blog coming soon!')" aria-label="Read more about boosting network speed"><span class="button-text">Read More</span></button>
                 </article>
                 <article>
                     <h3>The Future of Cloud Computing</h3>
                     <p>Explore how edge computing and AI are shaping the next era of cloud solutions.</p>
-                    <button class="modern-button small action-button" onclick="alert('Blog coming soon!')">Read More</button>
+                    <button class="modern-button small action-button" onclick="alert('Blog coming soon!')" aria-label="Read more about cloud computing future"><span class="button-text">Read More</span></button>
                 </article>
             </div>
         </section>
@@ -354,7 +363,15 @@
                     </div>
                 </div>
             </div>
-            <button class="modern-button action-button" onclick="location.href='mailto:nick@sysfx.net'">Send Email</button>
+            <form class="contact-form" action="mailto:nick@sysfx.net" method="post" enctype="text/plain">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required aria-label="Your name">
+                <label for="email-input">Email:</label>
+                <input type="email" id="email-input" name="email" required aria-label="Your email">
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" rows="4" required aria-label="Your message"></textarea>
+                <button type="submit" class="modern-button action-button" aria-label="Send message to sysfx"><span class="button-text">Send Message</span></button>
+            </form>
         </section>
     </main>
 
@@ -373,7 +390,7 @@
             <span class="modal-close">×</span>
             <h3>Computer Repair Services</h3>
             <p>Our computer repair services cover desktops, laptops, and more, addressing hardware issues, software optimization, and urgent needs with same-day service options. Trust our certified technicians to restore your devices to peak performance using state-of-the-art tools.</p>
-            <button class="modern-button small action-button modal-action" onclick="location.href='#contact'">Request Repair</button>
+            <button class="modern-button small action-button modal-action" onclick="location.href='#contact'" aria-label="Request computer repair"><span class="button-text">Request Repair</span></button>
         </div>
     </div>
     <div id="cybersecurity-modal" class="modal">
@@ -381,7 +398,7 @@
             <span class="modal-close">×</span>
             <h3>Cybersecurity Solutions</h3>
             <p>Protect your business with sysfx’s advanced cybersecurity solutions, featuring threat detection, firewalls, and continuous monitoring to shield against cyber threats. We offer tailored plans to secure your data and ensure compliance with industry standards.</p>
-            <button class="modern-button small action-button modal-action" onclick="location.href='#contact'">Secure My Business</button>
+            <button class="modern-button small action-button modal-action" onclick="location.href='#contact'" aria-label="Secure my business with cybersecurity"><span class="button-text">Secure My Business</span></button>
         </div>
     </div>
     <div id="web-development-modal" class="modal">
@@ -389,7 +406,7 @@
             <span class="modal-close">×</span>
             <h3>Web Development Services</h3>
             <p>Create a powerful online presence with sysfx’s web development services. We build custom, responsive websites with e-commerce capabilities, optimized for speed and SEO to drive traffic and conversions for your business.</p>
-            <button class="modern-button small action-button modal-action" onclick="location.href='#contact'">Build My Website</button>
+            <button class="modern-button small action-button modal-action" onclick="location.href='#contact'" aria-label="Build my website with sysfx"><span class="button-text">Build My Website</span></button>
         </div>
     </div>
     <div id="networking-modal" class="modal">
@@ -397,7 +414,7 @@
             <span class="modal-close">×</span>
             <h3>Networking Solutions</h3>
             <p>sysfx provides robust networking solutions for seamless connectivity, from small business setups to large enterprise systems. Our experts ensure speed, security, and reliability with enterprise-grade technology.</p>
-            <button class="modern-button small action-button modal-action" onclick="location.href='#contact'">Enhance My Network</button>
+            <button class="modern-button small action-button modal-action" onclick="location.href='#contact'" aria-label="Enhance my network with sysfx"><span class="button-text">Enhance My Network</span></button>
         </div>
     </div>
     <div id="cloud-solutions-modal" class="modal">
@@ -405,7 +422,7 @@
             <span class="modal-close">×</span>
             <h3>Cloud Solutions</h3>
             <p>Migrate to the cloud with sysfx’s scalable, secure cloud solutions to optimize your IT infrastructure. Our experts streamline your workflow, enhancing efficiency and flexibility for business growth.</p>
-            <button class="modern-button small action-button modal-action" onclick="location.href='#contact'">Migrate to Cloud</button>
+            <button class="modern-button small action-button modal-action" onclick="location.href='#contact'" aria-label="Migrate to cloud with sysfx"><span class="button-text">Migrate to Cloud</span></button>
         </div>
     </div>
     <div id="it-support-modal" class="modal">
@@ -413,15 +430,15 @@
             <span class="modal-close">×</span>
             <h3>IT Support Services</h3>
             <p>Get 24/7 IT support from sysfx to keep your systems running smoothly. Our proactive maintenance and remote/on-site assistance resolve issues quickly, ensuring peak performance anytime, anywhere.</p>
-            <button class="modern-button small action-button modal-action" onclick="location.href='#contact'">Get IT Help</button>
+            <button class="modern-button small action-button modal-action" onclick="location.href='#contact'" aria-label="Get IT support from sysfx"><span class="button-text">Get IT Help</span></button>
         </div>
     </div>
 
     <!-- Audio Player -->
-    <audio id="welcome-music" preload="auto">
+    <div id="welcome-music" preload="auto">
         <source src="https://ia802208.us.archive.org/30/items/title_20240514_0432/title.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
-    </audio>
+    </div>
 
     <!-- Tech Tip Container with Close Button -->
     <div class="sticky-note">
@@ -434,10 +451,35 @@
         <span>Need help? Chat with us!</span>
     </div>
 
-    <!-- Scroll-to-Top Button -->
-    <button class="scroll-top-btn" aria-label="Scroll to Top"><i class="fas fa-arrow-up"></i></button>
+    <!-- Floating Buttons Container -->
+    <div class="floating-buttons">
+        <button class="scroll-top-btn" aria-label="Scroll to Top"><i class="fas fa-arrow-up"></i></button>
+        <button id="music-toggle" class="floating-music-button" aria-label="Toggle background music"><i class="fas fa-music"></i></button>
+    </div>
 
     <!-- Easter Egg Trigger -->
     <div class="easter-egg-trigger" aria-hidden="true"></div>
+
+    <!-- Inline Script for Dynamic Header Spacer -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const header = document.querySelector("header");
+            const headerSpacer = document.querySelector(".header-spacer");
+            const scrollingText = document.querySelector(".scrolling-text");
+            
+            function updateSpacerHeight() {
+                const headerHeight = header.offsetHeight;
+                const scrollingTextHeight = scrollingText.offsetHeight;
+                headerSpacer.style.minHeight = `${headerHeight + scrollingTextHeight}px`;
+            }
+
+            window.addEventListener("scroll", updateSpacerHeight);
+            window.addEventListener("resize", updateSpacerHeight);
+            updateSpacerHeight();
+
+            // Mark JS as loaded to hide main content until animations kick in
+            document.body.classList.add("js-fallback");
+        });
+    </script>
 </body>
 </html>
