@@ -12,9 +12,6 @@
     --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.25);
     --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.4);
     --gray-text: #333;
-    --header-height: 120px;
-    --scrolling-text-height: 40px;
-    --effective-header-height: var(--header-height);
 }
 
 body {
@@ -38,7 +35,7 @@ body.dark-mode {
 }
 
 main {
-    padding-top: calc(var(--scrolling-text-height) + var(--effective-header-height));
+    padding-top: 0; /* Adjusted since scrolling-text is no longer fixed */
     transition: padding-top 0.4s ease;
 }
 
@@ -63,17 +60,6 @@ body.dark-mode #preloader {
 #preloader.fade-out {
     opacity: 0;
     pointer-events: none;
-}
-
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
 }
 
 .scroll-progress {
@@ -136,36 +122,7 @@ body.dark-mode .glass-morphism {
     box-shadow: var(--shadow-dark);
 }
 
-.scrolling-text {
-    position: fixed;
-    top: var(--effective-header-height);
-    left: 0;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    color: #fff;
-    padding: 12px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    z-index: 50;
-    animation: scrollTextBg 12s infinite ease-in-out;
-}
-
-@keyframes scrollTextBg {
-    0%, 100% { background: rgba(0, 0, 0, 0.85); }
-    50% { background: rgba(0, 0, 0, 0.65); }
-}
-
-.scrolling-text span {
-    display: inline-block;
-    padding-left: 100%;
-    animation: scroll-text 18s linear infinite;
-}
-
-@keyframes scroll-text {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
-}
-
+/* Header Styles */
 header {
     position: fixed;
     top: 0;
@@ -173,7 +130,6 @@ header {
     width: 100%;
     background: var(--glass-bg);
     padding: 10px 20px;
-    text-align: center;
     z-index: 100;
     transition: height 0.4s ease, padding 0.4s ease;
     box-sizing: border-box;
@@ -188,62 +144,50 @@ header.shrink {
     padding: 8px 15px;
 }
 
-header.shrink .status-bar,
-header.shrink h1,
-header.shrink .hamburger,
-header.shrink nav {
+header.shrink .status-bar {
     display: none;
 }
 
+header.shrink .header-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
 header.shrink .logo-container {
-    height: 60px;
-    margin-right: 15px;
+    margin: 0;
 }
 
 header.shrink .flipping-logo {
-    width: 60px;
+    width: 40px;
+}
+
+header.shrink .header-text {
+    margin-left: 10px;
+}
+
+header.shrink h1 {
+    display: none;
 }
 
 header.shrink #typing-effect {
-    font-size: 1.1em;
-    color: var(--primary-color);
-    display: inline-block;
+    font-size: 1.2em;
+    margin: 0;
 }
 
-header h1 {
-    color: #333;
-    font-size: 2em;
-    margin: 8px 0;
-}
-
-body.dark-mode header h1 {
-    color: #fff;
-}
-
-.sysfx-green {
-    color: var(--primary-color) !important;
-}
-
-.status-bar {
+.header-container {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 8px 15px;
-    background: rgba(0, 0, 0, 0.25);
-    border-radius: 8px;
-    margin-bottom: 10px;
-    font-size: 0.95em;
-    color: #fff;
+    justify-content: center;
+    position: relative;
+    flex-wrap: wrap;
 }
 
 .logo-container {
     display: flex;
-    justify-content: center;
     align-items: center;
-    height: 80px;
-    margin-bottom: 8px;
-    perspective: 1200px;
-    transition: height 0.4s ease;
+    margin-right: 15px;
 }
 
 .flipping-logo {
@@ -259,6 +203,24 @@ body.dark-mode header h1 {
     0% { transform: rotateY(0deg); }
     50% { transform: rotateY(180deg); }
     100% { transform: rotateY(360deg); }
+}
+
+.header-text {
+    text-align: center;
+}
+
+header h1 {
+    color: #333;
+    font-size: 2em;
+    margin: 8px 0;
+}
+
+body.dark-mode header h1 {
+    color: #fff;
+}
+
+.sysfx-green {
+    color: var(--primary-color) !important;
 }
 
 #typing-effect {
@@ -320,10 +282,12 @@ body.dark-mode #typing-effect {
     background: var(--glass-bg);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     z-index: 99;
+    display: none; /* Starts hidden */
 }
 
 .mobile-nav-wrapper.active {
     transform: translateY(0);
+    display: block;
 }
 
 .mobile-nav-wrapper .nav-link {
@@ -338,6 +302,48 @@ body.dark-mode #typing-effect {
     background: rgba(0, 160, 0, 0.1);
 }
 
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 15px;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 0.95em;
+    color: #fff;
+}
+
+/* Scrolling Text */
+.scrolling-text {
+    position: relative; /* No longer fixed */
+    width: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 12px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    z-index: 50;
+    animation: scrollTextBg 12s infinite ease-in-out;
+}
+
+@keyframes scrollTextBg {
+    0%, 100% { background: rgba(0, 0, 0, 0.85); }
+    50% { background: rgba(0, 0, 0, 0.65); }
+}
+
+.scrolling-text span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: scroll-text 18s linear infinite;
+}
+
+@keyframes scroll-text {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+/* General Styles */
 .gradient-text {
     background: var(--text-gradient);
     -webkit-background-clip: text;
@@ -398,17 +404,6 @@ h3 { font-size: 1.6em; }
 .tiny-section {
     width: 65%;
     padding: 20px;
-}
-
-.section-animation {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.section-animation.visible {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 0.9s ease, transform 0.9s ease;
 }
 
 .services-text {
@@ -620,7 +615,7 @@ h3 { font-size: 1.6em; }
 }
 
 .modern-button.explore-services:hover {
-    background: linear-gradient(135deg, #1c86ee, #00a3d6); /* Blue hover */
+    background: linear-gradient(135deg, #1c86ee, #00a3d6);
     box-shadow: 0 8px 25px rgba(30, 144, 255, 0.6);
 }
 
@@ -745,13 +740,6 @@ body.dark-mode .modern-button.mode-button:not(.music-note):hover {
     transition: all 0.4s ease;
     transform-style: preserve-3d;
     cursor: pointer;
-    animation: bounceIn 0.9s ease-out;
-}
-
-@keyframes bounceIn {
-    0% { transform: scale(0.85); opacity: 0; }
-    60% { transform: scale(1.12); opacity: 1; }
-    100% { transform: scale(1); }
 }
 
 body.dark-mode .service {
@@ -761,11 +749,6 @@ body.dark-mode .service {
 
 .card-hover {
     transition: transform 0.4s ease, box-shadow 0.4s ease;
-}
-
-.card-hover.visible {
-    opacity: 1;
-    transform: none;
 }
 
 .card-hover:hover {
@@ -824,13 +807,7 @@ body.dark-mode .extra-info {
     max-width: 550px;
     text-align: center;
     color: #333;
-    animation: slideIn 0.6s ease-out;
     position: relative;
-}
-
-@keyframes slideIn {
-    0% { transform: translateY(-30px); opacity: 0; }
-    100% { transform: translateY(0); opacity: 1; }
 }
 
 body.dark-mode .modal-content {
@@ -852,22 +829,13 @@ body.dark-mode .modal-content {
     outline: none;
 }
 
-.modal-action:hover {
-    transform: scale(1.05);
-}
-
-.events {
-    position: relative;
-}
-
-.event-timeline {
+.events .event-timeline {
     display: flex;
     flex-direction: column;
     gap: 30px;
     margin-top: 35px;
     position: relative;
     padding-left: 45px;
-    max-width: 100%;
 }
 
 .event-timeline::before {
@@ -878,12 +846,6 @@ body.dark-mode .modal-content {
     width: 3px;
     height: 100%;
     background: var(--primary-color);
-    animation: growTimeline 2.5s ease-in-out forwards;
-}
-
-@keyframes growTimeline {
-    0% { height: 0; }
-    100% { height: 100%; }
 }
 
 .event-card {
@@ -895,16 +857,6 @@ body.dark-mode .modal-content {
     border-radius: 25px;
     transition: transform 0.4s ease;
     position: relative;
-    opacity: 0;
-    animation: fadeIn 0.6s ease forwards;
-}
-
-.event-card:nth-child(1) { animation-delay: 0.3s; }
-.event-card:nth-child(2) { animation-delay: 0.5s; }
-.event-card:nth-child(3) { animation-delay: 0.7s; }
-
-@keyframes fadeIn {
-    to { opacity: 1; }
 }
 
 body.dark-mode .event-card {
@@ -951,10 +903,6 @@ body.dark-mode .testimonial {
     color: #e0e0e0;
 }
 
-.testimonial.card-hover:hover {
-    transform: scale(1.08);
-}
-
 .quote-icon {
     color: var(--primary-color);
     font-size: 1.8em;
@@ -965,12 +913,6 @@ body.dark-mode .testimonial {
     margin-top: 15px;
     font-style: italic;
     color: var(--primary-color);
-    animation: fadeInUp 0.9s ease-out;
-}
-
-@keyframes fadeInUp {
-    0% { transform: translateY(25px); opacity: 0; }
-    100% { transform: translateY(0); opacity: 1; }
 }
 
 .carousel-prev, .carousel-next {
@@ -1369,46 +1311,29 @@ body.dark-mode .nav-link {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    body {
-        overflow-x: hidden;
-    }
-
-    header {
-        padding: 8px 15px;
-        min-height: 100px;
-    }
-
-    header.shrink {
-        height: 60px;
-        padding: 6px 12px;
-    }
-
     .hamburger {
         display: block;
-        position: fixed;
-        top: calc(var(--scrolling-text-height) + 15px);
-        right: 15px;
-        z-index: 1000;
     }
 
     .mobile-nav-wrapper {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        transform: translateY(-100%);
-        transition: transform 0.4s ease;
+        display: none; /* Hidden by default */
     }
 
     .mobile-nav-wrapper.active {
-        transform: translateY(0);
+        display: block;
     }
 
-    .nav-link {
-        padding: 12px 15px;
-        width: 100%;
-        justify-content: flex-start;
-        font-size: 1.1em;
+    .header-container {
+        justify-content: space-between;
+    }
+
+    .header-text {
+        flex-grow: 1;
+        text-align: left;
+    }
+
+    header.shrink .header-text {
+        margin-left: 10px;
     }
 
     .stats-container {
@@ -1435,19 +1360,6 @@ body.dark-mode .nav-link {
         grid-template-columns: 1fr;
     }
 
-    .service {
-        padding: 20px;
-    }
-
-    .service-grid {
-        gap: 15px;
-    }
-
-    .event-card {
-        grid-template-columns: 80px 1fr;
-        text-align: left;
-    }
-
     .event-timeline {
         padding-left: 30px;
     }
@@ -1456,129 +1368,22 @@ body.dark-mode .nav-link {
         left: 15px;
     }
 
-    .timeline::before {
-        left: 15px;
-    }
-
-    .timeline-item {
-        padding-left: 35px;
-    }
-
-    .timeline-item::before {
-        left: 9px;
-    }
-
     .button-container {
         flex-direction: column;
         gap: 15px;
     }
-
-    .status-bar {
-        flex-direction: row;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-
-    .hero {
-        padding: 20px 15px;
-        min-height: 250px;
-    }
-
-    .chat-bubble {
-        bottom: 80px;
-        right: 15px;
-        font-size: 13px;
-        padding: 10px 20px;
-    }
-
-    .floating-buttons {
-        bottom: 15px;
-        right: 15px;
-        flex-direction: row;
-        gap: 10px;
-    }
-
-    #map {
-        height: 250px;
-    }
-
-    .location-section {
-        padding: 15px 0;
-    }
-
-    .supported-badges {
-        gap: 15px;
-    }
-
-    .badge {
-        width: 45px;
-        height: 45px;
-    }
-
-    .sticky-note {
-        top: 90px;
-        right: 10px;
-        font-size: 13px;
-        padding: 10px 25px 10px 15px;
-        max-width: 180px;
-    }
-
-    .gallery-container {
-        gap: 15px;
-        padding: 15px 0;
-    }
-
-    .gallery-item {
-        flex: 0 0 240px;
-    }
-
-    .stats-container {
-        gap: 15px;
-        padding: 15px 0;
-    }
-
-    .carousel-prev, .carousel-next {
-        padding: 8px;
-        font-size: 1.2em;
-    }
-
-    h1.glow-text { font-size: 2.2em; }
-    h2.glow-text { font-size: 2em; }
-    h3 { font-size: 1.4em; }
 }
 
 @media (max-width: 480px) {
-    .hero {
-        padding: 15px 10px;
-        min-height: 200px;
-    }
-
-    .status-bar {
-        font-size: 0.85em;
-    }
-
     .hamburger {
-        top: calc(var(--scrolling-text-height) + 10px);
-        right: 10px;
         font-size: 1.6em;
     }
 
-    .mobile-nav-wrapper .nav-link {
+    header.shrink .flipping-logo {
+        width: 30px;
+    }
+
+    header.shrink #typing-effect {
         font-size: 1em;
-    }
-
-    .chat-bubble {
-        font-size: 12px;
-        padding: 8px 15px;
-    }
-
-    .floating-buttons {
-        gap: 8px;
-    }
-
-    .scroll-top-btn, .floating-music-button {
-        width: 45px;
-        height: 45px;
-        font-size: 1.5em;
     }
 }
