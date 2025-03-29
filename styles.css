@@ -246,7 +246,6 @@ body.dark-mode .outlined-text {
     transform: translate(-50%, -50%);
     mix-blend-mode: difference;
     opacity: 0; /* Hidden initially, shown by JS */
-    will-change: transform; /* Performance hint */
 }
 
 body.cursor-ready .cursor { /* Class added by JS after init */
@@ -644,7 +643,6 @@ section {
     opacity: 0;
     transform: translateY(50px);
     transition: opacity 0.8s var(--transition-ease-out), transform 0.8s var(--transition-ease-out);
-    will-change: opacity, transform; /* Performance hint */
 }
 
 .section-animation.visible {
