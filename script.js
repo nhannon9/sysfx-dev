@@ -1,25 +1,111 @@
 /**
- * sysfx Website Script
- * Version: 1.2.1 (Patch for particles init)
+ * SysFX Website Script
+ * Version: 1.4
  * Author: sysfx (Revised by AI Assistant)
- * Description: Handles animations, interactivity, and dynamic content for the sysfx website.
+ *
+ * Features:
+ * - Dark Mode Toggle & Persistence
+ * - Mobile Navigation Handling
+ * - Dynamic Header Padding Adjustment
+ * - Smooth Scrolling & Scrollspy
+ * - Typing Effect
+ * - Particles.js Background
+ * - Leaflet Map Integration
+ * - Service Modals
+ * - Gallery Lightbox
+ * - Testimonial Carousel (Fade)
+ * - Stats Counter Animation (GSAP)
+ * - Section Reveal Animations (GSAP)
+ * - Footer Reveal Animation (GSAP)
+ * - Current Time Display
+ * - Tech Trivia Fetch
+ * - Background Music Toggle
+ * - Custom Cursor Logic
+ * - Scroll Progress Bar
+ * - Sticky Note & Chat Bubble Logic
+ * - Easter Egg (Confetti)
+ * - Preloader Hiding
  */
 
-document.addEventListener("DOMContentLoaded", () => {
+'use strict';
 
-    // --- Global Elements & State ---
-    const body = document.body;
-    const header = document.getElementById('main-header');
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- Globals & Configuration ---
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const CONFIG = {
+        SCROLLSPY_THROTTLE_MS: 100,
+        RESIZE_DEBOUNCE_MS: 250,
+        TYPING_SPEED_MS: 100,
+        TYPING_DELETE_SPEED_MS: 50,
+        TYPING_PAUSE_MS: 2000,
+        CAROUSEL_INTERVAL_MS: 5000,
+        STICKY_NOTE_DELAY_MS: 8000,
+        CHAT_BUBBLE_DELAY_MS: 12000,
+        TAGLINES: [
+            "Your Partner in Tech Solutions.",
+            "Expert Computer Repair Services.",
+            "Robust Cybersecurity Solutions.",
+            "Custom Web Development.",
+            "Reliable Networking & IT Support.",
+            "Serving Clinton, CT and Beyond."
+        ],
+        TECH_TRIVIA_URL: 'https://opentdb.com/api.php?amount=1&category=18&type=multiple' // Example API
+    };
+
+    // --- Element Selectors Cache ---
+    const ELEMENTS = {
+        body: document.body,
+        preloader: document.getElementById('preloader'),
+        header: document.getElementById('main-header'),
+        darkModeToggle: document.getElementById('darkModeToggle'),
+        hamburgerButton: document.getElementById('hamburger-button'),
+        mobileNav: document.getElementById('main-navigation'),
+        navLinks: document.querySelectorAll('.nav-link'),
+        scrollProgress: document.querySelector('.scroll-progress'),
+        currentTimeDisplay: document.getElementById('current-time'),
+        typingEffectElement: document.getElementById('typing-effect'),
+        mapElement: document.getElementById('map'),
+        serviceCards: document.querySelectorAll('.service[data-modal-target]'),
+        modalContainer: document.querySelector('.modal-container'),
+        modals: document.querySelectorAll('.modal'),
+        galleryItems: document.querySelectorAll('.gallery-item'),
+        lightbox: document.getElementById('lightbox'),
+        lightboxImage: document.querySelector('.lightbox-image'),
+        lightboxClose: document.querySelector('.lightbox-close'),
+        testimonialSlider: document.querySelector('.testimonial-slider'),
+        testimonials: document.querySelectorAll('.testimonial'),
+        carouselPrev: document.querySelector('.carousel-prev'),
+        carouselNext: document.querySelector('.carousel-next'),
+        statsNumbers: document.querySelectorAll('.stat-number[data-target]'),
+        animatedSections: document.querySelectorAll('.section-animation'),
+        footer: document.querySelector('.main-footer'),
+        triviaTextElement: document.getElementById('trivia-text'),
+        musicToggle: document.getElementById('music-toggle'),
+        backgroundMusic: document.getElementById('background-music'),
+        scrollTopButton: document.getElementById('scroll-top-button'),
+        stickyNote: document.getElementById('sticky-note'),
+        chatBubble: document.getElementById('chat-bubble'),
+        easterEggTrigger: document.querySelector('.easter-egg-trigger'),
+        customCursor: document.querySelector('.cursor'),
+        form: document.querySelector('.contact-form'),
+        formStatus: document.getElementById('form-status'),
+        skipLink: document.querySelector('.skip-link') // Assuming class is 'skip-link'
+    };
+
+    // --- State Variables ---
+    let headerHeight = ELEMENTS.header?.offsetHeight || 0;
+    let currentTypingIndex = 0;
+    let currentTaglineIndex = 0;
+    let isTyping = false;
+    let currentTestimonialIndex = 0;
+    let testimonialInterval;
+    let musicPlaying = false;
+    let mapInstance = null;
+    let particlesInstance = null; // To potentially destroy later if needed
 
     // --- Utility Functions ---
-    /**
-     * Debounces a function to limit the rate at which it can fire.
-     * @param {Function} func - The function to debounce.
-     * @param {number} wait - The debounce duration in milliseconds.
-     * @returns {Function} - The debounced function.
-     */
-    function debounce(func, wait) {
+    const debounce = (func, wait) => {
         let timeout;
         return function executedFunction(...args) {
             const later = () => {
@@ -29,907 +115,1073 @@ document.addEventListener("DOMContentLoaded", () => {
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
         };
-    }
+    };
 
-    /**
-     * Plays a sound effect. Caches Audio objects for efficiency.
-     * @param {string} type - The type of sound ('click', 'hover', 'confirm', 'open', 'close').
-     * @param {number} [volume=0.8] - Volume level (0 to 1).
-     */
-    const soundCache = {};
-    function playSound(type, volume = 0.8) {
-        // Example sound URLs (replace/add as needed)
-        const sounds = {
-            click: "https://cdn.freesound.org/previews/245/245645_4055516-lq.mp3",
-            hover: "https://cdn.freesound.org/previews/184/184438_2393279-lq.mp3",
-            confirm: "https://cdn.freesound.org/previews/505/505727_11019708-lq.mp3",
-            open: "https://cdn.freesound.org/previews/661/661481_12731996-lq.mp3", // Example: UI reveal sound
-            close: "https://cdn.freesound.org/previews/245/245645_4055516-lq.mp3" // Example: UI close (can reuse click)
+    const throttle = (func, limit) => {
+        let inThrottle;
+        return function executedFunction(...args) {
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
         };
+    };
 
-        if (!sounds[type]) {
-            console.warn(`Sound type "${type}" not defined.`);
-            return;
-        }
-
-        try {
-            if (!soundCache[type]) {
-                soundCache[type] = new Audio(sounds[type]);
-                soundCache[type].volume = Math.max(0, Math.min(volume, 1));
-                soundCache[type].preload = "auto";
-            }
-            if (soundCache[type].readyState >= 2) { // HAVE_CURRENT_DATA or more
-                 soundCache[type].currentTime = 0;
-                 soundCache[type].play().catch(e => console.warn(`Sound play failed [${type}]: ${e.message}`));
-            } else {
-                // If not ready, attach a one-time listener
-                const playWhenReady = () => {
-                    soundCache[type].currentTime = 0;
-                    soundCache[type].play().catch(e => console.warn(`Sound play failed on ready [${type}]: ${e.message}`));
-                };
-                soundCache[type].addEventListener('canplaythrough', playWhenReady, { once: true });
-                // Attempt to load if not already loading
-                if (soundCache[type].readyState === 0) { // HAVE_NOTHING
-                    soundCache[type].load();
-                }
-            }
-        } catch (error) {
-            console.error("Error playing sound:", error);
-        }
-    }
+    // --- Core Functions ---
 
     /**
-     * Announces a message to screen readers.
-     * @param {string} message - The message to announce.
+     * Initializes Dark Mode based on localStorage or system preference.
      */
-    function announceToScreenReader(message) {
-        const announcement = document.createElement("div");
-        announcement.setAttribute("aria-live", "polite");
-        announcement.className = "sr-only";
-        announcement.textContent = message;
-        body.appendChild(announcement);
-        setTimeout(() => announcement.remove(), 1500);
-    }
-
-    /**
-     * Smoothly scrolls to a target element, using scroll-padding-top defined in CSS.
-     * @param {string} selector - The CSS selector for the target element (e.g., '#contact').
-     */
-    function scrollToSection(selector) {
-        const targetElement = document.querySelector(selector);
-        if (targetElement) {
-            targetElement.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start' // Align to top, respecting scroll-padding-top
-            });
-            playSound("click");
-        } else {
-            console.warn(`Element not found for selector: ${selector}`);
-        }
-    }
-
-
-    // --- Initialization Functions ---
-
-    /**
-     * Initializes header-related functionality (clock, dynamic padding, scroll behavior).
-     */
-    function initHeader() {
-        const clockElement = document.getElementById("current-time");
-        const scrollProgress = document.querySelector(".scroll-progress");
-
-        function updateClock() {
-            if (clockElement) {
-                try {
-                    const now = new Date();
-                    const timeFormat = new Intl.DateTimeFormat("en-US", { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'America/New_York', hour12: true });
-                    const dateFormat = new Intl.DateTimeFormat("en-US", { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
-                    const timeZoneAbbr = new Intl.DateTimeFormat("en-US", { timeZoneName: 'short', timeZone: 'America/New_York' }).formatToParts(now).find(part => part.type === 'timeZoneName')?.value || 'EST';
-
-                    const time = timeFormat.format(now);
-                    const date = dateFormat.format(now);
-
-                    clockElement.innerHTML = `<i class="fas fa-clock" aria-hidden="true"></i> ${time} | ${date} (${timeZoneAbbr})`;
-                } catch (e) {
-                    console.error("Error updating clock:", e);
-                    clockElement.textContent = "Error loading time.";
-                }
-            }
-        }
-        updateClock();
-        setInterval(updateClock, 1000); // Update every second
-
-        let lastHeaderHeight = 0;
-        function updateLayout() {
-            if (!header) return;
-
-            const currentHeaderHeight = header.offsetHeight;
-            if (currentHeaderHeight !== lastHeaderHeight && currentHeaderHeight > 0) { // Add check for > 0
-                body.style.paddingTop = `${currentHeaderHeight}px`;
-                // Update scroll-padding-top dynamically as well
-                document.documentElement.style.scrollPaddingTop = `${currentHeaderHeight + 10}px`; // Add buffer
-                lastHeaderHeight = currentHeaderHeight;
-            }
-
-            if (scrollProgress) {
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                const docHeight = Math.max(body.scrollHeight, document.documentElement.scrollHeight, body.offsetHeight, document.documentElement.offsetHeight, body.clientHeight, document.documentElement.clientHeight) - window.innerHeight;
-                const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-                scrollProgress.style.width = `${Math.min(scrollPercent, 100)}%`; // Ensure max 100%
-            }
-        }
-
-        // Initial calculation might be slightly off if fonts load late, recalc after delay
-        requestAnimationFrame(() => {
-             updateLayout();
-             setTimeout(updateLayout, 100); // Recalculate after a short delay
-             // Add listeners after initial calculation
-             window.addEventListener("scroll", debounce(updateLayout, 10), { passive: true });
-             window.addEventListener("resize", debounce(updateLayout, 100));
-        });
-    }
-
-    /**
-     * Initializes the main navigation (hamburger toggle, link clicks, closing behavior).
-     */
-    function initNavigation() {
-        const navToggle = document.getElementById('hamburger-button');
-        const mainNav = document.getElementById('main-navigation');
-
-        if (!navToggle || !mainNav) {
-             console.warn("Navigation elements not found.");
-             return;
-        }
-
-        const navLinks = mainNav.querySelectorAll('.nav-link');
-
-        function openNav() {
-            if (body.classList.contains('nav-active')) return; // Prevent double trigger
-            body.classList.add('nav-active', 'no-scroll');
-            navToggle.setAttribute('aria-expanded', 'true');
-            navToggle.querySelector('i').classList.replace('fa-bars', 'fa-times');
-            mainNav.querySelector('a').focus(); // Focus first link for accessibility
-            playSound("open", 0.6);
-        }
-
-        function closeNav() {
-            if (!body.classList.contains('nav-active')) return; // Prevent double trigger
-            body.classList.remove('nav-active', 'no-scroll');
-            navToggle.setAttribute('aria-expanded', 'false');
-            navToggle.querySelector('i').classList.replace('fa-times', 'fa-bars');
-            playSound("close", 0.6);
-        }
-
-        navToggle.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent triggering document click listener
-            const isNavActive = body.classList.contains('nav-active');
-            if (isNavActive) {
-                closeNav();
-            } else {
-                openNav();
-            }
-        });
-
-        // Close nav when a link is clicked
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                const targetHref = link.getAttribute('href');
-                if (targetHref && targetHref.startsWith('#')) {
-                    e.preventDefault(); // Prevent default jump
-                    // Only close nav if it's currently open (usually on mobile)
-                    if (body.classList.contains('nav-active')) {
-                        closeNav();
-                    }
-                    // Use timeout to allow nav closing animation before scrolling
-                    setTimeout(() => {
-                         scrollToSection(targetHref);
-                    }, 50); // Short delay might be needed
-                }
-                // Allow normal behavior for external links if any are added later
-            });
-        });
-
-        // Close nav on Escape key press
-        document.addEventListener('keydown', (e) => {
-            if (e.key === "Escape" && body.classList.contains('nav-active')) {
-                closeNav();
-            }
-        });
-
-        // Close nav on click outside (if nav is open)
-        document.addEventListener('click', (e) => {
-            // Close nav only if click is outside nav AND outside toggle button
-            if (body.classList.contains('nav-active') && !mainNav.contains(e.target) && !navToggle.contains(e.target)) {
-                closeNav();
-            }
-        });
-    }
-
-    /**
-     * Initializes the typing effect in the header.
-     */
-    function initTypingEffect() {
-        const typingElement = document.getElementById("typing-effect");
-        if (!typingElement) return;
-
-        const phrases = [
-            "Your Trusted Tech Partner.",
-            "Securing Your Digital Future.",
-            "Providing Next-Gen Solutions.",
-            "Local Experts, Global Standards.",
-            "Precision Tech Expertise.",
-            "Your IT Partner in Clinton, CT.",
-            "Innovating for Your Success.",
-            "Building the Web of Tomorrow.",
-            "Making Technology Work For You.",
-            "Fast Repairs, Lasting Solutions."
-        ];
-        let currentPhraseIndex = 0;
-        let charIndex = 0;
-        let isTyping = true;
-        const typingSpeed = 55;
-        const erasingSpeed = 35;
-        const pauseBetweenPhrases = 2000;
-        let timeoutId; // Store timeout ID
-
-        function type() {
-            if (!document.contains(typingElement)) { // Check element exists
-                clearTimeout(timeoutId); // Stop if element removed
-                return;
-            }
-            const currentPhrase = phrases[currentPhraseIndex];
-            if (isTyping) {
-                if (charIndex < currentPhrase.length) {
-                    typingElement.textContent = currentPhrase.substring(0, charIndex + 1);
-                    charIndex++;
-                    timeoutId = setTimeout(type, typingSpeed);
-                } else {
-                    isTyping = false;
-                    timeoutId = setTimeout(erase, pauseBetweenPhrases + Math.random() * 400);
-                }
-            }
-        }
-
-        function erase() {
-            if (!document.contains(typingElement)) {
-                clearTimeout(timeoutId);
-                return;
-            }
-             const currentText = typingElement.textContent;
-            if (currentText.length > 0) {
-                typingElement.textContent = currentText.slice(0, -1);
-                timeoutId = setTimeout(erase, erasingSpeed);
-            } else {
-                isTyping = true;
-                charIndex = 0;
-                currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
-                timeoutId = setTimeout(type, 500); // Pause before typing next phrase
-            }
-        }
-        // Clear any previous timeouts if re-initializing (shouldn't happen with DOMContentLoaded)
-        clearTimeout(timeoutId);
-        // Start the effect
-        type();
-    }
-
-    /**
-     * Initializes dark mode toggle functionality.
-     */
-    function initDarkMode() {
-        const darkModeToggle = document.getElementById("darkModeToggle");
-        if (!darkModeToggle) return;
-
-        const icon = darkModeToggle.querySelector("i");
-        const textSpan = darkModeToggle.querySelector(".mode-button-text");
+    const initializeDarkMode = () => {
         const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        let isDarkMode = localStorage.getItem("darkMode") === "enabled" || (localStorage.getItem("darkMode") === null && prefersDark);
-
-        function applyDarkMode(active) {
-            body.classList.toggle("dark-mode", active);
-            icon.classList.replace(active ? "fa-moon" : "fa-sun", active ? "fa-sun" : "fa-moon");
-            if (textSpan) textSpan.textContent = active ? " Light Mode" : " Dark Mode";
-            darkModeToggle.setAttribute('aria-label', active ? 'Switch to Light Mode' : 'Switch to Dark Mode');
-            localStorage.setItem("darkMode", active ? "enabled" : "disabled");
-
-            // **FIX:** Delay particle update slightly using requestAnimationFrame
-            // Use a microtask delay to ensure DOM update completes before particle call
-            queueMicrotask(updateParticles);
-
-            // Map markers update should be fine without delay
-            updateMapMarkers();
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            ELEMENTS.body.classList.add('dark-mode');
+            updateDarkModeButton(true);
+        } else {
+            ELEMENTS.body.classList.remove('dark-mode');
+            updateDarkModeButton(false);
         }
-
-        darkModeToggle.addEventListener("click", () => {
-            isDarkMode = !isDarkMode;
-            applyDarkMode(isDarkMode);
-            playSound("click", 0.7);
-            announceToScreenReader(isDarkMode ? "Dark mode enabled" : "Light mode enabled");
-        });
-
-        // Apply initial state
-        applyDarkMode(isDarkMode);
-    }
+        // Add transition class after initial load to prevent flash
+        setTimeout(() => ELEMENTS.body.classList.add('theme-transitions-active'), 100);
+    };
 
     /**
-     * Updates or initializes Particles.js background safely.
+     * Updates the Dark Mode toggle button's appearance.
+     * @param {boolean} isDarkMode - Whether dark mode is active.
      */
-    function updateParticles() {
-        if (typeof particlesJS === 'undefined') {
-            console.warn("particlesJS library not loaded.");
-            return;
+    const updateDarkModeButton = (isDarkMode) => {
+        if (!ELEMENTS.darkModeToggle) return;
+        const icon = ELEMENTS.darkModeToggle.querySelector('i');
+        const text = ELEMENTS.darkModeToggle.querySelector('.mode-button-text');
+        if (isDarkMode) {
+            icon?.classList.replace('fa-moon', 'fa-sun');
+            if (text) text.textContent = ' Light Mode';
+            ELEMENTS.darkModeToggle.setAttribute('aria-label', 'Switch to light mode');
+        } else {
+            icon?.classList.replace('fa-sun', 'fa-moon');
+            if (text) text.textContent = ' Dark Mode';
+            ELEMENTS.darkModeToggle.setAttribute('aria-label', 'Switch to dark mode');
         }
-        const particlesElement = document.getElementById('particles-js');
+    };
 
-        // **CRITICAL FIX:** Check if element exists *before* calling particlesJS
-        if (!particlesElement) {
-            console.warn('Particles container #particles-js not found in DOM.');
-            return;
+    /**
+     * Toggles Dark Mode on button click.
+     */
+    const toggleDarkMode = () => {
+        const isDark = ELEMENTS.body.classList.toggle('dark-mode');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        updateDarkModeButton(isDark);
+        // Re-initialize map marker if map exists
+        if (mapInstance) {
+            initializeMapMarker(); // Update marker color
+        }
+         // Update Particles.js colors (requires custom config or reinit)
+        // Note: Default particles.js doesn't easily support live color changes without reinit or complex config.
+        // Re-initializeParticles(); // Uncomment if particles need theme update
+    };
+
+    /**
+     * Adjusts body padding-top based on the header's actual height.
+     */
+    const adjustBodyPadding = () => {
+        headerHeight = ELEMENTS.header?.offsetHeight || 0;
+        ELEMENTS.body.style.paddingTop = `${headerHeight}px`;
+        html.style.scrollPaddingTop = `${headerHeight + 10}px`; // Update scroll padding too
+    };
+
+    /**
+     * Updates the scroll progress bar width.
+     */
+    const updateScrollProgress = () => {
+        if (!ELEMENTS.scrollProgress) return;
+        const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrolled = (window.scrollY / scrollableHeight) * 100;
+        ELEMENTS.scrollProgress.style.width = `${Math.min(scrolled, 100)}%`;
+    };
+
+    /**
+     * Displays the current time.
+     */
+    const displayTime = () => {
+        if (!ELEMENTS.currentTimeDisplay) return;
+        const now = new Date();
+        const optionsTime = { hour: '2-digit', minute: '2-digit', hour12: true };
+        const optionsDate = { weekday: 'short', month: 'short', day: 'numeric' };
+        const timeString = now.toLocaleTimeString('en-US', optionsTime);
+        const dateString = now.toLocaleDateString('en-US', optionsDate);
+        ELEMENTS.currentTimeDisplay.innerHTML = `<i class="far fa-calendar-alt"></i> ${dateString}   <i class="far fa-clock"></i> ${timeString}`;
+    };
+
+    /**
+     * Handles the typing and deleting effect for taglines.
+     */
+    const typeEffectHandler = async () => {
+        if (!ELEMENTS.typingEffectElement || isTyping) return;
+        isTyping = true;
+        const currentText = CONFIG.TAGLINES[currentTaglineIndex];
+
+        // Typing
+        for (let i = 0; i <= currentText.length; i++) {
+            ELEMENTS.typingEffectElement.textContent = currentText.substring(0, i);
+            await new Promise(resolve => setTimeout(resolve, CONFIG.TYPING_SPEED_MS));
         }
 
-        const isDarkMode = body.classList.contains("dark-mode");
-        const particleColor = isDarkMode ? "#ffffff" : "#00a000";
-        const lineColor = isDarkMode ? "rgba(255, 255, 255, 0.5)" : "rgba(0, 160, 0, 0.5)";
-        const particleOpacity = isDarkMode ? 0.7 : 0.4;
+        // Pause
+        await new Promise(resolve => setTimeout(resolve, CONFIG.TYPING_PAUSE_MS));
 
-        // Optional: Destroy previous instance if necessary (check library docs)
-        // if (window.pJSDom && window.pJSDom[0] && window.pJSDom[0].pJS) {
-        //     try { window.pJSDom[0].pJS.fn.vendors.destroypJS(); } catch(e) {}
-        //     window.pJSDom = [];
-        // }
+        // Deleting
+        for (let i = currentText.length; i >= 0; i--) {
+            ELEMENTS.typingEffectElement.textContent = currentText.substring(0, i);
+            await new Promise(resolve => setTimeout(resolve, CONFIG.TYPING_DELETE_SPEED_MS));
+        }
 
-        try {
-            particlesJS("particles-js", {
+         // Pause before next line
+        await new Promise(resolve => setTimeout(resolve, CONFIG.TYPING_DELETE_SPEED_MS * 2));
+
+
+        currentTaglineIndex = (currentTaglineIndex + 1) % CONFIG.TAGLINES.length;
+        isTyping = false;
+        requestAnimationFrame(typeEffectHandler); // Loop
+    };
+
+    /**
+     * Initializes the Particles.js background.
+     */
+    const initializeParticles = () => {
+        if (typeof particlesJS !== 'undefined' && document.getElementById('particles-js')) {
+             // Define configurations for light and dark modes
+            const lightModeConfig = {
                 particles: {
-                    number: { value: Math.max(30, Math.min(window.innerWidth / 15, 80)), density: { enable: true, value_area: 800 } },
-                    color: { value: particleColor }, shape: { type: "circle" },
-                    opacity: { value: particleOpacity, random: true, anim: { enable: true, speed: 0.5, opacity_min: 0.1, sync: false } },
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: "#00a000" }, // Primary color
+                    shape: { type: "circle" },
+                    opacity: { value: 0.4, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false } },
                     size: { value: 3, random: true, anim: { enable: false } },
-                    line_linked: { enable: true, distance: 150, color: lineColor, opacity: 0.3, width: 1 },
-                    move: { enable: true, speed: 2, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
+                    line_linked: { enable: true, distance: 150, color: "#cccccc", opacity: 0.4, width: 1 }, // Lighter links
+                    move: { enable: true, speed: 2, direction: "none", random: false, straight: false, out_mode: "out", bounce: false }
                 },
                 interactivity: {
-                    detect_on: "canvas", events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: false }, resize: true },
-                    modes: { grab: { distance: 120, line_linked: { opacity: 0.6 } } }
+                    detect_on: "canvas",
+                    events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" }, resize: true },
+                    modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
                 },
                 retina_detect: true
-            });
-        } catch(e) {
-            console.error("Error initializing particlesJS:", e);
+            };
+            const darkModeConfig = { // Slightly different config for dark mode
+                 particles: {
+                    number: { value: 100, density: { enable: true, value_area: 800 } },
+                    color: { value: "#4CAF50" }, // Secondary color
+                    shape: { type: "circle" },
+                    opacity: { value: 0.5, random: true, anim: { enable: true, speed: 0.8, opacity_min: 0.15, sync: false } },
+                    size: { value: 3.5, random: true, anim: { enable: false } },
+                    line_linked: { enable: true, distance: 130, color: "#444444", opacity: 0.6, width: 1 }, // Darker links
+                    move: { enable: true, speed: 1.5, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
+                },
+                 interactivity: {
+                    detect_on: "canvas",
+                    events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "bubble" }, resize: true }, // Different modes
+                    modes: { grab: { distance: 140, line_opacity: 1 }, bubble: { distance: 200, size: 6, duration: 0.3 }, repulse: { distance: 100 }, push: { particles_nb: 4 } }
+                },
+                retina_detect: true
+            };
+
+            const currentConfig = ELEMENTS.body.classList.contains('dark-mode') ? darkModeConfig : lightModeConfig;
+            particlesJS('particles-js', currentConfig);
+
+        } else {
+            console.warn('particlesJS not found or particles-js element missing.');
         }
-    }
-    function initParticles() {
-        // The initial call is handled via initDarkMode to ensure correct colors.
-        // This function is kept for potential future direct calls if needed.
-    }
+    };
+     // Function to potentially re-initialize particles on theme change (use carefully)
+    // const ReInitializeParticles = () => {
+    //     const pjsContainer = document.querySelector('.particles-js-canvas-el')?.parentElement;
+    //     if (pjsContainer && typeof pJSDom !== 'undefined' && pJSDom.length > 0) {
+    //         pJSDom[0].pJS.fn.vendors.destroypJS(); // Destroy existing instance
+    //         pJSDom.splice(0, 1); // Remove from internal array
+    //     }
+    //     initializeParticles(); // Re-initialize with new theme config
+    // };
+
 
     /**
      * Initializes the Leaflet map.
      */
-    let mapInstance = null; // Store map instance
-    let markerLayer = null; // Store marker layer
-    function initMap() {
-        const mapElement = document.getElementById("map");
-        if (!mapElement || typeof L === "undefined") { return; }
-        if (mapInstance) {
-            try { mapInstance.remove(); } catch(e) {} // Gracefully remove old map
-            mapInstance = null;
-        }
-
-        try {
-            mapInstance = L.map(mapElement, {
-                scrollWheelZoom: false,
-                dragging: !L.Browser.mobile,
-                touchZoom: L.Browser.mobile,
-                zoomControl: true
-            }).setView([41.2788, -72.5276], 14);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                maxZoom: 18,
-                minZoom: 10
-            }).addTo(mapInstance);
-
-            markerLayer = L.layerGroup().addTo(mapInstance);
-            updateMapMarkers(); // Initial marker placement
-        } catch(e) {
-            console.error("Error initializing Leaflet map:", e);
-        }
-    }
-    /**
-     * Updates map markers based on current theme (dark/light).
-     */
-    function updateMapMarkers() {
-        if (!mapInstance || !markerLayer || typeof L === "undefined") return;
-
-        try {
-            const isDarkMode = body.classList.contains("dark-mode");
-            // Ensure CSS variables are accessible or define fallbacks
-            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#00a000';
-            const secondaryColor = getComputedStyle(document.documentElement).getPropertyValue('--secondary-color').trim() || '#4CAF50';
-            const iconColor = isDarkMode ? secondaryColor : primaryColor;
-            const borderColor = isDarkMode ? "#444" : "#fff";
-
-            const customIcon = L.divIcon({
-                className: 'custom-map-marker',
-                html: `<span style="background-color:${iconColor}; border: 2px solid ${borderColor};" class="marker-inner"></span>`,
-                iconSize: [24, 24],
-                iconAnchor: [12, 12]
-            });
-
-            markerLayer.clearLayers();
-            const markersData = [
-                { lat: 41.2788, lon: -72.5276, popup: "<strong>sysfx HQ</strong><br>123 Main St<br>Clinton, CT", targetSection: "#contact" },
-            ];
-
-            markersData.forEach(({ lat, lon, popup, targetSection }) => {
-                const marker = L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
-                marker.bindPopup(popup);
-                marker.on('mouseover', () => marker.openPopup());
-                if (targetSection && document.querySelector(targetSection)) {
-                    marker.on('click', () => scrollToSection(targetSection));
-                }
-            });
-        } catch(e) {
-            console.error("Error updating map markers:", e);
-        }
-    }
-
-    /**
-     * Initializes the testimonial slider (Fade Implementation).
-     */
-    function initTestimonialSlider() {
-        const slider = document.querySelector(".testimonial-slider");
-        const testimonials = document.querySelectorAll(".testimonial");
-        const prevBtn = document.querySelector(".carousel-prev");
-        const nextBtn = document.querySelector(".carousel-next");
-
-        if (!slider || testimonials.length === 0) { return; } // Allow single testimonial
-
-        if (testimonials.length < 2 || !prevBtn || !nextBtn) {
-             if (prevBtn) prevBtn.style.display = 'none';
-             if (nextBtn) nextBtn.style.display = 'none';
-             if (testimonials.length > 0) { // Ensure first is visible if only one
-                  testimonials[0].style.opacity = '1';
-                  testimonials[0].style.position = 'relative';
-                  testimonials[0].setAttribute('aria-hidden', 'false');
-             }
+    const initializeMap = () => {
+        if (typeof L === 'undefined' || !ELEMENTS.mapElement) {
+             console.warn('Leaflet library or map element not found.');
+             if(ELEMENTS.mapElement) ELEMENTS.mapElement.innerHTML = '<p>Map could not be loaded.</p>';
              return;
         }
+        try {
+            mapInstance = L.map(ELEMENTS.mapElement, {
+                scrollWheelZoom: false // Disable scroll wheel zoom initially
+            }).setView([41.2793, -72.4310], 14); // Approx Clinton, CT coordinates & zoom
 
-        let currentIndex = 0;
-        let slideInterval;
-        const totalSlides = testimonials.length;
+            // Add click listener to enable scroll wheel zoom
+            mapInstance.on('click', () => {
+                mapInstance.scrollWheelZoom.enable();
+            });
+            // Add blur listener to disable again when map loses focus
+            mapInstance.on('blur', () => {
+                 mapInstance.scrollWheelZoom.disable();
+            });
 
-        testimonials.forEach((testimonial, index) => {
-            testimonial.style.opacity = index === 0 ? '1' : '0';
-            testimonial.style.position = index === 0 ? 'relative' : 'absolute';
-            testimonial.style.top = '0';
-            testimonial.style.left = '0';
-            testimonial.setAttribute('aria-hidden', String(index !== 0));
-        });
 
-        function showTestimonial(index) {
-            const previousIndex = currentIndex;
-            currentIndex = (index + totalSlides) % totalSlides;
-            if (previousIndex === currentIndex) return;
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(mapInstance);
 
-            const prevSlide = testimonials[previousIndex];
-            const nextSlide = testimonials[currentIndex];
+            initializeMapMarker(); // Add the marker
 
-            nextSlide.style.position = 'relative';
-            nextSlide.style.opacity = '0';
-            nextSlide.setAttribute('aria-hidden', 'false');
-
-            gsap.to(prevSlide, { opacity: 0, duration: 0.6, ease: "power2.inOut", onComplete: () => { prevSlide.style.position = 'absolute'; prevSlide.setAttribute('aria-hidden', 'true'); }});
-            gsap.to(nextSlide, { opacity: 1, duration: 0.6, ease: "power2.inOut" });
+        } catch (error) {
+            console.error("Error initializing Leaflet map:", error);
+            ELEMENTS.mapElement.innerHTML = '<p>Map could not be loaded due to an error.</p>';
         }
-
-        function next() { showTestimonial(currentIndex + 1); }
-        function prev() { showTestimonial(currentIndex - 1); }
-        function startAutoSlide() { stopAutoSlide(); slideInterval = setInterval(next, 6000); }
-        function stopAutoSlide() { clearInterval(slideInterval); }
-
-        nextBtn.addEventListener('click', () => { next(); playSound('click', 0.5); stopAutoSlide(); startAutoSlide(); });
-        prevBtn.addEventListener('click', () => { prev(); playSound('click', 0.5); stopAutoSlide(); startAutoSlide(); });
-
-        const container = document.querySelector('.carousel-container');
-        if(container) { container.addEventListener('mouseenter', stopAutoSlide); container.addEventListener('mouseleave', startAutoSlide); }
-        startAutoSlide();
-    }
+    };
 
     /**
-     * Initializes the counting animation for stats numbers.
+      * Creates and adds/updates the map marker based on the current theme.
+      */
+    const initializeMapMarker = () => {
+        if (!mapInstance || typeof L === 'undefined') return;
+
+        // Remove existing marker layer if present
+        mapInstance.eachLayer((layer) => {
+            if (layer instanceof L.Marker) {
+                mapInstance.removeLayer(layer);
+            }
+        });
+
+         const isDark = ELEMENTS.body.classList.contains('dark-mode');
+         const markerColor = isDark ? 'var(--secondary-color)' : 'var(--primary-color)';
+         const borderColor = isDark ? 'var(--text-dark)' : 'var(--text-light)';
+
+        // Create a custom pulsing marker with DivIcon
+         const pulsingIcon = L.divIcon({
+             className: 'custom-map-marker', // Can add custom CSS rules for this class
+             html: `<div style="
+                        background-color: ${markerColor};
+                        width: 18px;
+                        height: 18px;
+                        border-radius: 50%;
+                        border: 3px solid ${borderColor};
+                        box-shadow: 0 0 0 rgba(0, 160, 0, 0.4);
+                        animation: pulse 2s infinite;
+                     "></div>
+                     <style>
+                        @keyframes pulse {
+                            0% { box-shadow: 0 0 0 0 rgba(0, 160, 0, 0.5); }
+                            70% { box-shadow: 0 0 0 15px rgba(0, 160, 0, 0); }
+                            100% { box-shadow: 0 0 0 0 rgba(0, 160, 0, 0); }
+                        }
+                        /* Adjust animation color for dark mode if needed */
+                        body.dark-mode @keyframes pulse {
+                             0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.5); }
+                            70% { box-shadow: 0 0 0 15px rgba(76, 175, 80, 0); }
+                            100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+                        }
+                     </style>`,
+             iconSize: [24, 24],
+             iconAnchor: [12, 12],
+             popupAnchor: [0, -15]
+         });
+
+
+        L.marker([41.2793, -72.4310], { icon: pulsingIcon })
+            .addTo(mapInstance)
+            .bindPopup("<b>sysfx HQ</b><br>123 Main Street<br>Clinton, CT 06413")
+            .openPopup();
+    };
+
+
+    /**
+     * Handles opening and closing modals.
      */
-    function initStatsCounter() {
-        const statNumbers = document.querySelectorAll(".stat-number");
-        if (statNumbers.length === 0 || typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-            statNumbers.forEach(stat => { const target = parseInt(stat.getAttribute("data-target")) || 0; stat.textContent = target.toLocaleString() + (stat.textContent.includes('+') ? '+' : ''); });
-            return;
-        }
-        gsap.registerPlugin(ScrollTrigger);
+    const handleModals = () => {
+        ELEMENTS.serviceCards?.forEach(card => {
+            card.addEventListener('click', () => {
+                const modalId = card.getAttribute('data-modal-target');
+                const modal = document.getElementById(modalId);
+                openModal(modal);
+            });
+             // Add keyboard accessibility
+            card.addEventListener('keydown', (e) => {
+                 if (e.key === 'Enter' || e.key === ' ') {
+                     e.preventDefault(); // Prevent space bar scrolling
+                     const modalId = card.getAttribute('data-modal-target');
+                     const modal = document.getElementById(modalId);
+                     openModal(modal);
+                 }
+            });
+        });
 
-        statNumbers.forEach(stat => {
-            const target = parseInt(stat.getAttribute("data-target")) || 0;
-            const nextSiblingText = stat.nextSibling ? stat.nextSibling.nodeValue : '';
-            const hasPlus = nextSiblingText && nextSiblingText.trim().startsWith('+');
-
-            ScrollTrigger.create({
-                trigger: stat, start: "top 85%", once: true,
-                onEnter: () => {
-                    gsap.fromTo(stat, { textContent: 0 }, { textContent: target, duration: 2.5, ease: "power2.out", snap: { textContent: 1 }, onUpdate: function() { stat.textContent = Math.ceil(this.targets()[0].textContent).toLocaleString() + (hasPlus ? '+' : ''); }, onComplete: function() { stat.textContent = target.toLocaleString() + (hasPlus ? '+' : ''); } });
+        ELEMENTS.modals?.forEach(modal => {
+            const closeButton = modal.querySelector('.modal-close');
+            // Close on close button click
+            closeButton?.addEventListener('click', () => closeModal(modal));
+            // Close on backdrop click
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) { // Check if click is on backdrop itself
+                    closeModal(modal);
                 }
             });
         });
-    }
 
-    /**
-     * Initializes the custom cursor behavior.
-     */
-    function initCustomCursor() {
-        const cursor = document.querySelector(".cursor");
-        if (!cursor || isTouchDevice) { if(cursor) cursor.style.display = 'none'; return; }
-
-        let mouseX = -100, mouseY = -100, currentX = -100, currentY = -100;
-        const smoothing = 0.12;
-
-        function updateCursorPosition(e) { mouseX = e.clientX; mouseY = e.clientY; }
-        function renderCursor() { const deltaX = mouseX - currentX; const deltaY = mouseY - currentY; currentX += deltaX * smoothing; currentY += deltaY * smoothing; cursor.style.transform = `translate(${currentX - cursor.offsetWidth / 2}px, ${currentY - cursor.offsetHeight / 2}px)`; requestAnimationFrame(renderCursor); }
-
-        document.addEventListener("mousemove", updateCursorPosition);
-        requestAnimationFrame(renderCursor);
-
-        document.addEventListener("mousedown", () => cursor.classList.add("click"));
-        document.addEventListener("mouseup", () => cursor.classList.remove("click"));
-
-        document.querySelectorAll('a, button, .service, .gallery-item, .nav-link, .modal-close, .carousel-control, .social-links a, .floating-action-button, .chat-bubble, [role="button"]')
-            .forEach(el => { el.addEventListener("mouseenter", () => cursor.classList.add("hover")); el.addEventListener("mouseleave", () => cursor.classList.remove("hover")); });
-
-        body.classList.add('cursor-ready');
-    }
-
-    /**
-     * Initializes modal window functionality for service items.
-     */
-    function initModals() {
-        const serviceArticles = document.querySelectorAll(".service[data-modal-target]");
-        const modals = document.querySelectorAll(".modal");
-        if (serviceArticles.length === 0 || modals.length === 0) return;
-
-        const modalMap = new Map();
-        modals.forEach(modal => modalMap.set(modal.id, modal));
-        let previouslyFocusedElement = null;
-
-        function openModal(modalId, triggerElement) {
-            const modal = modalMap.get(modalId);
-            if (modal && !modal.classList.contains('active')) {
-                previouslyFocusedElement = triggerElement || document.activeElement;
-                modal.classList.add('active');
-                modal.setAttribute('aria-hidden', 'false');
-                body.classList.add('no-scroll');
-                const closeButton = modal.querySelector('.modal-close');
-                if (closeButton) setTimeout(() => closeButton.focus(), 50);
-                playSound("open");
-            } else if (!modal) { console.warn(`Modal with ID "${modalId}" not found.`); }
-        }
-
-        function closeModal(modal) {
-             if(modal && modal.classList.contains('active')) {
-                modal.classList.remove('active');
-                modal.setAttribute('aria-hidden', 'true');
-                body.classList.remove('no-scroll');
-                 playSound("close");
-                 if (previouslyFocusedElement) { try { previouslyFocusedElement.focus(); } catch(e) {} previouslyFocusedElement = null; }
-             }
-        }
-
-        serviceArticles.forEach(article => {
-            const modalId = article.getAttribute("data-modal-target");
-            if (modalId) {
-                article.addEventListener('click', (e) => openModal(modalId, e.currentTarget));
-                article.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(modalId, e.currentTarget); } });
+        // Close modal on Escape key press
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                const activeModal = document.querySelector('.modal.active');
+                if (activeModal) {
+                    closeModal(activeModal);
+                }
             }
         });
+    };
 
-        modals.forEach(modal => {
-            const closeBtn = modal.querySelector(".modal-close");
-            const modalActions = modal.querySelectorAll(".modal-action[data-link]");
-            if (closeBtn) closeBtn.addEventListener('click', () => closeModal(modal));
-            modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(modal); });
-            modalActions.forEach(button => { button.addEventListener('click', (e) => { e.stopPropagation(); const targetSection = button.getAttribute('data-link'); if(targetSection) { closeModal(modal); setTimeout(() => scrollToSection(targetSection), 100); } }); });
-        });
-
-        document.addEventListener('keydown', (e) => { if (e.key === "Escape") { const activeModal = document.querySelector('.modal.active'); if (activeModal) closeModal(activeModal); } });
-    }
-
-    /**
-     * Initializes GSAP ScrollTrigger animations for sections and footer.
+     /**
+     * Opens a specific modal.
+     * @param {HTMLElement} modal - The modal element to open.
      */
-    function initScrollAnimations() {
-        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-            console.warn("GSAP/ScrollTrigger not found, skipping scroll animations.");
-            document.querySelectorAll(".section-animation, .main-footer").forEach(el => el.classList.add('visible'));
-            return;
-        }
-        gsap.registerPlugin(ScrollTrigger);
+     const openModal = (modal) => {
+        if (!modal) return;
+        // Lazy load modal content here if implemented
+        modal.classList.add('active');
+        ELEMENTS.body.classList.add('no-scroll'); // Prevent background scroll
+        modal.setAttribute('aria-hidden', 'false');
+         // Focus management: focus the close button or the modal itself
+         const focusableElement = modal.querySelector('.modal-close') || modal;
+         setTimeout(() => focusableElement?.focus(), 50); // Delay focus slightly for transition
+     };
 
-        document.querySelectorAll(".section-animation").forEach(section => {
-            gsap.fromTo(section, { opacity: 0, y: 50 }, {
-                opacity: 1, y: 0, duration: 0.8, ease: "power3.out",
-                scrollTrigger: { trigger: section, start: "top 85%", end: "bottom 15%", toggleActions: "play none none reset", onEnter: () => section.classList.add("visible"), onLeaveBack: () => section.classList.remove("visible") }
-            });
-        });
+     /**
+      * Closes a specific modal.
+      * @param {HTMLElement} modal - The modal element to close.
+      */
+     const closeModal = (modal) => {
+        if (!modal) return;
+        modal.classList.remove('active');
+        ELEMENTS.body.classList.remove('no-scroll');
+        modal.setAttribute('aria-hidden', 'true');
+        // Optional: return focus to the element that opened the modal
+     };
 
-        const footer = document.querySelector(".main-footer");
-        if (footer) {
-             ScrollTrigger.create({
-                 trigger: footer, start: "top 95%", once: true,
-                 onEnter: () => {
-                    // Ensure initial styles for animation are set if not using GSAP From
-                    footer.style.opacity = '0';
-                    footer.style.transform = 'translateY(30px)';
-                    footer.classList.add('visible'); // Trigger CSS animation
-                 }
-             });
-        }
-    }
 
     /**
-     * Initializes the image lightbox gallery functionality.
+     * Handles opening the gallery lightbox.
      */
-    function initLightbox() {
-        const galleryItems = document.querySelectorAll(".gallery-item");
-        const lightbox = document.getElementById("lightbox");
-        if (galleryItems.length === 0 || !lightbox) return;
+    const handleLightbox = () => {
+        if (!ELEMENTS.lightbox || !ELEMENTS.lightboxImage || !ELEMENTS.lightboxClose) return;
 
-        const lightboxImage = lightbox.querySelector(".lightbox-image");
-        const lightboxClose = lightbox.querySelector(".lightbox-close");
-        let currentTrigger = null;
+        let currentTarget = null; // To return focus
 
-        function openLightbox(item) {
-            const imgSrc = item.getAttribute("data-src");
-            const imgAlt = item.getAttribute("data-alt") || item.querySelector("img")?.alt || "Enlarged gallery image";
-            if (!imgSrc) return;
-
-            lightboxImage.src = imgSrc;
-            lightboxImage.alt = imgAlt;
-            lightboxImage.style.transform = 'scale(1)';
-            lightboxImage.classList.remove('zoomed');
-            lightbox.classList.add('active');
-            lightbox.setAttribute('aria-hidden', 'false');
-            body.classList.add('no-scroll');
-            currentTrigger = item;
-            setTimeout(() => lightboxClose.focus(), 50);
-            playSound("open");
-        }
-
-        function closeLightbox() {
-            if (!lightbox.classList.contains('active')) return;
-            lightbox.classList.remove('active');
-            lightbox.setAttribute('aria-hidden', 'true');
-            body.classList.remove('no-scroll');
-             playSound("close");
-             if (currentTrigger) { try { currentTrigger.focus(); } catch(e) {} currentTrigger = null; }
-             // Delay resetting src slightly to allow fade out animation
-             setTimeout(() => { if (!lightbox.classList.contains('active')) lightboxImage.src = ''; }, 350);
-        }
-
-        function toggleZoom(e) {
-             e.stopPropagation();
-             const isZoomed = lightboxImage.classList.toggle('zoomed');
-             lightboxImage.style.transform = isZoomed ? 'scale(1.5)' : 'scale(1)'; // CSS should handle transition
-        }
-
-        galleryItems.forEach(item => {
-            item.addEventListener("click", () => openLightbox(item));
-            item.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLightbox(item); } });
-            item.addEventListener("mouseover", () => playSound("hover", 0.4));
-        });
-
-        lightboxClose.addEventListener("click", closeLightbox);
-        lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
-        lightboxImage.addEventListener('click', toggleZoom);
-
-        document.addEventListener('keydown', (e) => { if (e.key === "Escape" && lightbox.classList.contains('active')) closeLightbox(); });
-    }
-
-    /**
-     * Initializes the background music toggle.
-     */
-    function initMusicPlayer() {
-        const musicToggle = document.getElementById("music-toggle");
-        const backgroundMusic = document.getElementById("background-music");
-        if (!musicToggle || !backgroundMusic) return;
-
-        let isMusicPlaying = localStorage.getItem("musicPlaying") === "true";
-
-        function setMusicState(play) {
-             try {
-                 if (play && backgroundMusic.paused) {
-                     backgroundMusic.play().then(() => {
-                         gsap.to(backgroundMusic, { volume: 0.4, duration: 1 });
-                         musicToggle.classList.remove("muted"); musicToggle.setAttribute('aria-pressed', 'true'); musicToggle.setAttribute('aria-label', 'Pause background music');
-                         localStorage.setItem("musicPlaying", "true"); isMusicPlaying = true;
-                     }).catch(e => { console.warn("Music autoplay failed:", e.message); setMusicState(false); });
-                 } else if (!play && !backgroundMusic.paused) {
-                     gsap.to(backgroundMusic, { volume: 0, duration: 0.8, onComplete: () => {
-                         backgroundMusic.pause(); musicToggle.classList.add("muted"); musicToggle.setAttribute('aria-pressed', 'false'); musicToggle.setAttribute('aria-label', 'Play background music');
-                         localStorage.setItem("musicPlaying", "false"); isMusicPlaying = false; } });
-                 } else { // Update UI on initial load even if state matches
-                      musicToggle.classList.toggle("muted", !play); musicToggle.setAttribute('aria-pressed', String(play)); musicToggle.setAttribute('aria-label', play ? 'Pause background music' : 'Play background music');
-                 }
-             } catch (error) { console.error("Error controlling music:", error); }
-        }
-        musicToggle.addEventListener("click", () => { setMusicState(!isMusicPlaying); playSound("click"); });
-        backgroundMusic.volume = 0; setMusicState(isMusicPlaying); // Initialize
-    }
-
-    /**
-     * Initializes floating elements like tech tips, chat bubble, scroll-to-top.
-     */
-    function initFloatingElements() {
-        const stickyNote = document.getElementById("sticky-note");
-        const techTipText = document.getElementById("tech-tip-text");
-        const closeTechTipBtn = document.getElementById("close-tech-tip");
-        if (stickyNote && techTipText && closeTechTipBtn) {
-            const tips = ["Ctrl+Shift+T reopens the last closed browser tab!", "Regularly restarting your router can solve many connection issues.", "Use a password manager for strong, unique passwords.", "Enable Two-Factor Authentication (2FA) wherever possible.", "Keep your software updated to patch security vulnerabilities.", "Backup your important data regularly (cloud or external drive).", "Windows Key + L locks your computer instantly.", "Clean your keyboard and mouse periodically for hygiene and performance.", "Right-click > 'Inspect' in your browser opens developer tools.", "Consider using an SSD for significantly faster boot and load times."];
-            const tipDismissed = localStorage.getItem("techTipDismissed") === "true";
-            if (!tipDismissed) {
-                techTipText.textContent = tips[Math.floor(Math.random() * tips.length)];
-                setTimeout(() => { stickyNote.style.display = 'flex'; gsap.from(stickyNote, { y: -30, opacity: 0, duration: 0.5, ease: 'back.out(1.7)'}); }, 3000);
-                closeTechTipBtn.addEventListener('click', () => { gsap.to(stickyNote, { scale: 0.8, opacity: 0, duration: 0.3, ease: "back.in(1.7)", onComplete: () => { stickyNote.style.display = 'none'; localStorage.setItem("techTipDismissed", "true"); } }); playSound("close"); });
-            } else { stickyNote.style.display = 'none'; }
-        }
-
-        const chatBubble = document.getElementById("chat-bubble");
-        if (chatBubble) {
-            setTimeout(() => { chatBubble.style.display = 'flex'; gsap.from(chatBubble, { x: 50, opacity: 0, duration: 0.5, ease: "power2.out" }); }, 4500);
-            chatBubble.addEventListener("click", () => { alert("Live chat coming soon! For urgent help, please call or email us via the Contact section."); playSound("confirm"); });
-            chatBubble.addEventListener("mouseover", () => playSound("hover", 0.4));
-            chatBubble.addEventListener("keydown", (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); chatBubble.click(); } });
-        }
-
-        const scrollTopBtn = document.getElementById("scroll-top-button");
-        if (scrollTopBtn) {
-             function checkScrollTopVisibility() {
-                 const isVisible = window.scrollY > 400;
-                 const currentlyDisplayed = scrollTopBtn.style.display !== 'none';
-                 if (isVisible && !currentlyDisplayed) {
-                      scrollTopBtn.style.display = 'flex';
-                      gsap.fromTo(scrollTopBtn, {opacity: 0, scale: 0.5}, {opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(1.7)'});
-                 } else if (!isVisible && currentlyDisplayed) {
-                      gsap.to(scrollTopBtn, {opacity: 0, scale: 0.5, duration: 0.3, ease: 'back.in(1.7)', onComplete: () => { scrollTopBtn.style.display = 'none'; }});
-                 }
-             }
-            window.addEventListener("scroll", debounce(checkScrollTopVisibility, 100), { passive: true });
-            scrollTopBtn.addEventListener("click", () => { window.scrollTo({ top: 0, behavior: "smooth" }); playSound("click"); });
-            checkScrollTopVisibility();
-        }
-    }
-
-    /**
-    * Initializes Scrollspy for navigation link highlighting.
-    */
-   function initScrollSpy() {
-       if (typeof IntersectionObserver === 'undefined') {
-            console.warn("IntersectionObserver not supported, skipping scrollspy.");
-            return;
-       }
-
-       const sections = Array.from(document.querySelectorAll('main section[id]'));
-       const navLinks = document.querySelectorAll('.main-nav a.nav-link[data-section-id]');
-       const navLinkMap = new Map();
-       navLinks.forEach(link => navLinkMap.set(link.getAttribute('data-section-id'), link));
-
-       if (sections.length === 0 || navLinks.length === 0) return;
-
-       let currentActiveLinkId = null; // Store the ID of the currently active link's target
-
-       const observerCallback = (entries) => {
-            let intersectingSections = [];
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    intersectingSections.push({
-                        id: entry.target.id,
-                        ratio: entry.intersectionRatio,
-                        top: entry.boundingClientRect.top
-                    });
+        ELEMENTS.galleryItems?.forEach(item => {
+            item.addEventListener('click', () => {
+                currentTarget = item; // Store the clicked item
+                const highResSrc = item.getAttribute('data-src');
+                const altText = item.getAttribute('data-alt') || item.querySelector('img')?.alt || 'Gallery image';
+                if (highResSrc) {
+                    ELEMENTS.lightboxImage.setAttribute('src', highResSrc);
+                    ELEMENTS.lightboxImage.setAttribute('alt', altText);
+                    ELEMENTS.lightbox.classList.add('active');
+                    ELEMENTS.body.classList.add('no-scroll');
+                    ELEMENTS.lightbox.setAttribute('aria-hidden', 'false');
+                    setTimeout(() => ELEMENTS.lightboxClose.focus(), 50); // Focus close button
                 }
             });
+             // Add keyboard accessibility
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                     e.preventDefault();
+                     item.click(); // Trigger click handler
+                }
+            });
+        });
 
-            let newActiveLinkId = null;
+        // Close lightbox
+        const closeLightboxAction = () => {
+             ELEMENTS.lightbox.classList.remove('active');
+             ELEMENTS.body.classList.remove('no-scroll');
+             ELEMENTS.lightbox.setAttribute('aria-hidden', 'true');
+             ELEMENTS.lightboxImage.setAttribute('src', ''); // Clear src
+             ELEMENTS.lightboxImage.setAttribute('alt', '');
+             currentTarget?.focus(); // Return focus to the item that opened it
+        };
 
-            // If scrolled to the very top, activate 'home'
-            if (window.scrollY < 100 && navLinkMap.has('home')) {
-                 newActiveLinkId = 'home';
+        ELEMENTS.lightboxClose.addEventListener('click', closeLightboxAction);
+        ELEMENTS.lightbox.addEventListener('click', (event) => {
+            if (event.target === ELEMENTS.lightbox) { // Click on backdrop
+                closeLightboxAction();
             }
-            // If scrolled near the bottom, activate 'contact'
-            else if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 150 && navLinkMap.has('contact')) {
-                 newActiveLinkId = 'contact';
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && ELEMENTS.lightbox.classList.contains('active')) {
+                 closeLightboxAction();
             }
-            // If there are intersecting sections, find the best one
-            else if (intersectingSections.length > 0) {
-                // Sort by intersection ratio (desc), then by proximity to top (asc)
-                intersectingSections.sort((a, b) => {
-                    if (b.ratio !== a.ratio) {
-                        return b.ratio - a.ratio;
+        });
+    };
+
+
+    /**
+     * Handles the testimonial carousel (fade transition).
+     */
+    const handleTestimonialCarousel = () => {
+        if (!ELEMENTS.testimonialSlider || !ELEMENTS.testimonials || ELEMENTS.testimonials.length === 0) return;
+
+        const totalTestimonials = ELEMENTS.testimonials.length;
+
+        const showTestimonial = (index) => {
+            ELEMENTS.testimonials.forEach((testimonial, i) => {
+                if (i === index) {
+                    testimonial.setAttribute('aria-hidden', 'false');
+                    // Opacity/visibility handled by CSS [.testimonial[aria-hidden="false"]]
+                } else {
+                    testimonial.setAttribute('aria-hidden', 'true');
+                }
+            });
+            currentTestimonialIndex = index;
+        };
+
+        const nextTestimonial = () => {
+            const nextIndex = (currentTestimonialIndex + 1) % totalTestimonials;
+            showTestimonial(nextIndex);
+        };
+
+        const prevTestimonial = () => {
+            const prevIndex = (currentTestimonialIndex - 1 + totalTestimonials) % totalTestimonials;
+            showTestimonial(prevIndex);
+        };
+
+        // Event Listeners for Controls
+        ELEMENTS.carouselNext?.addEventListener('click', () => {
+            nextTestimonial();
+            resetInterval();
+        });
+        ELEMENTS.carouselPrev?.addEventListener('click', () => {
+            prevTestimonial();
+            resetInterval();
+        });
+
+        // Keyboard navigation
+        ELEMENTS.carouselPrev?.addEventListener('keydown', e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), prevTestimonial(), resetInterval()));
+        ELEMENTS.carouselNext?.addEventListener('keydown', e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), nextTestimonial(), resetInterval()));
+
+
+        // Auto-play
+        const startInterval = () => {
+            if (testimonialInterval) clearInterval(testimonialInterval); // Clear existing interval
+            testimonialInterval = setInterval(nextTestimonial, CONFIG.CAROUSEL_INTERVAL_MS);
+        };
+
+        const resetInterval = () => {
+            clearInterval(testimonialInterval);
+            startInterval();
+        };
+
+        // Initial setup
+        showTestimonial(0); // Show the first testimonial initially
+        startInterval(); // Start auto-play
+
+        // Pause on hover
+        ELEMENTS.testimonialSlider.addEventListener('mouseenter', () => clearInterval(testimonialInterval));
+        ELEMENTS.testimonialSlider.addEventListener('mouseleave', startInterval);
+        ELEMENTS.testimonialSlider.addEventListener('focusin', () => clearInterval(testimonialInterval));
+        ELEMENTS.testimonialSlider.addEventListener('focusout', startInterval);
+    };
+
+    /**
+     * Animates the stats numbers using GSAP when they become visible.
+     */
+    const animateStats = () => {
+        if (prefersReducedMotion || typeof gsap === 'undefined') {
+            // If reduced motion or GSAP unavailable, just set final values
+            ELEMENTS.statsNumbers?.forEach(num => {
+                num.textContent = num.dataset.target || '0';
+            });
+            return;
+        }
+
+        ELEMENTS.statsNumbers?.forEach(statNum => {
+            const target = parseInt(statNum.dataset.target, 10) || 0;
+            // Use Intersection Observer to trigger animation
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        gsap.to(statNum, {
+                            textContent: target,
+                            duration: 2,
+                            ease: "power1.inOut",
+                            snap: { textContent: 1 }, // Snap to whole numbers
+                            stagger: 0.1, // Add stagger if animating multiple stats at once
+                            onUpdate: function() {
+                                // Format number with commas if needed
+                                // statNum.textContent = parseInt(statNum.textContent).toLocaleString();
+                                statNum.textContent = Math.round(this.targets()[0].textContent); // Ensure integer display
+                            },
+                            onComplete: function() {
+                                // Ensure final value is exact and formatted
+                                statNum.textContent = target.toLocaleString();
+                            }
+                        });
+                        observer.unobserve(statNum); // Animate only once
                     }
-                    return a.top - b.top;
                 });
-                // The "best" match is the first one in the sorted array
-                newActiveLinkId = intersectingSections[0].id;
-            }
-            // If nothing else matches, keep the previously active link (prevents flicker between sections)
-            else {
-                newActiveLinkId = currentActiveLinkId;
-            }
+            }, { threshold: 0.5 }); // Trigger when 50% visible
 
+            observer.observe(statNum);
+        });
+    };
 
-            // Only update classes if the active link has changed
-            if (newActiveLinkId !== currentActiveLinkId) {
-                navLinks.forEach(link => {
-                    link.classList.toggle('active', link.getAttribute('data-section-id') === newActiveLinkId);
+     /**
+     * Handles section reveal animations using GSAP and ScrollTrigger.
+     */
+    const revealSections = () => {
+        if (prefersReducedMotion || typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+             // Remove opacity if animations disabled
+            ELEMENTS.animatedSections?.forEach(section => section.style.opacity = 1);
+            ELEMENTS.footer?.classList.add('visible'); // Make footer visible immediately
+            return;
+        }
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        ELEMENTS.animatedSections?.forEach((section) => {
+            gsap.from(section, {
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 85%", // Trigger when 85% from top enters viewport
+                    end: "bottom 20%",
+                    // markers: true, // Uncomment for debugging
+                    toggleActions: "play none none none", // Play animation once on enter
+                    // scrub: true, // Uncomment for scroll-linked animation
+                },
+                y: 50, // Start 50px down
+                opacity: 0, // Start invisible
+                duration: 0.8, // Animation duration
+                ease: "power2.out",
+            });
+        });
+
+        // Separate animation for the footer
+        if (ELEMENTS.footer) {
+            gsap.to(ELEMENTS.footer, {
+                scrollTrigger: {
+                    trigger: ELEMENTS.footer,
+                    start: "top 95%", // Trigger when footer is almost visible
+                    end: "bottom top", // End when bottom hits top (fully visible)
+                    // markers: true, // Debugging
+                    onEnter: () => ELEMENTS.footer.classList.add('visible'),
+                    onLeaveBack: () => ELEMENTS.footer.classList.remove('visible') // Optional: hide if scrolling back up past trigger
+                }
+                // CSS handles the actual animation via .visible class
+            });
+        }
+    };
+
+    /**
+     * Fetches and displays a tech trivia fact.
+     */
+    const fetchTechTrivia = async () => {
+        if (!ELEMENTS.triviaTextElement) return;
+        ELEMENTS.triviaTextElement.textContent = 'Loading tech fact...';
+        try {
+            // Using a simple placeholder as the API might be unreliable/require sign-up
+            const trivia = [
+                "The first computer mouse was invented by Doug Engelbart in 1964 and was made of wood.",
+                "Approximately 90% of the world's data has been created in the last few years.",
+                "The QWERTY keyboard layout was designed to slow typists down to prevent typewriter jams.",
+                "The average smartphone user checks their phone over 150 times a day.",
+                "Domain name registration was free until 1995."
+            ];
+             const randomFact = trivia[Math.floor(Math.random() * trivia.length)];
+             ELEMENTS.triviaTextElement.textContent = randomFact;
+
+            // Example using Fetch API (replace URL if needed)
+            // const response = await fetch(CONFIG.TECH_TRIVIA_URL);
+            // if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            // const data = await response.json();
+            // if (data.results && data.results.length > 0) {
+            //     // Decode HTML entities often found in OpenTDB
+            //     const txt = document.createElement("textarea");
+            //     txt.innerHTML = data.results[0].question + " A: " + data.results[0].correct_answer; // Combine Q&A for trivia format
+            //     ELEMENTS.triviaTextElement.textContent = txt.value;
+            // } else {
+            //     ELEMENTS.triviaTextElement.textContent = 'Could not fetch a tech fact right now.';
+            // }
+        } catch (error) {
+            console.error("Error fetching tech trivia:", error);
+            ELEMENTS.triviaTextElement.textContent = 'Did you know? The first gigabyte hard drive (IBM 3380) in 1980 weighed over 500 pounds!'; // Fallback fact
+        }
+    };
+
+    /**
+     * Toggles background music playback.
+     */
+    const toggleMusic = () => {
+        if (!ELEMENTS.backgroundMusic || !ELEMENTS.musicToggle) return;
+        try {
+            if (musicPlaying) {
+                ELEMENTS.backgroundMusic.pause();
+                ELEMENTS.musicToggle.classList.add('muted');
+                ELEMENTS.musicToggle.setAttribute('aria-pressed', 'false');
+                ELEMENTS.musicToggle.setAttribute('aria-label', 'Play background music');
+            } else {
+                // Play might return a promise, handle potential errors
+                ELEMENTS.backgroundMusic.play().then(() => {
+                    ELEMENTS.musicToggle.classList.remove('muted');
+                    ELEMENTS.musicToggle.setAttribute('aria-pressed', 'true');
+                     ELEMENTS.musicToggle.setAttribute('aria-label', 'Pause background music');
+                }).catch(error => {
+                    console.warn("Background music playback failed. User interaction might be required first.", error);
+                     musicPlaying = !musicPlaying; // Revert state if play failed
+                     // Optionally display a message to the user
                 });
-                currentActiveLinkId = newActiveLinkId; // Update the current active ID
             }
-       };
+            musicPlaying = !musicPlaying;
+        } catch(e) {
+            console.error("Error toggling music:", e);
+        }
+    };
 
-       const observerOptions = {
-            root: null,
-            rootMargin: `-${header ? header.offsetHeight + 20 : 100}px 0px -40% 0px`, // Adjusted top margin based on header, bottom margin to prioritize upper sections
-            threshold: 0 // Trigger whenever visibility changes
-       };
+    /**
+     * Shows/hides the scroll-to-top button.
+     */
+    const handleScrollTopButton = () => {
+        if (!ELEMENTS.scrollTopButton) return;
+        if (window.scrollY > window.innerHeight * 0.5) { // Show after scrolling 50% of viewport height
+            ELEMENTS.scrollTopButton.style.display = 'flex'; // Use flex to show
+             ELEMENTS.scrollTopButton.style.opacity = '1';
+             ELEMENTS.scrollTopButton.style.transform = 'scale(1)';
+        } else {
+             ELEMENTS.scrollTopButton.style.opacity = '0';
+             ELEMENTS.scrollTopButton.style.transform = 'scale(0.8)';
+             // Use timeout to set display none after transition
+             setTimeout(() => {
+                 if (window.scrollY <= window.innerHeight * 0.5) { // Double check condition
+                     ELEMENTS.scrollTopButton.style.display = 'none';
+                 }
+             }, 300); // Match CSS transition duration
+        }
+    };
 
-       const observer = new IntersectionObserver(observerCallback, observerOptions);
-       sections.forEach(section => observer.observe(section));
-   }
+    /**
+     * Scrolls the page to the top smoothly.
+     */
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
+
+    /**
+     * Handles the custom cursor movement and interactions.
+     */
+    const handleCustomCursor = () => {
+        if (!ELEMENTS.customCursor || prefersReducedMotion) {
+            ELEMENTS.customCursor?.remove(); // Remove cursor element if not needed
+            return;
+        }
+
+        ELEMENTS.body.classList.add('cursor-ready'); // Show cursor after JS init
+
+        window.addEventListener('mousemove', (e) => {
+            gsap.to(ELEMENTS.customCursor, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.1, // Faster update
+                ease: 'power1.out'
+            });
+        });
+
+        document.addEventListener('mousedown', () => ELEMENTS.customCursor.classList.add('click'));
+        document.addEventListener('mouseup', () => ELEMENTS.customCursor.classList.remove('click'));
+
+        // Add hover effect for specific elements
+        const hoverTargets = document.querySelectorAll(
+            'a, button, .service, .gallery-item, .testimonial, .card-hover, .event-card, .timeline-item, .social-links a, .floating-action-button, .hamburger, input, textarea, [role="button"]'
+        );
+        hoverTargets.forEach(el => {
+            el.addEventListener('mouseenter', () => ELEMENTS.customCursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => ELEMENTS.customCursor.classList.remove('hover'));
+        });
+    };
+
+    /**
+     * Handles the mobile navigation toggle and closing.
+     */
+    const handleMobileNav = () => {
+        if (!ELEMENTS.hamburgerButton || !ELEMENTS.mobileNav) return;
+
+        ELEMENTS.hamburgerButton.addEventListener('click', () => {
+            const isActive = ELEMENTS.hamburgerButton.classList.toggle('is-active');
+            ELEMENTS.body.classList.toggle('nav-active');
+            ELEMENTS.hamburgerButton.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+            ELEMENTS.mobileNav.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+             // Toggle inert state for main content (accessibility)
+             const mainContent = document.getElementById('main-content');
+             const footerContent = document.querySelector('.main-footer');
+             if (isActive) {
+                 mainContent?.setAttribute('inert', '');
+                 footerContent?.setAttribute('inert', '');
+                 ELEMENTS.mobileNav.focus(); // Focus nav panel when opened
+             } else {
+                 mainContent?.removeAttribute('inert');
+                 footerContent?.removeAttribute('inert');
+                  ELEMENTS.hamburgerButton.focus(); // Return focus to toggle button
+             }
+        });
+
+        // Close nav when a link is clicked
+        ELEMENTS.mobileNav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                ELEMENTS.hamburgerButton.classList.remove('is-active');
+                ELEMENTS.body.classList.remove('nav-active');
+                ELEMENTS.hamburgerButton.setAttribute('aria-expanded', 'false');
+                ELEMENTS.mobileNav.setAttribute('aria-hidden', 'true');
+                 // Remove inert state
+                document.getElementById('main-content')?.removeAttribute('inert');
+                document.querySelector('.main-footer')?.removeAttribute('inert');
+            });
+        });
+
+         // Close nav on Escape key
+         document.addEventListener('keydown', (event) => {
+             if (event.key === 'Escape' && ELEMENTS.body.classList.contains('nav-active')) {
+                 ELEMENTS.hamburgerButton.click(); // Simulate click to close
+             }
+         });
+
+         // Close nav on overlay click (using the body::before pseudo-element)
+         // We can detect clicks *not* on the nav itself when it's active
+         document.addEventListener('click', (event) => {
+            if (ELEMENTS.body.classList.contains('nav-active') &&
+                !ELEMENTS.mobileNav.contains(event.target) &&
+                !ELEMENTS.hamburgerButton.contains(event.target)) {
+                 ELEMENTS.hamburgerButton.click();
+            }
+         });
+    };
 
 
     /**
-     * Initializes miscellaneous interactive elements (trivia, easter egg, etc.).
+     * Handles the scrollspy functionality to highlight active nav link.
      */
-    function initMisc() {
-        const triviaTextElement = document.getElementById("trivia-text");
-        if (triviaTextElement) {
-            const trivia = ["The first computer 'bug' was literally a moth found in a relay in 1947.", "The first 1GB hard drive (IBM 3380) in 1980 weighed over 500 pounds.", "Domain Name System (DNS), the internet's phonebook, was introduced in 1983.", "Approximately 90% of the world's data was created in the last two years.", "The QWERTY keyboard layout was designed to slow typists down.", "There are more devices connected to the internet than people on Earth.", "The term 'Wi-Fi' doesn't actually stand for anything.", "The average smartphone user touches their phone over 2,600 times a day.", "The first computer mouse was made of wood.", "CAPTCHA stands for 'Completely Automated Public Turing test to tell Computers and Humans Apart'."];
-            triviaTextElement.textContent = trivia[Math.floor(Math.random() * trivia.length)];
+    const handleScrollspy = throttle(() => {
+        if (!ELEMENTS.navLinks) return;
+        let currentSectionId = null;
+        const scrollPosition = window.scrollY + headerHeight + 50; // Offset includes header + buffer
+
+        // Find the section currently in view
+        const sections = document.querySelectorAll('main section[id]'); // Select only sections in main with IDs
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+
+            // Check if section is within the scroll position (+/- height for accuracy)
+             if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                currentSectionId = section.id;
+             }
+        });
+
+         // Fallback for top/bottom of page
+        if (window.scrollY < window.innerHeight * 0.5 && !currentSectionId) {
+            currentSectionId = 'home'; // Default to home if near top
+        } else if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50 && !currentSectionId) {
+            // If near the bottom, check if contact is the last section
+             const lastSection = sections[sections.length - 1];
+            if (lastSection?.id === 'contact') {
+                 currentSectionId = 'contact';
+            }
         }
 
-        const easterEggTrigger = document.querySelector(".easter-egg-trigger");
-        if (easterEggTrigger && typeof confetti !== 'undefined') {
-            let clickCount = 0; const requiredClicks = 7; let resetTimeout;
-            easterEggTrigger.addEventListener("click", () => { clickCount++; playSound('hover', 0.2); clearTimeout(resetTimeout); if (clickCount === requiredClicks) { confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ["#00a000", "#4CAF50", "#ffffff", "#ffeb3b"], scalar: 1.1 }); alert("✨ Easter Egg Found! ✨\nThanks for visiting! Mention code 'SYSFX10' for 10% off your next service!"); playSound("confirm"); clickCount = 0; } else { resetTimeout = setTimeout(() => { clickCount = 0; }, 2000); } });
+
+        // Update nav link styles
+        ELEMENTS.navLinks.forEach(link => {
+            link.classList.remove('active');
+            const sectionId = link.getAttribute('href')?.substring(1); // Get ID from href
+            // Use dataset if available, otherwise fallback to href
+            // const sectionId = link.dataset.sectionId || link.getAttribute('href')?.substring(1);
+            if (sectionId && sectionId === currentSectionId) {
+                link.classList.add('active');
+            }
+        });
+    }, CONFIG.SCROLLSPY_THROTTLE_MS);
+
+
+    /**
+     * Shows the sticky note after a delay.
+     */
+    const showStickyNote = () => {
+        if (!ELEMENTS.stickyNote) return;
+        setTimeout(() => {
+            ELEMENTS.stickyNote.style.display = 'flex';
+            gsap.fromTo(ELEMENTS.stickyNote, { opacity: 0, scale: 0.8, rotation: -10 }, { opacity: 1, scale: 1, rotation: -4, duration: 0.5, ease: 'back.out(1.7)' });
+
+            const closeBtn = ELEMENTS.stickyNote.querySelector('.close-btn');
+            closeBtn?.addEventListener('click', () => {
+                 gsap.to(ELEMENTS.stickyNote, { opacity: 0, scale: 0.8, rotation: 10, duration: 0.3, ease: 'power1.in', onComplete: () => ELEMENTS.stickyNote.style.display = 'none' });
+            });
+        }, CONFIG.STICKY_NOTE_DELAY_MS);
+    };
+
+    /**
+     * Shows the chat bubble after a delay.
+     */
+    const showChatBubble = () => {
+        if (!ELEMENTS.chatBubble) return;
+        setTimeout(() => {
+             ELEMENTS.chatBubble.style.display = 'flex';
+             gsap.fromTo(ELEMENTS.chatBubble, { opacity: 0, x: 50 }, { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out' });
+
+             ELEMENTS.chatBubble.addEventListener('click', () => {
+                alert('Live chat coming soon!'); // Placeholder action
+            });
+        }, CONFIG.CHAT_BUBBLE_DELAY_MS);
+    };
+
+    /**
+     * Handles the confetti easter egg.
+     */
+    const handleEasterEgg = () => {
+        if (!ELEMENTS.easterEggTrigger || typeof confetti === 'undefined') return;
+        ELEMENTS.easterEggTrigger.addEventListener('click', () => {
+             const duration = 5 * 1000; // 5 seconds
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: var(--z-modal-content) + 10 }; // Ensure confetti is high
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+
+                const particleCount = 50 * (timeLeft / duration);
+                // Launch from middle-left and middle-right
+                confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.4), y: Math.random() - 0.2 } });
+                confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.6, 0.9), y: Math.random() - 0.2 } });
+            }, 250);
+
+             // Add a little burst at the end
+             setTimeout(() => confetti({ particleCount: 100, spread: 200, origin: { y: 0.6 }, colors: ['#00a000', '#4CAF50', '#ffeb3b', '#ffffff'] }), duration - 100);
+        });
+    };
+
+     /**
+     * Basic form validation.
+     */
+    const validateForm = () => {
+        let isValid = true;
+        const requiredInputs = ELEMENTS.form?.querySelectorAll('[required]');
+
+        requiredInputs?.forEach(input => {
+            const group = input.closest('.form-group') || input.parentElement;
+            const errorElement = group.querySelector('.form-error');
+            input.classList.remove('invalid');
+            if (errorElement) errorElement.style.display = 'none';
+
+            let hasError = false;
+            if (input.type === 'email') {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!input.value.trim() || !emailRegex.test(input.value.trim())) {
+                    hasError = true;
+                    if(errorElement) errorElement.textContent = 'Please enter a valid email address.';
+                }
+            } else if (input.type === 'checkbox') {
+                 if (!input.checked) {
+                     hasError = true;
+                     if(errorElement) errorElement.textContent = 'This field is required.';
+                 }
+            } else { // Text, Textarea, Tel etc.
+                if (!input.value.trim()) {
+                     hasError = true;
+                    if(errorElement) errorElement.textContent = 'This field is required.';
+                }
+            }
+
+             if (hasError) {
+                 isValid = false;
+                 input.classList.add('invalid');
+                  if (errorElement) errorElement.style.display = 'block';
+             }
+        });
+
+        return isValid;
+    };
+
+    /**
+      * Handles form submission via Formspree (or similar).
+      */
+    const handleFormSubmission = () => {
+        if (!ELEMENTS.form) return;
+
+        ELEMENTS.form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent default browser submission
+
+             if (!validateForm()) {
+                 if (ELEMENTS.formStatus) {
+                     ELEMENTS.formStatus.textContent = 'Please fix the errors above.';
+                     ELEMENTS.formStatus.className = 'form-status error';
+                 }
+                return;
+            }
+
+            const formData = new FormData(ELEMENTS.form);
+            const submitButton = ELEMENTS.form.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.innerHTML;
+
+            // Indicate loading state
+            if (ELEMENTS.formStatus) {
+                 ELEMENTS.formStatus.textContent = 'Sending...';
+                 ELEMENTS.formStatus.className = 'form-status';
+            }
+            submitButton.disabled = true;
+             submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...'; // Loading indicator
+
+            try {
+                const response = await fetch(ELEMENTS.form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    // Success
+                    if (ELEMENTS.formStatus) {
+                        ELEMENTS.formStatus.textContent = 'Message sent successfully! We\'ll be in touch soon.';
+                        ELEMENTS.formStatus.className = 'form-status success';
+                    }
+                    ELEMENTS.form.reset(); // Clear the form
+                    // Clear validation states
+                    ELEMENTS.form.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+                    ELEMENTS.form.querySelectorAll('.form-error').forEach(el => el.style.display = 'none');
+                } else {
+                    // Handle server errors (e.g., Formspree error)
+                     const data = await response.json();
+                     if (Object.hasOwn(data, 'errors')) {
+                         throw new Error(data["errors"].map(error => error["message"]).join(", "));
+                     } else {
+                          throw new Error('Oops! There was a problem submitting your form.');
+                     }
+                }
+            } catch (error) {
+                // Handle network errors or thrown errors
+                console.error('Form submission error:', error);
+                if (ELEMENTS.formStatus) {
+                    ELEMENTS.formStatus.textContent = error.message || 'An error occurred. Please try again later.';
+                    ELEMENTS.formStatus.className = 'form-status error';
+                }
+            } finally {
+                // Reset button state
+                 submitButton.disabled = false;
+                submitButton.innerHTML = originalButtonText;
+            }
+        });
+    };
+
+     /**
+      * Hides the preloader.
+      */
+    const hidePreloader = () => {
+        if (!ELEMENTS.preloader) {
+             ELEMENTS.body.classList.remove('preload'); // Ensure body becomes visible even if no preloader
+            return;
         }
+        // Use GSAP for smooth fade out if available
+        if (typeof gsap !== 'undefined') {
+            gsap.to(ELEMENTS.preloader, {
+                opacity: 0,
+                duration: 0.5,
+                ease: 'power1.inOut',
+                onComplete: () => {
+                    ELEMENTS.preloader.style.display = 'none';
+                     ELEMENTS.body.classList.remove('preload'); // Make body visible
+                }
+            });
+        } else {
+             ELEMENTS.preloader.style.opacity = '0';
+             setTimeout(() => {
+                 ELEMENTS.preloader.style.display = 'none';
+                  ELEMENTS.body.classList.remove('preload');
+             }, 500); // Match potential CSS transition
+        }
+    };
 
-        const yearSpan = document.getElementById("current-year");
-        if (yearSpan) { yearSpan.textContent = new Date().getFullYear(); }
 
-        document.querySelectorAll('.social-links a').forEach(link => { link.addEventListener('mouseover', () => playSound('hover', 0.3)); });
-    }
+    // --- Initialization Function ---
+    const initialize = () => {
+        initializeDarkMode();
+        adjustBodyPadding(); // Initial padding adjustment
+        displayTime();
+        setInterval(displayTime, 60000); // Update time every minute
+        if (!prefersReducedMotion) {
+            initializeParticles();
+            typeEffectHandler(); // Start typing effect
+            handleCustomCursor();
+            revealSections(); // Init GSAP animations
+            animateStats(); // Init GSAP stat animations
+             showStickyNote();
+             showChatBubble();
+        } else {
+             // Handle non-animated fallbacks if needed (stats, sections visible)
+            ELEMENTS.statsNumbers?.forEach(num => num.textContent = num.dataset.target || '0');
+            ELEMENTS.animatedSections?.forEach(section => section.style.opacity = 1);
+            ELEMENTS.footer?.classList.add('visible');
+             // Ensure cursor element is removed if motion is reduced
+             ELEMENTS.customCursor?.remove();
+        }
+        initializeMap();
+        handleModals();
+        handleLightbox();
+        handleTestimonialCarousel();
+        fetchTechTrivia(); // Fetch trivia on load
+        handleMobileNav();
+        handleScrollTopButton(); // Initial check for scroll button
+        handleEasterEgg();
+        handleFormSubmission();
+
+        // Hide preloader after everything else is potentially set up
+        // Use window.onload for better accuracy (waits for images etc)
+        window.onload = hidePreloader;
+        // Fallback if onload doesn't fire quickly
+        setTimeout(hidePreloader, 2500);
 
 
-    // --- Run Initializations ---
-    try {
-        initHeader();
-        initNavigation();
-        initTypingEffect();
-        initDarkMode();        // Depends on header/body, calls updateParticles/Map
-        // initParticles();    // Called by initDarkMode
-        initMap();             // Setup map
-        initTestimonialSlider();
-        initStatsCounter();
-        initCustomCursor();
-        initModals();
-        initScrollAnimations();
-        initLightbox();
-        initMusicPlayer();
-        initFloatingElements();
-        initScrollSpy();       // Run after sections and nav are ready
-        initMisc();
-        console.log("sysfx scripts initialized successfully (v1.2.1).");
-    } catch (error) {
-        console.error("Error during script initialization:", error);
-        // Optionally display a user-friendly message on the page
-        // document.body.innerHTML = 'Oops! Something went wrong loading the page. Please try refreshing.';
-    }
+        // Initial Scrollspy Call
+        handleScrollspy();
+    };
+
+
+    // --- Event Listeners ---
+    ELEMENTS.darkModeToggle?.addEventListener('click', toggleDarkMode);
+    ELEMENTS.musicToggle?.addEventListener('click', toggleMusic);
+    ELEMENTS.scrollTopButton?.addEventListener('click', scrollToTop);
+
+    // Throttled and Debounced Listeners
+    window.addEventListener('scroll', throttle(() => {
+        updateScrollProgress();
+        handleScrollspy();
+        handleScrollTopButton();
+    }, 50)); // Throttle scroll events more aggressively
+
+    window.addEventListener('resize', debounce(() => {
+        adjustBodyPadding();
+        handleScrollspy(); // Re-check scrollspy on resize
+    }, CONFIG.RESIZE_DEBOUNCE_MS));
+
+     // Add focus handler for skip link
+     ELEMENTS.skipLink?.addEventListener('blur', () => {
+         ELEMENTS.skipLink.style.left = '-999px'; // Hide again on blur
+     });
+
+
+    // --- Start Initialization ---
+    initialize();
 
 }); // End DOMContentLoaded
