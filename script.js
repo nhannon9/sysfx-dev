@@ -1,1021 +1,1102 @@
 /**
- * SysFX Website Script
- * Version: 1.8 (Professional Refinements & Integration Fixes)
- * Author: sysfx (Revised by Gemini)
- *
- * Purpose: Manages dynamic interactions, animations, and third-party
- *          library integrations for the sysfx website.
+ * sysfx Website Script
+ * Version: 1.1
+ * Author: sysfx (Revised by AI Assistant)
+ * Description: Handles animations, interactivity, and dynamic content for the sysfx website.
  */
 
-'use strict';
+// Wait for the DOM to be fully loaded and parsed
+document.addEventListener("DOMContentLoaded", () => {
 
-document.addEventListener('DOMContentLoaded', () => {
-
-    // --- Configuration & Feature Flags ---
-    const CONFIG = {
-        SCROLLSPY_THROTTLE_MS: 150,
-        RESIZE_DEBOUNCE_MS: 250, // Standard debounce
-        TYPING_SPEED_MS: 85, // Slightly faster
-        TYPING_DELETE_SPEED_MS: 40, // Slightly faster
-        TYPING_PAUSE_MS: 2000,
-        CAROUSEL_INTERVAL_MS: 5500,
-        FORM_STATUS_TIMEOUT_MS: 6000,
-        PRELOADER_FADE_DURATION_MS: 600,
-        PRELOADER_MAX_WAIT_MS: 5000, // Max time before forcing removal
-        MODAL_SCROLL_DELAY_MS: 150, // Delay before scrolling after modal close action
-        AUDIO_FADE_DURATION_MS: 500, // Music fade duration
-        TAGLINES: [
-            "Your Partner in Tech Solutions.",
-            "Expert Computer Repair Services.",
-            "Robust Cybersecurity Solutions.",
-            "Custom Web Development.",
-            "Reliable Networking & IT Support.",
-            "Serving Clinton, CT and Beyond."
-        ],
-        TECH_TRIVIA: [ // Keep local trivia for reliability
-            "The first computer mouse, invented by Doug Engelbart in 1964, was made of wood.",
-            "An estimated 90% of the world's data has been created in just the last few years.",
-            "The QWERTY keyboard layout was designed to slow typists down on early typewriters.",
-            "On average, a smartphone user checks their device over 150 times per day.",
-            "Registering a domain name was free until 1995.",
-            "The first 1GB hard drive (IBM 3380, 1980) weighed over 500 pounds and cost $40,000.",
-            "The term 'bug' originated when a moth caused a malfunction in the Harvard Mark II computer in 1947."
-        ],
-        // Map Settings
-        MAP_COORDS: [41.2793, -72.5210], // Adjusted slightly based on Clinton center
-        MAP_ZOOM: 14,
-        MAP_MAX_ZOOM: 18,
-        MAP_MIN_ZOOM: 8
-    };
-
-    const FEATURE_FLAGS = {
-        enableParticles: true,
-        enableCustomCursor: true,
-        enableFormspree: true, // Set to false if not using Formspree
-        enableBackgroundMusic: true,
-        enableEasterEgg: true,
-        // Disabled features (can be re-enabled if implemented)
-        enableStickyNote: false,
-        enableChatBubble: false,
-    };
+    // --- Global Elements & State ---
+    const body = document.body;
+    const header = document.getElementById('main-header');
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
     // --- Utility Functions ---
-    const debounce = (func, wait) => {
+    /**
+     * Debounces a function to limit the rate at which it can fire.
+     * @param {Function} func - The function to debounce.
+     * @param {number} wait - The debounce duration in milliseconds.
+     * @returns {Function} - The debounced function.
+     */
+    function debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
             const later = () => {
                 clearTimeout(timeout);
-                func.apply(this, args);
+                func(...args);
             };
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
         };
-    };
+    }
 
-    const throttle = (func, limit) => {
-        let inThrottle;
-        return function executedFunction(...args) {
-            if (!inThrottle) {
-                func.apply(this, args);
-                inThrottle = true;
-                setTimeout(() => inThrottle = false, limit);
-            }
+    /**
+     * Plays a sound effect. Caches Audio objects for efficiency.
+     * @param {string} type - The type of sound ('click', 'hover', 'confirm', etc.).
+     * @param {number} [volume=0.8] - Volume level (0 to 1).
+     */
+    const soundCache = {};
+    function playSound(type, volume = 0.8) {
+        // Example sound URLs (replace with your actual files or CDN links)
+        const sounds = {
+            click: "https://cdn.freesound.org/previews/245/245645_4055516-lq.mp3", // Example click sound
+            hover: "https://cdn.freesound.org/previews/184/184438_2393279-lq.mp3", // Example hover sound
+            confirm: "https://cdn.freesound.org/previews/505/505727_11019708-lq.mp3", // Example confirmation
+            open: "https://cdn.freesound.org/previews/661/661481_12731996-lq.mp3", // Example open/reveal
+            close: "https://cdn.freesound.org/previews/245/245645_4055516-lq.mp3" // Example close (can reuse click)
         };
-    };
 
-    const logError = (message, error = '') => {
-        console.error(`[SysFX Script Error] ${message}`, error);
-    };
-    const logWarn = (message) => { console.warn(`[SysFX Script Warn] ${message}`); };
-    const logInfo = (message) => { console.info(`[SysFX Script Info] ${message}`); };
-
-    const selectElement = (selector, context = document) => {
-        try {
-            const element = context.querySelector(selector);
-            // No warning needed for potentially missing optional elements
-            return element;
-        } catch (e) { logError(`Invalid selector: ${selector}`, e); return null; }
-    };
-    const selectElements = (selector, context = document) => {
-        try {
-            return context.querySelectorAll(selector);
-        } catch (e) { logError(`Invalid selector: ${selector}`, e); return document.querySelectorAll('.non-existent'); }
-    };
-
-    // --- State Variables ---
-    let headerHeight = 0;
-    let currentTaglineIndex = 0;
-    let isTypingPaused = false;
-    let currentTestimonialIndex = 0;
-    let testimonialInterval = null;
-    let musicPlaying = false;
-    let audioFadeInterval = null; // For music fade
-    let mapInstance = null;
-    let particlesJSInstance = null; // Store pJS instance
-    let activeModal = null;
-    let activeLightboxTrigger = null; // Use consistent naming
-    let isDarkMode = false; // Track theme state
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // --- Element Selectors Cache ---
-    const ELEMENTS = (() => {
-        const selectors = {
-            html: 'html', body: 'body', preloader: '#preloader', header: '#main-header',
-            darkModeToggle: '#darkModeToggle', hamburgerButton: '#hamburger-button',
-            mobileNav: '#main-navigation', navLinks: '.nav-link[data-section-id]',
-            scrollProgress: '.scroll-progress', currentTimeDisplay: '#current-time',
-            typingEffectElement: '#typing-effect', mapElement: '#map',
-            serviceCards: '.service[data-modal-target]', modalContainer: '.modal-container',
-            modals: '.modal', galleryItems: '.gallery-item[data-src]',
-            lightbox: '#lightbox', lightboxImage: '.lightbox-image', lightboxCaption: '#lightbox-caption',
-            lightboxClose: '.lightbox-close', testimonialSlider: '.testimonial-slider',
-            testimonials: '.testimonial', carouselPrev: '.carousel-prev', carouselNext: '.carousel-next',
-            testimonialLiveRegion: '#testimonial-live-region',
-            statsNumbers: '.stat-number[data-target]', animatedSections: '.section-animation',
-            footer: '.main-footer', triviaTextElement: '#trivia-text',
-            musicToggle: '#music-toggle', backgroundMusic: '#background-music',
-            scrollTopButton: '#scroll-top-button', easterEggTrigger: '.easter-egg-trigger',
-            customCursor: '.cursor', form: '.contact-form', formStatus: '#form-status',
-            skipLink: '.skip-link', mainContent: '#main-content'
-        };
-        const elements = {};
-        for (const key in selectors) {
-            elements[key] = key.endsWith('s') || key === 'navLinks' ? selectElements(selectors[key]) : selectElement(selectors[key]);
-        }
-        if (!elements.body) console.error("FATAL: Body element not found!");
-        return elements;
-    })();
-
-    // --- Core Functions ---
-
-    const initializeDarkMode = () => {
-        if (!ELEMENTS.body || !ELEMENTS.darkModeToggle) return;
-        const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
-        const savedTheme = localStorage.getItem('theme');
-        isDarkMode = savedTheme === 'dark' || (!savedTheme && prefersDark); // Update global state
-
-        ELEMENTS.body.classList.toggle('dark-mode', isDarkMode);
-        updateDarkModeButton(); // Pass no argument, uses global isDarkMode
-
-        setTimeout(() => ELEMENTS.body.classList.add('theme-transitions-active'), 150);
-    };
-
-    const updateDarkModeButton = () => {
-        if (!ELEMENTS.darkModeToggle) return;
-        const icon = selectElement('i', ELEMENTS.darkModeToggle);
-        const text = selectElement('.mode-button-text', ELEMENTS.darkModeToggle); // Text exists, hidden by CSS
-
-        ELEMENTS.darkModeToggle.setAttribute('aria-pressed', String(isDarkMode));
-        if (icon) {
-            icon.classList.toggle('fa-moon', !isDarkMode);
-            icon.classList.toggle('fa-sun', isDarkMode);
-        }
-        if (text) text.textContent = isDarkMode ? ' Light Mode' : ' Dark Mode';
-        ELEMENTS.darkModeToggle.setAttribute('aria-label', isDarkMode ? 'Switch to light mode' : 'Switch to dark mode');
-    };
-
-    const toggleDarkMode = () => {
-        if (!ELEMENTS.body) return;
-        isDarkMode = !isDarkMode; // Toggle global state
-        ELEMENTS.body.classList.toggle('dark-mode', isDarkMode);
-        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-        updateDarkModeButton();
-        if (mapInstance) initializeMapMarker(); // Update map marker color
-        if (FEATURE_FLAGS.enableParticles) ReInitializeParticles(); // Re-init particles with new config
-    };
-
-    const adjustLayoutPadding = debounce(() => {
-        if (!ELEMENTS.header || !ELEMENTS.body || !ELEMENTS.html) return;
-        headerHeight = ELEMENTS.header.offsetHeight;
-        ELEMENTS.body.style.paddingTop = `${headerHeight}px`;
-        ELEMENTS.html.style.scrollPaddingTop = `${headerHeight + 20}px`;
-    }, 100);
-
-    let lastScrollTop = 0;
-    const handleHeaderShrink = throttle(() => { // Throttle this expensive check
-        if (!ELEMENTS.header) return;
-        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-        const shrinkThreshold = 80;
-
-        if (currentScroll > lastScrollTop && currentScroll > shrinkThreshold) {
-            ELEMENTS.header.classList.add('header-shrunk');
-        } else if (currentScroll < lastScrollTop || currentScroll <= shrinkThreshold) {
-            ELEMENTS.header.classList.remove('header-shrunk');
-        }
-        lastScrollTop = Math.max(0, currentScroll);
-        // Adjust layout padding *after* shrink/expand animation might start
-        // Use a slightly delayed debounce if needed, or rely on the existing resize debounce
-        // adjustLayoutPadding(); // Call debounced version
-    }, 100); // Throttle check frequency
-
-
-    const updateScrollProgress = throttle(() => {
-        if (!ELEMENTS.scrollProgress) return;
-        const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const scrolled = scrollableHeight > 0 ? (window.scrollY / scrollableHeight) * 100 : 0;
-        const progress = Math.min(scrolled, 100);
-        ELEMENTS.scrollProgress.style.width = `${progress}%`;
-        ELEMENTS.scrollProgress.setAttribute('aria-valuenow', String(Math.round(progress)));
-    }, 50);
-
-    const displayTime = () => {
-        if (!ELEMENTS.currentTimeDisplay) return;
-        try {
-            const now = new Date();
-            const optionsTime = { hour: 'numeric', minute: '2-digit', hour12: true };
-            const optionsDate = { weekday: 'short', month: 'short', day: 'numeric' };
-            const timeString = now.toLocaleTimeString(navigator.language || 'en-US', optionsTime);
-            const dateString = now.toLocaleDateString(navigator.language || 'en-US', optionsDate);
-            ELEMENTS.currentTimeDisplay.innerHTML = `<i class="far fa-calendar-alt" aria-hidden="true"></i> ${dateString}    <i class="far fa-clock" aria-hidden="true"></i> ${timeString}`;
-        } catch (e) { logError('Failed to display time', e); ELEMENTS.currentTimeDisplay.textContent = 'Time unavailable'; }
-    };
-
-    const typeEffectHandler = async () => {
-        if (!ELEMENTS.typingEffectElement || prefersReducedMotion || CONFIG.TAGLINES.length === 0) {
-            if (ELEMENTS.typingEffectElement && CONFIG.TAGLINES.length > 0) {
-                ELEMENTS.typingEffectElement.textContent = CONFIG.TAGLINES[0]; // Set first tagline statically
-            }
+        if (!sounds[type]) {
+            console.warn(`Sound type "${type}" not defined.`);
             return;
         }
 
-        const type = async (text) => {
-            for (let i = 0; i <= text.length; i++) {
-                if (isTypingPaused) return false; // Indicate pause requested
-                ELEMENTS.typingEffectElement.textContent = text.substring(0, i);
-                await new Promise(res => setTimeout(res, CONFIG.TYPING_SPEED_MS));
-            }
-            return true; // Indicate completion
-        };
-        const del = async (text) => {
-            for (let i = text.length; i >= 0; i--) {
-                if (isTypingPaused) return false;
-                ELEMENTS.typingEffectElement.textContent = text.substring(0, i);
-                await new Promise(res => setTimeout(res, CONFIG.TYPING_DELETE_SPEED_MS));
-            }
-            return true;
-        };
-
-        while (true) {
-            if (isTypingPaused) { await new Promise(res => setTimeout(res, 500)); continue; }
-
-            const currentText = CONFIG.TAGLINES[currentTaglineIndex];
-            if (!await type(currentText)) continue; // Restart if paused during typing
-            await new Promise(res => setTimeout(res, CONFIG.TYPING_PAUSE_MS));
-            if (isTypingPaused) continue;
-            if (!await del(currentText)) continue; // Restart if paused during deleting
-            await new Promise(res => setTimeout(res, CONFIG.TYPING_DELETE_SPEED_MS * 2)); // Brief pause before next
-            currentTaglineIndex = (currentTaglineIndex + 1) % CONFIG.TAGLINES.length;
-        }
-    };
-
-    const getParticlesConfig = () => {
-        // Get CSS variable values safely
-        const computedStyle = getComputedStyle(ELEMENTS.body);
-        const primaryColor = computedStyle.getPropertyValue('--sysfx-green-primary').trim() || '#00a000';
-        const secondaryColor = computedStyle.getPropertyValue('--sysfx-green-secondary').trim() || '#4CAF50';
-        const lightLineColor = computedStyle.getPropertyValue('--border-color-light').trim() || '#cccccc';
-        const darkLineColor = computedStyle.getPropertyValue('--border-color-dark').trim() || '#444444';
-
-        const commonConfig = {
-            interactivity: {
-                detect_on: "window", // More reliable than canvas sometimes
-                events: { resize: true },
-                modes: { // Define all modes used
-                    repulse: { distance: 80, duration: 0.4 },
-                    push: { particles_nb: 4 },
-                    grab: { distance: 120, line_linked: { opacity: 0.7 } }, // Use line_linked here
-                    bubble: { distance: 150, size: 6, duration: 0.3 }
-               }
-            },
-            retina_detect: true
-        };
-
-        const lightConfig = {
-            ...commonConfig,
-            particles: {
-                number: { value: 70, density: { enable: true, value_area: 800 } },
-                color: { value: primaryColor },
-                shape: { type: "circle" },
-                opacity: { value: 0.4, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false } },
-                size: { value: 2.5, random: true },
-                line_linked: { enable: true, distance: 140, color: lightLineColor, opacity: 0.4, width: 1 },
-                move: { enable: true, speed: 2, direction: "none", random: false, straight: false, out_mode: "out", bounce: false }
-            },
-            interactivity: { ...commonConfig.interactivity, events: { ...commonConfig.interactivity.events, onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" } } }
-        };
-
-        const darkConfig = {
-            ...commonConfig,
-            particles: {
-                number: { value: 90, density: { enable: true, value_area: 800 } },
-                color: { value: secondaryColor },
-                shape: { type: "circle" },
-                opacity: { value: 0.5, random: true, anim: { enable: true, speed: 0.8, opacity_min: 0.15, sync: false } },
-                size: { value: 3, random: true },
-                line_linked: { enable: true, distance: 120, color: darkLineColor, opacity: 0.5, width: 1 },
-                move: { enable: true, speed: 1.5, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
-            },
-            interactivity: { ...commonConfig.interactivity, events: { ...commonConfig.interactivity.events, onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "bubble" } } }
-        };
-
-        return isDarkMode ? darkConfig : lightConfig;
-    };
-
-    const initializeParticles = () => {
-        if (!FEATURE_FLAGS.enableParticles || prefersReducedMotion || typeof particlesJS === 'undefined') {
-            logInfo('ParticlesJS skipped (disabled, reduced motion, or library missing).');
-            const particlesContainer = selectElement('#particles-js');
-            if (particlesContainer) particlesContainer.style.display = 'none';
-            return;
-        }
-
-        const particlesElementId = 'particles-js';
-        const particlesContainer = selectElement(`#${particlesElementId}`);
-        if (!particlesContainer) {
-            logWarn(`Particles container #${particlesElementId} not found.`);
-            return;
-        }
-        particlesContainer.style.display = 'block'; // Ensure visible
-
         try {
-            const currentConfig = getParticlesConfig();
-            // Store the instance for potential destruction
-            particlesJS(particlesElementId, currentConfig, () => {
-                logInfo('Particles.js initialized successfully.');
-                if (window.pJSDom && window.pJSDom.length > 0 && window.pJSDom[0].pJS) {
-                    particlesJSInstance = window.pJSDom[0].pJS; // Capture instance
-                }
-            });
+            if (!soundCache[type]) {
+                soundCache[type] = new Audio(sounds[type]);
+                soundCache[type].volume = Math.max(0, Math.min(volume, 1)); // Clamp volume
+                soundCache[type].preload = "auto";
+            }
+            // Ensure playback isn't interrupted if already playing briefly
+            if (soundCache[type].readyState >= 2) { // HAVE_CURRENT_DATA or more
+                 soundCache[type].currentTime = 0; // Reset playback position
+                 soundCache[type].play().catch(e => console.warn(`Sound play failed: ${e.message}`));
+            } else {
+                // If not ready, try playing once loaded (might have slight delay first time)
+                soundCache[type].addEventListener('canplaythrough', () => {
+                     soundCache[type].currentTime = 0;
+                     soundCache[type].play().catch(e => console.warn(`Sound play failed: ${e.message}`));
+                }, { once: true });
+            }
         } catch (error) {
-            logError("Error initializing particles.js", error);
-            if (particlesContainer) particlesContainer.style.display = 'none';
+            console.error("Error playing sound:", error);
         }
-    };
+    }
 
-    // Function to destroy and re-initialize particles (e.g., on theme change)
-    const ReInitializeParticles = () => {
-        if (particlesJSInstance && particlesJSInstance.pJS && particlesJSInstance.pJS.fn && particlesJSInstance.pJS.fn.vendors && particlesJSInstance.pJS.fn.vendors.destory) {
-             particlesJSInstance.pJS.fn.vendors.destory(); // Correct typo in library if needed: destroy
-             particlesJSInstance = null; // Clear instance
-             logInfo("Destroyed previous ParticlesJS instance.");
-             // Use requestAnimationFrame to ensure DOM cleanup before re-init
-             requestAnimationFrame(initializeParticles);
-        } else if (window.pJSDom && window.pJSDom.length > 0) {
-            // Fallback if instance wasn't captured correctly but pJSDom exists
-             try {
-                window.pJSDom[0].pJS.fn.vendors.destory();
-                window.pJSDom.splice(0, 1); // Remove from global array
-                logInfo("Destroyed previous ParticlesJS instance via pJSDom.");
-             } catch(e) {
-                logWarn("Could not destroy ParticlesJS instance via pJSDom.", e);
-             }
-             requestAnimationFrame(initializeParticles);
+    /**
+     * Announces a message to screen readers.
+     * @param {string} message - The message to announce.
+     */
+    function announceToScreenReader(message) {
+        const announcement = document.createElement("div");
+        announcement.setAttribute("aria-live", "polite");
+        announcement.className = "sr-only"; // Use the utility class for visual hiding
+        announcement.textContent = message;
+        body.appendChild(announcement);
+        // Remove after a short delay to ensure it's read
+        setTimeout(() => announcement.remove(), 1500);
+    }
+
+    /**
+     * Smoothly scrolls to a target element, accounting for the fixed header.
+     * @param {string} selector - The CSS selector for the target element (e.g., '#contact').
+     */
+    function scrollToSection(selector) {
+        const targetElement = document.querySelector(selector);
+        if (targetElement && header) {
+            const headerHeight = header.offsetHeight;
+            const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = targetPosition - headerHeight - 10; // Add a small buffer
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth"
+            });
+            playSound("click");
+        } else {
+            console.warn(`Element not found for selector: ${selector}`);
         }
-        else {
-            // If no instance found, just try initializing
-            initializeParticles();
-        }
-    };
+    }
 
+    // --- Initialization Functions ---
 
-    const initializeMap = () => {
-        if (typeof L === 'undefined') { logWarn('Leaflet library (L) not found.'); if (ELEMENTS.mapElement) ELEMENTS.mapElement.innerHTML = '<p>Map library failed to load.</p>'; return; }
-        if (!ELEMENTS.mapElement) { logWarn('Map element (#map) not found.'); return; }
+    /**
+     * Initializes header-related functionality (clock, dynamic padding, scroll behavior).
+     */
+    function initHeader() {
+        const clockElement = document.getElementById("current-time");
+        const scrollProgress = document.querySelector(".scroll-progress");
 
-        try {
-            if (mapInstance && mapInstance.remove) mapInstance.remove();
+        // Update Clock
+        function updateClock() {
+            if (clockElement) {
+                try {
+                    const now = new Date();
+                    // Use Intl for better localization and formatting
+                    const timeFormat = new Intl.DateTimeFormat("en-US", { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'America/New_York', hour12: true });
+                    const dateFormat = new Intl.DateTimeFormat("en-US", { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
+                    const timeZoneAbbr = new Intl.DateTimeFormat("en-US", { timeZoneName: 'short', timeZone: 'America/New_York' }).formatToParts(now).find(part => part.type === 'timeZoneName')?.value || 'EST'; // Fallback
 
-            mapInstance = L.map(ELEMENTS.mapElement, { scrollWheelZoom: false, attributionControl: false })
-                .setView(CONFIG.MAP_COORDS, CONFIG.MAP_ZOOM);
+                    const time = timeFormat.format(now);
+                    const date = dateFormat.format(now);
 
-            mapInstance.on('focus', () => mapInstance.scrollWheelZoom.enable());
-            mapInstance.on('blur', () => mapInstance.scrollWheelZoom.disable());
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: CONFIG.MAP_MAX_ZOOM, minZoom: CONFIG.MAP_MIN_ZOOM
-            }).addTo(mapInstance);
-
-            L.control.attribution({ prefix: false, position: 'bottomright' })
-                .addAttribution('© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OSM</a>')
-                .addTo(mapInstance);
-
-            initializeMapMarker();
-            logInfo('Leaflet map initialized.');
-
-        } catch (error) { logError("Error initializing Leaflet map", error); ELEMENTS.mapElement.innerHTML = '<p>Map could not be loaded.</p>'; mapInstance = null; }
-    };
-
-    const initializeMapMarker = () => {
-        if (!mapInstance || typeof L === 'undefined') return;
-
-        // Clear previous markers more robustly
-        mapInstance.eachLayer((layer) => {
-            if (layer instanceof L.Marker || (layer.options && layer.options.icon instanceof L.DivIcon)) { // Check for marker or divIcon marker
-                try { mapInstance.removeLayer(layer); } catch (e) { logWarn("Could not remove previous map marker layer.", e); }
+                    clockElement.innerHTML = `<i class="fas fa-clock" aria-hidden="true"></i> ${time} | ${date} (${timeZoneAbbr})`;
+                } catch (e) {
+                    console.error("Error updating clock:", e);
+                    clockElement.textContent = "Error loading time.";
+                }
             }
-        });
+        }
+        updateClock();
+        setInterval(updateClock, 1000); // Update every second
 
-        try {
-            const computedStyle = getComputedStyle(ELEMENTS.body);
-            const primaryColor = computedStyle.getPropertyValue('--sysfx-green-primary').trim() || '#00a000';
-            const secondaryColor = computedStyle.getPropertyValue('--sysfx-green-secondary').trim() || '#4CAF50';
-            const lightBg = computedStyle.getPropertyValue('--bg-surface-light').trim() || '#ffffff';
-            const darkBg = computedStyle.getPropertyValue('--bg-surface-dark').trim() || '#1e1e1e';
+        // Update Body Padding & Scroll Progress/Header Shrink
+        let lastHeaderHeight = 0;
+        function updateLayout() {
+            if (!header) return;
 
-            const markerColor = isDarkMode ? secondaryColor : primaryColor;
-            const pulseColor = isDarkMode ? 'rgba(76, 175, 80, 0.5)' : 'rgba(0, 160, 0, 0.5)';
-            const pulseEndColor = isDarkMode ? 'rgba(76, 175, 80, 0)' : 'rgba(0, 160, 0, 0)';
-            const borderColor = isDarkMode ? darkBg : lightBg; // Use surface bg for border contrast
-
-            // Keyframes for pulsing animation
-            const keyframes = `@keyframes pulseMarker { 0% { box-shadow: 0 0 0 0 ${pulseColor}; } 70% { box-shadow: 0 0 0 15px ${pulseEndColor}; } 100% { box-shadow: 0 0 0 0 ${pulseEndColor}; } }`;
-            const styleExists = document.getElementById('pulseMarkerKeyframes');
-            if (!styleExists) {
-                 const styleSheet = document.createElement("style");
-                 styleSheet.id = 'pulseMarkerKeyframes';
-                 styleSheet.innerText = keyframes;
-                 document.head.appendChild(styleSheet);
+            const currentHeaderHeight = header.offsetHeight;
+            // Only update padding if header height actually changes
+            if (currentHeaderHeight !== lastHeaderHeight) {
+                body.style.paddingTop = `${currentHeaderHeight}px`;
+                lastHeaderHeight = currentHeaderHeight;
+                 // console.log(`Header height updated: ${currentHeaderHeight}px`); // Debug log
             }
 
-            const pulsingIcon = L.divIcon({
-                className: 'custom-map-marker',
-                html: `<div style="
-                           background-color: ${markerColor};
-                           width: 18px; height: 18px; border-radius: 50%;
-                           border: 3px solid ${borderColor};
-                           box-shadow: 0 0 0 ${pulseColor};
-                           animation: pulseMarker 2s infinite cubic-bezier(0.455, 0.03, 0.515, 0.955);
-                           transition: background-color 0.3s ease, border-color 0.3s ease;
-                       "></div>`,
-                iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [0, -15]
-            });
 
-            L.marker(CONFIG.MAP_COORDS, { icon: pulsingIcon, title: 'sysfx Location', alt: 'Map marker for sysfx Location' }) // Added alt text
-                .addTo(mapInstance)
-                .bindPopup("<b>sysfx HQ</b><br>123 Main Street<br>Clinton, CT 06413");
+            // Scroll Progress
+            if (scrollProgress) {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const docHeight = Math.max(
+                    body.scrollHeight, document.documentElement.scrollHeight,
+                    body.offsetHeight, document.documentElement.offsetHeight,
+                    body.clientHeight, document.documentElement.clientHeight
+                ) - window.innerHeight;
+                const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+                scrollProgress.style.width = `${scrollPercent}%`;
+            }
 
-        } catch (error) { logError("Failed to create/update map marker", error); }
-    };
-
-    const handleModals = () => {
-        if (ELEMENTS.serviceCards.length === 0 && ELEMENTS.modals.length === 0) return;
-
-        const openModal = (modal, triggerElement = null) => {
-            if (!modal || modal === activeModal) return;
-            activeModal = modal;
-            if (triggerElement) activeModal.triggerElement = triggerElement;
-
-            modal.style.display = 'flex';
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const reflow = modal.offsetHeight; // Force reflow for transition
-
-            requestAnimationFrame(() => {
-                modal.classList.add('active');
-                ELEMENTS.body?.classList.add('no-scroll');
-                modal.setAttribute('aria-hidden', 'false');
-                ELEMENTS.mainContent?.setAttribute('inert', ''); // Make background content inert
-                ELEMENTS.footer?.setAttribute('inert', '');
-
-                const focusable = selectElements('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', modal);
-                const firstFocusable = focusable[0] || modal; // Fallback to modal itself
-                setTimeout(() => firstFocusable.focus(), 100); // Delay focus
-            });
-        };
-
-        const closeModal = (modal) => {
-            if (!modal || modal !== activeModal || !modal.classList.contains('active')) return;
-            modal.classList.remove('active');
-            modal.setAttribute('aria-hidden', 'true');
-
-            const trigger = activeModal.triggerElement;
-            activeModal.triggerElement = null;
-            activeModal = null;
-
-            const onTransitionEnd = (event) => {
-                if (event.target !== modal || !['opacity', 'transform'].includes(event.propertyName)) return;
-                modal.style.display = 'none';
-                if (!activeModal) { // Only remove if no *other* modal became active
-                    ELEMENTS.body?.classList.remove('no-scroll');
-                    ELEMENTS.mainContent?.removeAttribute('inert');
-                    ELEMENTS.footer?.removeAttribute('inert');
-                }
-                trigger?.focus(); // Return focus
-                modal.removeEventListener('transitionend', onTransitionEnd);
-            };
-            modal.addEventListener('transitionend', onTransitionEnd);
-
-            // Fallback timeout
-            setTimeout(() => {
-                if (!activeModal && modal.style.display !== 'none') {
-                    logWarn(`TransitionEnd fallback for modal: ${modal.id}`);
-                    modal.removeEventListener('transitionend', onTransitionEnd);
-                    modal.style.display = 'none';
-                    ELEMENTS.body?.classList.remove('no-scroll');
-                    ELEMENTS.mainContent?.removeAttribute('inert');
-                    ELEMENTS.footer?.removeAttribute('inert');
-                    trigger?.focus();
-                }
-            }, 500); // Match CSS + buffer
-        };
-
-        ELEMENTS.serviceCards?.forEach(card => {
-            const modalId = card.dataset.modalTarget;
-            if (!modalId) return;
-            const modal = selectElement(`#${modalId}`);
-            if (!modal) return;
-            const openTrigger = () => openModal(modal, card);
-            card.addEventListener('click', openTrigger);
-            card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openTrigger(); } });
-        });
-
-        ELEMENTS.modals?.forEach(modal => {
-            selectElements('.modal-close, .modal-close-alt', modal).forEach(btn => btn.addEventListener('click', () => closeModal(modal)));
-            modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(modal); });
-
-            // Handle modal actions (scrolling after close)
-            selectElements('.modal-action[data-link]', modal).forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetSelector = button.dataset.link;
-                    const targetElement = selectElement(targetSelector);
-                    closeModal(modal); // Close first
-
-                    // Scroll to target *after* modal close transition + delay
-                    setTimeout(() => {
-                        if (targetElement) {
-                            targetElement.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
-                            // Optionally focus target
-                            // targetElement.focus({ preventScroll: true });
-                        } else { logWarn(`Modal action target not found: ${targetSelector}`); }
-                    }, CONFIG.MODAL_SCROLL_DELAY_MS + 400); // Delay = scroll delay + modal transition estimate
-                });
-            });
-        });
-
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && activeModal) closeModal(activeModal); });
-    };
-
-    const handleLightbox = () => {
-        if (!ELEMENTS.lightbox || !ELEMENTS.lightboxImage || !ELEMENTS.lightboxClose || !ELEMENTS.lightboxCaption) return;
-
-        const openLightbox = (triggerElement) => {
-            activeLightboxTrigger = triggerElement;
-            const highResSrc = triggerElement.dataset.src;
-            const altText = triggerElement.dataset.alt || selectElement('img', triggerElement)?.alt || 'Gallery image';
-
-            if (!highResSrc) { logWarn("Gallery item missing data-src.", triggerElement); return; }
-
-            ELEMENTS.lightboxImage.setAttribute('src', highResSrc);
-            ELEMENTS.lightboxImage.setAttribute('alt', altText);
-            ELEMENTS.lightboxCaption.textContent = altText; // Set screen reader caption
-            ELEMENTS.lightbox.style.display = 'flex';
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const reflow = ELEMENTS.lightbox.offsetHeight;
-
-            requestAnimationFrame(() => {
-                ELEMENTS.lightbox.classList.add('active');
-                ELEMENTS.body?.classList.add('no-scroll');
-                ELEMENTS.lightbox.setAttribute('aria-hidden', 'false');
-                ELEMENTS.mainContent?.setAttribute('inert', '');
-                ELEMENTS.footer?.setAttribute('inert', '');
-                setTimeout(() => ELEMENTS.lightboxClose.focus(), 100);
-            });
-        };
-
-        const closeLightbox = () => {
-            if (!ELEMENTS.lightbox.classList.contains('active')) return;
-            ELEMENTS.lightbox.classList.remove('active');
-            ELEMENTS.lightbox.setAttribute('aria-hidden', 'true');
-            const trigger = activeLightboxTrigger;
-            activeLightboxTrigger = null;
-
-            const onTransitionEnd = (e) => {
-                if (e.target !== ELEMENTS.lightbox || e.propertyName !== 'opacity') return;
-                ELEMENTS.lightbox.style.display = 'none';
-                ELEMENTS.lightboxImage.src = ''; ELEMENTS.lightboxImage.alt = ''; ELEMENTS.lightboxCaption.textContent = '';
-                if (!activeModal) { // Don't remove if a modal is still open
-                    ELEMENTS.body?.classList.remove('no-scroll');
-                    ELEMENTS.mainContent?.removeAttribute('inert');
-                    ELEMENTS.footer?.removeAttribute('inert');
-                }
-                trigger?.focus();
-                ELEMENTS.lightbox.removeEventListener('transitionend', onTransitionEnd);
-            };
-            ELEMENTS.lightbox.addEventListener('transitionend', onTransitionEnd);
-
-            // Fallback
-            setTimeout(() => {
-                if (ELEMENTS.lightbox.style.display !== 'none' && !activeLightboxTrigger) {
-                    logWarn(`TransitionEnd fallback for lightbox.`);
-                    ELEMENTS.lightbox.removeEventListener('transitionend', onTransitionEnd);
-                    ELEMENTS.lightbox.style.display = 'none';
-                    ELEMENTS.lightboxImage.src = ''; ELEMENTS.lightboxImage.alt = ''; ELEMENTS.lightboxCaption.textContent = '';
-                     if (!activeModal) { ELEMENTS.body?.classList.remove('no-scroll'); ELEMENTS.mainContent?.removeAttribute('inert'); ELEMENTS.footer?.removeAttribute('inert'); }
-                    trigger?.focus();
-                }
-            }, 500);
-        };
-
-        ELEMENTS.galleryItems?.forEach(item => {
-            // Changed to button in HTML, listener remains
-            item.addEventListener('click', () => openLightbox(item));
-            item.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(item); } });
-        });
-
-        ELEMENTS.lightboxClose.addEventListener('click', closeLightbox);
-        ELEMENTS.lightbox.addEventListener('click', (e) => { if (e.target === ELEMENTS.lightbox) closeLightbox(); });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && ELEMENTS.lightbox.classList.contains('active')) closeLightbox(); });
-    };
-
-
-    const handleTestimonialCarousel = () => {
-        if (!ELEMENTS.testimonialSlider || ELEMENTS.testimonials.length === 0) {
-            if (ELEMENTS.carouselPrev) ELEMENTS.carouselPrev.style.display = 'none';
-            if (ELEMENTS.carouselNext) ELEMENTS.carouselNext.style.display = 'none';
-            return;
+             // Header shrink class (optional - can be CSS only if preferred)
+            // header.classList.toggle("shrink", window.scrollY > 100);
         }
-        const totalTestimonials = ELEMENTS.testimonials.length;
-        const container = ELEMENTS.testimonialSlider.parentElement;
 
-        const showTestimonial = (index) => {
-            if (index < 0 || index >= totalTestimonials) index = 0;
-            ELEMENTS.testimonials.forEach((t, i) => t.setAttribute('aria-hidden', String(i !== index)));
-            currentTestimonialIndex = index;
-            if (ELEMENTS.testimonialLiveRegion) ELEMENTS.testimonialLiveRegion.textContent = `Showing testimonial ${index + 1} of ${totalTestimonials}.`;
-        };
-        const nextTestimonial = () => showTestimonial((currentTestimonialIndex + 1) % totalTestimonials);
-        const prevTestimonial = () => showTestimonial((currentTestimonialIndex - 1 + totalTestimonials) % totalTestimonials);
-
-        const stopInterval = () => clearInterval(testimonialInterval);
-        const startInterval = () => { stopInterval(); if (!prefersReducedMotion) testimonialInterval = setInterval(nextTestimonial, CONFIG.CAROUSEL_INTERVAL_MS); };
-        const resetInterval = () => { stopInterval(); startInterval(); };
-
-        ELEMENTS.carouselNext?.addEventListener('click', () => { nextTestimonial(); resetInterval(); });
-        ELEMENTS.carouselPrev?.addEventListener('click', () => { prevTestimonial(); resetInterval(); });
-        [ELEMENTS.carouselPrev, ELEMENTS.carouselNext].forEach((btn, i) => btn?.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); (i === 0 ? prevTestimonial : nextTestimonial)(); resetInterval(); } }));
-
-        if (container) { ['mouseenter', 'focusin'].forEach(e => container.addEventListener(e, stopInterval)); ['mouseleave', 'focusout'].forEach(e => container.addEventListener(e, startInterval)); }
-        showTestimonial(0);
-        startInterval();
-    };
-
-    const animateStats = () => {
-        const runFallback = () => ELEMENTS.statsNumbers?.forEach(n => n.textContent = parseInt(n.dataset.target || '0').toLocaleString());
-        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || prefersReducedMotion || ELEMENTS.statsNumbers.length === 0) { if (ELEMENTS.statsNumbers.length > 0) runFallback(); return; }
-
-        gsap.registerPlugin(ScrollTrigger);
-        ELEMENTS.statsNumbers.forEach(statNum => {
-            const target = parseInt(statNum.dataset.target, 10) || 0;
-            let proxy = { val: 0 };
-            ScrollTrigger.create({
-                trigger: statNum, start: "top 90%", once: true,
-                onEnter: () => gsap.to(proxy, {
-                    val: target, duration: 2, ease: "power2.out",
-                    onUpdate: () => statNum.textContent = Math.round(proxy.val).toLocaleString(),
-                    onComplete: () => statNum.textContent = target.toLocaleString() // Ensure final value
-                })
-            });
+        // Initial layout calculation
+        // Use requestAnimationFrame to ensure layout is stable
+        requestAnimationFrame(() => {
+             updateLayout();
+             // Add listeners after initial calculation
+             window.addEventListener("scroll", debounce(updateLayout, 10), { passive: true });
+             window.addEventListener("resize", debounce(updateLayout, 100));
         });
-    };
+    }
 
-    const revealSections = () => {
-        const runFallback = () => {
-            ELEMENTS.animatedSections?.forEach(s => { s.style.opacity = '1'; s.style.transform = 'translateY(0)'; });
-            ELEMENTS.footer?.classList.add('visible');
-        };
-        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || prefersReducedMotion || (ELEMENTS.animatedSections.length === 0 && !ELEMENTS.footer)) { runFallback(); return; }
+    /**
+     * Initializes the main navigation (hamburger toggle, link clicks, closing behavior).
+     */
+    function initNavigation() {
+        const navToggle = document.getElementById('hamburger-button');
+        const mainNav = document.getElementById('main-navigation');
 
-        gsap.registerPlugin(ScrollTrigger);
-        ELEMENTS.animatedSections?.forEach((section, index) => {
-            gsap.set(section, { opacity: 0, y: 50 }); // Consistent initial state
-            gsap.to(section, {
-                opacity: 1, y: 0, duration: 0.8, ease: "power3.out", delay: index * 0.05,
-                scrollTrigger: { trigger: section, start: "top 88%", toggleActions: "play none none none" }
-            });
-        });
-        if (ELEMENTS.footer) {
-            ScrollTrigger.create({
-                trigger: ELEMENTS.footer, start: "top 95%",
-                onEnter: () => ELEMENTS.footer.classList.add('visible'),
-                onLeaveBack: () => ELEMENTS.footer.classList.remove('visible')
-            });
-        }
-    };
-
-    const displayTechTrivia = () => {
-        if (!ELEMENTS.triviaTextElement || CONFIG.TECH_TRIVIA.length === 0) return;
-        const randomIndex = Math.floor(Math.random() * CONFIG.TECH_TRIVIA.length);
-        ELEMENTS.triviaTextElement.textContent = CONFIG.TECH_TRIVIA[randomIndex];
-    };
-
-    const fadeAudio = (audioElement, targetVolume, duration) => {
-        clearInterval(audioFadeInterval); // Clear any existing fade
-        const startVolume = audioElement.volume;
-        const volumeChange = targetVolume - startVolume;
-        if (Math.abs(volumeChange) < 0.01) { // Already at target
-             audioElement.volume = targetVolume;
-             if (targetVolume === 0) audioElement.pause();
+        if (!navToggle || !mainNav) {
+             console.warn("Navigation elements not found.");
              return;
         }
-        const stepTime = 30; // Milliseconds per step
-        const steps = duration / stepTime;
-        const volumeStep = volumeChange / steps;
-        let currentStep = 0;
 
-        audioFadeInterval = setInterval(() => {
-            currentStep++;
-            const newVolume = startVolume + (volumeStep * currentStep);
+        const navLinks = mainNav.querySelectorAll('.nav-link');
 
-            if ((volumeChange > 0 && newVolume >= targetVolume) || (volumeChange < 0 && newVolume <= targetVolume) || currentStep >= steps) {
-                 clearInterval(audioFadeInterval);
-                 audioElement.volume = targetVolume; // Ensure final value
-                 if (targetVolume === 0) audioElement.pause(); // Pause only after fade out completes
-                 logInfo(`Audio fade complete. Target: ${targetVolume}`);
-            } else {
-                audioElement.volume = newVolume;
-            }
-        }, stepTime);
-    };
-
-    const toggleMusic = async () => { // Mark as async
-        if (!FEATURE_FLAGS.enableBackgroundMusic || !ELEMENTS.backgroundMusic || !ELEMENTS.musicToggle) return;
-
-        try {
-            if (musicPlaying) {
-                // Fade out
-                fadeAudio(ELEMENTS.backgroundMusic, 0, CONFIG.AUDIO_FADE_DURATION_MS);
-                musicPlaying = false;
-            } else {
-                // Ensure volume is 0 before starting play if previously faded out
-                ELEMENTS.backgroundMusic.volume = 0;
-                // Play returns a promise
-                try {
-                    await ELEMENTS.backgroundMusic.play();
-                    // If play() succeeds, start fade in
-                    fadeAudio(ELEMENTS.backgroundMusic, 1, CONFIG.AUDIO_FADE_DURATION_MS); // Fade to full volume (1)
-                    musicPlaying = true;
-                 } catch (error) {
-                    logWarn("Background music autoplay failed.", error);
-                    // User interaction needed, keep UI muted
-                    musicPlaying = false; // Ensure state reflects failure
-                 }
-            }
-            // Update button state regardless of play success (user *intended* to toggle)
-            ELEMENTS.musicToggle.classList.toggle('muted', !musicPlaying);
-            ELEMENTS.musicToggle.setAttribute('aria-pressed', String(musicPlaying));
-            ELEMENTS.musicToggle.setAttribute('aria-label', musicPlaying ? 'Pause background music' : 'Play background music');
-        } catch (e) {
-            logError("Error toggling music", e);
-            musicPlaying = false; // Reset state on error
-            ELEMENTS.musicToggle.classList.add('muted');
-            ELEMENTS.musicToggle.setAttribute('aria-pressed', 'false');
-            ELEMENTS.musicToggle.setAttribute('aria-label', 'Play background music');
+        function openNav() {
+            body.classList.add('nav-active', 'no-scroll');
+            navToggle.setAttribute('aria-expanded', 'true');
+            navToggle.querySelector('i').classList.replace('fa-bars', 'fa-times');
+            mainNav.querySelector('a').focus(); // Focus first link for accessibility
+            playSound("open", 0.6);
         }
-    };
 
-
-    const handleScrollTopButton = throttle(() => {
-        if (!ELEMENTS.scrollTopButton) return;
-        const scrollThreshold = window.innerHeight * 0.3; // Show button a bit earlier
-        const shouldBeVisible = window.scrollY > scrollThreshold;
-        const isVisible = parseFloat(ELEMENTS.scrollTopButton.style.opacity || '0') > 0;
-
-        if (shouldBeVisible && !isVisible) {
-            ELEMENTS.scrollTopButton.style.display = 'flex'; // Ensure display is correct before animating
-            gsap?.to(ELEMENTS.scrollTopButton, { opacity: 1, scale: 1, duration: 0.3, ease: 'power1.out' }) || (ELEMENTS.scrollTopButton.style.opacity = '1');
-        } else if (!shouldBeVisible && isVisible) {
-            gsap?.to(ELEMENTS.scrollTopButton, {
-                opacity: 0, scale: 0.8, duration: 0.3, ease: 'power1.in',
-                onComplete: () => { if (window.scrollY <= scrollThreshold) ELEMENTS.scrollTopButton.style.display = 'none'; }
-            }) || (() => { ELEMENTS.scrollTopButton.style.opacity = '0'; ELEMENTS.scrollTopButton.style.display = 'none'; })();
+        function closeNav() {
+            body.classList.remove('nav-active', 'no-scroll');
+            navToggle.setAttribute('aria-expanded', 'false');
+            navToggle.querySelector('i').classList.replace('fa-times', 'fa-bars');
+            // Optional: return focus to hamburger button
+            // navToggle.focus();
+            playSound("close", 0.6);
         }
-    }, 200);
 
-    const scrollToTop = () => {
-        ELEMENTS.html?.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
-    };
-
-    const handleCustomCursor = () => {
-        if (!FEATURE_FLAGS.enableCustomCursor || !ELEMENTS.customCursor || prefersReducedMotion || typeof gsap === 'undefined') { ELEMENTS.customCursor?.remove(); return; }
-        ELEMENTS.body?.classList.add('cursor-ready');
-        const xTo = gsap.quickTo(ELEMENTS.customCursor, "x", { duration: 0.4, ease: "power2.out" });
-        const yTo = gsap.quickTo(ELEMENTS.customCursor, "y", { duration: 0.4, ease: "power2.out" });
-        const moveCursor = e => { xTo(e.clientX); yTo(e.clientY); };
-        const addClick = () => ELEMENTS.customCursor.classList.add('click');
-        const removeClick = () => ELEMENTS.customCursor.classList.remove('click');
-        const addHover = () => ELEMENTS.customCursor.classList.add('hover');
-        const removeHover = () => ELEMENTS.customCursor.classList.remove('hover');
-        window.addEventListener('mousemove', moveCursor, { passive: true });
-        document.addEventListener('mousedown', addClick); document.addEventListener('mouseup', removeClick);
-        const interactiveSelector = 'a, button, .service, .gallery-item, .card-hover, .social-links a, .floating-action-button, .hamburger, input, textarea, select, [role="button"], [tabindex="0"]';
-        ELEMENTS.body.addEventListener('mouseover', e => { if (e.target.closest(interactiveSelector)) addHover(); else removeHover(); });
-        ELEMENTS.body.addEventListener('mouseout', e => { if (e.target.closest(interactiveSelector)) removeHover(); });
-        document.addEventListener('mouseleave', () => gsap.to(ELEMENTS.customCursor, { opacity: 0, duration: 0.2 }));
-        document.addEventListener('mouseenter', () => gsap.to(ELEMENTS.customCursor, { opacity: 1, duration: 0.2 }));
-    };
-
-    const handleMobileNav = () => {
-        if (!ELEMENTS.hamburgerButton || !ELEMENTS.mobileNav) return;
-        const main = ELEMENTS.mainContent; const footer = ELEMENTS.footer;
-
-        const toggleNav = (forceClose = false) => {
-            const isActive = ELEMENTS.body.classList.contains('nav-active');
-            const openNav = !isActive && !forceClose;
-            ELEMENTS.body.classList.toggle('nav-active', openNav);
-            ELEMENTS.hamburgerButton.classList.toggle('is-active', openNav);
-            ELEMENTS.hamburgerButton.setAttribute('aria-expanded', String(openNav));
-            ELEMENTS.mobileNav.setAttribute('aria-hidden', String(!openNav));
-            if (openNav) {
-                main?.setAttribute('inert', ''); footer?.setAttribute('inert', '');
-                const firstFocusable = selectElement('a[href], button', ELEMENTS.mobileNav) || ELEMENTS.mobileNav;
-                setTimeout(() => firstFocusable.focus(), 100);
+        navToggle.addEventListener('click', () => {
+            const isNavActive = body.classList.contains('nav-active');
+            if (isNavActive) {
+                closeNav();
             } else {
-                main?.removeAttribute('inert'); footer?.removeAttribute('inert');
-                ELEMENTS.hamburgerButton.focus();
-            }
-        };
-        ELEMENTS.hamburgerButton.addEventListener('click', () => toggleNav());
-        ELEMENTS.mobileNav.addEventListener('click', (e) => { if (e.target.closest('a')) toggleNav(true); });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && ELEMENTS.body.classList.contains('nav-active')) toggleNav(true); });
-        document.addEventListener('click', (e) => { // Close on overlay click
-            if (ELEMENTS.body.classList.contains('nav-active') && !ELEMENTS.mobileNav.contains(e.target) && !ELEMENTS.hamburgerButton.contains(e.target) && e.target !== ELEMENTS.hamburgerButton) {
-                toggleNav(true);
+                openNav();
             }
         });
-    };
 
-    const handleScrollspy = throttle(() => {
-        if (ELEMENTS.navLinks.length === 0) return;
-        let currentSectionId = null;
-        const scrollPosition = window.scrollY + headerHeight + 80; // Adjusted offset buffer
-        const sections = selectElements('main section[id]');
-
-        sections.forEach(section => {
-            const rect = section.getBoundingClientRect();
-            const isPotentiallyVisible = rect.top < window.innerHeight && rect.bottom >= 0;
-            if (isPotentiallyVisible) {
-                const sectionTop = section.offsetTop;
-                if (scrollPosition >= sectionTop && scrollPosition < sectionTop + section.offsetHeight) {
-                    currentSectionId = section.id;
+        // Close nav when a link is clicked
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const targetHref = link.getAttribute('href');
+                if (targetHref && targetHref.startsWith('#')) {
+                    e.preventDefault(); // Prevent default jump
+                    closeNav();
+                    // Use timeout to allow nav closing animation before scrolling
+                    setTimeout(() => {
+                         scrollToSection(targetHref);
+                    }, 100); // Adjust delay if needed
                 }
+                // Allow normal behavior for external links if any are added later
+            });
+        });
+
+        // Close nav on Escape key press
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape" && body.classList.contains('nav-active')) {
+                closeNav();
             }
         });
-        // Fallbacks
-        if (!currentSectionId) {
-            if (window.scrollY < window.innerHeight * 0.3) currentSectionId = 'home';
-            else if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 150) {
-                const lastSection = sections[sections.length - 1]; if (lastSection) currentSectionId = lastSection.id;
+
+        // Close nav on click outside (if nav is open)
+        document.addEventListener('click', (e) => {
+            if (body.classList.contains('nav-active') && !mainNav.contains(e.target) && !navToggle.contains(e.target)) {
+                closeNav();
             }
-        }
-        // Update links
-        ELEMENTS.navLinks.forEach(link => {
-            const href = link.getAttribute('href'); if (!href || !href.startsWith('#') || href.length === 1) return;
-            const linkSectionId = href.substring(1);
-            const isActive = linkSectionId === currentSectionId;
-            link.classList.toggle('active', isActive);
-            link.setAttribute('aria-current', isActive ? 'section' : 'false'); // Use 'false' when not current
         });
-    }, CONFIG.SCROLLSPY_THROTTLE_MS);
+    }
 
-    const handleEasterEgg = () => {
-        if (!FEATURE_FLAGS.enableEasterEgg || !ELEMENTS.easterEggTrigger || typeof confetti === 'undefined' || prefersReducedMotion) return;
-        ELEMENTS.easterEggTrigger.addEventListener('click', () => {
-            const duration = 4 * 1000; const animationEnd = Date.now() + duration;
-            const colors = ['#00a000', '#4CAF50', '#ffdd00', '#ffffff', '#dddddd'];
-            const zIndex = parseInt(getComputedStyle(ELEMENTS.html).getPropertyValue('--z-modal-content'), 10) + 50 || 1500;
-            const randomInRange = (min, max) => Math.random() * (max - min) + min;
-            const interval = setInterval(() => {
-                const timeLeft = animationEnd - Date.now(); if (timeLeft <= 0) return clearInterval(interval);
-                const particleCount = 50 * (timeLeft / duration);
-                confetti({ startVelocity: 30, spread: 360, ticks: 60, zIndex, particleCount, origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 }, colors: colors });
-            }, 200);
-            logInfo("Easter egg triggered!");
-        }, { once: true }); // Trigger only once per load
-    };
+    /**
+     * Initializes the typing effect in the header.
+     */
+    function initTypingEffect() {
+        const typingElement = document.getElementById("typing-effect");
+        if (!typingElement) return;
 
-    const validateForm = () => {
-        if (!ELEMENTS.form) return true;
-        let isValid = true;
-        selectElements('.form-group .form-error', ELEMENTS.form).forEach(el => el.textContent = '');
-        selectElements('.form-input.invalid, .form-textarea.invalid', ELEMENTS.form).forEach(el => el.classList.remove('invalid'));
-        selectElements('[required]', ELEMENTS.form).forEach(input => {
-            const group = input.closest('.form-group'); if (!group) return;
-            const errorElement = selectElement('.form-error', group); let msg = '';
-            if (input.type === 'email' && (!input.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim()))) msg = 'Valid email required.';
-            else if (input.type === 'checkbox' && !input.checked) msg = 'This field must be checked.';
-            else if (input.value.trim() === '') msg = 'This field is required.';
-            if (msg) { isValid = false; input.classList.add('invalid'); if (errorElement) errorElement.textContent = msg; }
-        });
-        if (!isValid) {
-             const firstInvalid = selectElement('.form-input.invalid, .form-textarea.invalid', ELEMENTS.form);
-             firstInvalid?.focus(); // Focus first invalid field
-        }
-        return isValid;
-    };
+        const phrases = [
+            "Your Trusted Tech Partner.",
+            "Securing Your Digital Future.",
+            "Providing Next-Gen Solutions.",
+            "Local Experts, Global Standards.",
+            "Precision Tech Expertise.",
+            "Your IT Partner in Clinton, CT.",
+            "Innovating for Your Success.",
+            "Building the Web of Tomorrow."
+        ];
+        let currentPhraseIndex = 0;
+        let charIndex = 0;
+        let isTyping = true;
+        const typingSpeed = 55; // Slightly faster
+        const erasingSpeed = 35;
+        const pauseBetweenPhrases = 2000; // Slightly shorter pause
+        let timeoutId;
 
-    const handleFormSubmission = () => {
-        if (!FEATURE_FLAGS.enableFormspree || !ELEMENTS.form) return;
-        if (!ELEMENTS.form.action || !ELEMENTS.form.action.includes('formspree.io')) { logWarn('Formspree action URL missing.'); return; }
-        ELEMENTS.form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            if (!validateForm()) { updateFormStatus('Please correct the errors.', 'error'); return; }
-            const formData = new FormData(ELEMENTS.form);
-            const submitButton = selectElement('button[type="submit"]', ELEMENTS.form);
-            const originalButtonContent = submitButton?.innerHTML;
-            updateFormStatus('Sending...', 'loading');
-            if (submitButton) { submitButton.disabled = true; submitButton.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Sending...'; }
-            try {
-                const response = await fetch(ELEMENTS.form.action, { method: 'POST', body: formData, headers: { 'Accept': 'application/json' } });
-                if (response.ok) {
-                    updateFormStatus('Message sent successfully!', 'success');
-                    ELEMENTS.form.reset();
-                    setTimeout(() => updateFormStatus('', 'idle'), CONFIG.FORM_STATUS_TIMEOUT_MS);
+        function type() {
+            const currentPhrase = phrases[currentPhraseIndex];
+            if (isTyping) {
+                if (charIndex < currentPhrase.length) {
+                    typingElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                    charIndex++;
+                    timeoutId = setTimeout(type, typingSpeed);
                 } else {
-                    const data = await response.json().catch(() => ({}));
-                    const errorMsg = data?.errors?.map(e => e.message || String(e)).join('. ') || response.statusText || 'Submission failed.';
-                    throw new Error(errorMsg);
+                    isTyping = false;
+                    timeoutId = setTimeout(erase, pauseBetweenPhrases + Math.random() * 400);
                 }
-            } catch (error) { logError('Form submission error', error); updateFormStatus(`Error: ${error.message}`, 'error'); }
-            finally { if (submitButton) { submitButton.disabled = false; submitButton.innerHTML = originalButtonContent; } }
-        });
-    };
-
-    const updateFormStatus = (message, state = 'idle') => {
-        if (!ELEMENTS.formStatus) return;
-        ELEMENTS.formStatus.textContent = message;
-        ELEMENTS.formStatus.className = `form-status ${state}`;
-        ELEMENTS.formStatus.style.display = (state === 'idle' || !message) ? 'none' : 'block';
-        ELEMENTS.formStatus.setAttribute('role', (state === 'error' || state === 'success') ? 'alert' : 'status');
-        ELEMENTS.formStatus.setAttribute('aria-live', (state === 'error' || state === 'success') ? 'assertive' : 'polite');
-    };
-
-    const hidePreloader = () => {
-        if (!ELEMENTS.preloader) { ELEMENTS.body?.classList.remove('preload'); return; }
-        const removePreloader = () => { ELEMENTS.preloader.remove(); ELEMENTS.body?.classList.remove('preload'); logInfo("Preloader removed."); };
-        const fallbackTimeout = setTimeout(() => { logWarn("Preloader fallback timeout."); removePreloader(); }, CONFIG.PRELOADER_MAX_WAIT_MS);
-        window.addEventListener('load', () => {
-            clearTimeout(fallbackTimeout);
-            if (typeof gsap !== 'undefined' && !prefersReducedMotion) {
-                gsap.to(ELEMENTS.preloader, { opacity: 0, duration: CONFIG.PRELOADER_FADE_DURATION_MS / 1000, ease: 'power1.inOut', onComplete: removePreloader });
-            } else {
-                ELEMENTS.preloader.style.transition = `opacity ${CONFIG.PRELOADER_FADE_DURATION_MS}ms ease-out`;
-                ELEMENTS.preloader.style.opacity = '0';
-                setTimeout(removePreloader, CONFIG.PRELOADER_FADE_DURATION_MS + 50); // Ensure removal after transition
             }
-        }, { once: true });
-    };
+        }
 
-    // --- Initialization Function ---
-    const initialize = () => {
-        logInfo("Initializing SysFX Script v1.8...");
-        hidePreloader(); // Starts process, waits for load event
-        initializeDarkMode();
-        adjustLayoutPadding();
-        displayTime(); setInterval(displayTime, 60000);
-        displayTechTrivia();
-        handleMobileNav();
-        handleScrollTopButton();
-        handleModals();
-        handleLightbox();
-        handleTestimonialCarousel();
-
-        // Defer library-dependent or animation tasks
-        requestAnimationFrame(() => {
-            initializeMap(); // Map init needs accurate dimensions
-             if (FEATURE_FLAGS.enableParticles) initializeParticles(); // Moved after Map
-            if (FEATURE_FLAGS.enableFormspree) handleFormSubmission();
-            if (!prefersReducedMotion) {
-                typeEffectHandler();
-                animateStats();
-                revealSections();
-                if (FEATURE_FLAGS.enableCustomCursor) handleCustomCursor();
-                if (FEATURE_FLAGS.enableEasterEgg) handleEasterEgg();
-                // Disabled features:
-                // if(FEATURE_FLAGS.enableStickyNote) showStickyNote();
-                // if(FEATURE_FLAGS.enableChatBubble) showChatBubble();
+        function erase() {
+             const currentText = typingElement.textContent;
+            if (currentText.length > 0) {
+                typingElement.textContent = currentText.slice(0, -1);
+                timeoutId = setTimeout(erase, erasingSpeed);
             } else {
-                // Apply final states directly for reduced motion
-                ELEMENTS.animatedSections?.forEach(s => { s.style.opacity = '1'; s.style.transform = 'none'; });
-                ELEMENTS.footer?.classList.add('visible');
-                ELEMENTS.statsNumbers?.forEach(n => n.textContent = parseInt(n.dataset.target || '0').toLocaleString());
-                if (ELEMENTS.typingEffectElement && CONFIG.TAGLINES.length > 0) ELEMENTS.typingEffectElement.textContent = CONFIG.TAGLINES[0];
+                isTyping = true;
+                charIndex = 0;
+                currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
+                timeoutId = setTimeout(type, 500); // Pause before typing next phrase
             }
+        }
+
+        // Clear any previous timeouts if re-initializing (though DOMContentLoaded should prevent this)
+        clearTimeout(timeoutId);
+        // Start the effect
+        type();
+    }
+
+    /**
+     * Initializes dark mode toggle functionality.
+     */
+    function initDarkMode() {
+        const darkModeToggle = document.getElementById("darkModeToggle");
+        if (!darkModeToggle) return;
+
+        const icon = darkModeToggle.querySelector("i");
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        let isDarkMode = localStorage.getItem("darkMode") === "enabled" || (localStorage.getItem("darkMode") === null && prefersDark);
+
+        function applyDarkMode(active) {
+            body.classList.toggle("dark-mode", active);
+            icon.classList.replace(active ? "fa-moon" : "fa-sun", active ? "fa-sun" : "fa-moon");
+            darkModeToggle.setAttribute('aria-label', active ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+            localStorage.setItem("darkMode", active ? "enabled" : "disabled");
+            // Update dependent components
+            updateParticles();
+            updateMapMarkers(); // Call marker update
+        }
+
+        darkModeToggle.addEventListener("click", () => {
+            isDarkMode = !isDarkMode;
+            applyDarkMode(isDarkMode);
+            playSound("click");
+            announceToScreenReader(isDarkMode ? "Dark mode enabled" : "Light mode enabled");
         });
 
-        setTimeout(handleScrollspy, 200); // Initial scrollspy check after layout settles
-        logInfo("SysFX Script Initialized.");
-    };
+        // Apply initial state
+        applyDarkMode(isDarkMode);
+    }
 
-    // --- Global Event Listeners ---
-    ELEMENTS.darkModeToggle?.addEventListener('click', toggleDarkMode);
-    if (FEATURE_FLAGS.enableBackgroundMusic) ELEMENTS.musicToggle?.addEventListener('click', toggleMusic);
-    ELEMENTS.scrollTopButton?.addEventListener('click', scrollToTop);
-    window.addEventListener('scroll', () => { updateScrollProgress(); handleScrollspy(); handleScrollTopButton(); handleHeaderShrink(); }, { passive: true });
-    window.addEventListener('resize', debounce(() => { adjustLayoutPadding(); handleScrollspy(); }, CONFIG.RESIZE_DEBOUNCE_MS));
-    ELEMENTS.skipLink?.addEventListener('focus', () => ELEMENTS.skipLink.style.left = '0');
-    ELEMENTS.skipLink?.addEventListener('blur', () => ELEMENTS.skipLink.style.left = '-999em');
+    /**
+     * Initializes the Particles.js background.
+     */
+    function initParticles() {
+        const particlesElement = document.getElementById('particles-js');
+        if (!particlesElement || typeof particlesJS === 'undefined') {
+            // console.warn("Particles.js element or library not found.");
+            return;
+        }
+        updateParticles(); // Initial setup
+        // Debounced resize handler added in initHeader
+    }
+    function updateParticles() {
+         if (typeof particlesJS === 'undefined') return; // Guard clause
+         const isDarkMode = body.classList.contains("dark-mode");
+         const particleColor = isDarkMode ? "#ffffff" : "#00a000";
+         const lineColor = isDarkMode ? "#ffffff" : "#00a000";
+         const particleOpacity = isDarkMode ? 0.7 : 0.4;
 
-    // --- Start Initialization ---
-    if (ELEMENTS.body) initialize();
-    else console.error("FATAL: Body element not found. SysFX script cannot initialize.");
+         particlesJS("particles-js", {
+            particles: {
+                number: { value: Math.max(30, Math.min(window.innerWidth / 15, 80)), density: { enable: true, value_area: 800 } }, // Responsive particle count
+                color: { value: particleColor },
+                shape: { type: "circle" }, // Simpler shape
+                opacity: { value: particleOpacity, random: true, anim: { enable: true, speed: 0.5, opacity_min: 0.1, sync: false } },
+                size: { value: 3, random: true, anim: { enable: false } }, // Smaller size
+                line_linked: { enable: true, distance: 150, color: lineColor, opacity: 0.3, width: 1 },
+                move: { enable: true, speed: 2, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: false }, resize: true }, // Disabled click push
+                modes: { grab: { distance: 120, line_linked: { opacity: 0.6 } } }
+            },
+            retina_detect: true
+        });
+    }
+
+
+    /**
+     * Initializes the Leaflet map.
+     */
+    let mapInstance = null; // Store map instance
+    let markerLayer = null; // Store marker layer
+    function initMap() {
+        const mapElement = document.getElementById("map");
+        if (!mapElement || typeof L === "undefined") {
+             // console.warn("Map element or Leaflet library not found.");
+             return;
+        }
+
+        // Prevent re-initialization if map already exists
+        if (mapInstance) {
+            mapInstance.remove();
+            mapInstance = null;
+        }
+
+        mapInstance = L.map(mapElement, {
+            scrollWheelZoom: false,
+            dragging: !L.Browser.mobile, // Allow dragging only on non-mobile
+            touchZoom: L.Browser.mobile, // Allow touch zoom on mobile
+            zoomControl: true // Keep zoom controls
+        }).setView([41.2788, -72.5276], 14); // Clinton, CT coordinates (adjust if needed)
+
+        // Use a tile layer that respects user preferences if possible, or a standard one
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 18,
+            minZoom: 10 // Prevent zooming out too far
+        }).addTo(mapInstance);
+
+        markerLayer = L.layerGroup().addTo(mapInstance);
+        updateMapMarkers(); // Initial marker placement
+    }
+    // Function to update markers (can be called by dark mode toggle)
+    function updateMapMarkers() {
+        if (!mapInstance || !markerLayer || typeof L === "undefined") return; // Ensure map is initialized
+
+        const isDarkMode = body.classList.contains("dark-mode");
+        const iconColor = isDarkMode ? "var(--secondary-color)" : "var(--primary-color)";
+        const borderColor = isDarkMode ? "#444" : "#fff";
+
+        // Define custom icon using Leaflet's DivIcon
+        const customIcon = L.divIcon({
+            className: 'custom-map-marker', // Use this class for CSS styling
+            html: `<span style="background-color:${iconColor}; border: 2px solid ${borderColor};" class="marker-inner"></span>`, // Inner span for styling flexibility
+            iconSize: [24, 24], // Size of the icon
+            iconAnchor: [12, 12] // Anchor point (center)
+        });
+
+        // Clear existing markers before adding new/updated ones
+        markerLayer.clearLayers();
+
+        // Define marker data (can be expanded)
+        const markersData = [
+            { lat: 41.2788, lon: -72.5276, popup: "<strong>sysfx HQ</strong><br>123 Main St<br>Clinton, CT", targetSection: "#contact" },
+            // Add more markers here if needed
+            // { lat: 41.xxxx, lon: -72.xxxx, popup: "Service Area Highlight", targetSection: "#services" }
+        ];
+
+        markersData.forEach(({ lat, lon, popup, targetSection }) => {
+            const marker = L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
+
+            // Bind popup
+            marker.bindPopup(popup);
+
+            // Add interactivity
+            marker.on('mouseover', () => marker.openPopup());
+            // marker.on('mouseout', () => marker.closePopup()); // Optional: close on mouseout
+
+            if (targetSection) {
+                marker.on('click', () => {
+                     // Check if the target section exists before scrolling
+                     if (document.querySelector(targetSection)) {
+                         scrollToSection(targetSection);
+                     } else {
+                          console.warn(`Target section ${targetSection} not found for map marker.`);
+                     }
+                });
+            }
+        });
+    }
+
+
+    /**
+     * Initializes the testimonial slider.
+     */
+    function initTestimonialSlider() {
+        const slider = document.querySelector(".testimonial-slider");
+        const testimonials = document.querySelectorAll(".testimonial");
+        const prevBtn = document.querySelector(".carousel-prev");
+        const nextBtn = document.querySelector(".carousel-next");
+
+        if (!slider || testimonials.length === 0 || !prevBtn || !nextBtn) {
+             // console.warn("Testimonial slider elements not found or no testimonials present.");
+             return;
+        }
+
+        let currentIndex = 0;
+        let slideInterval;
+        const totalSlides = testimonials.length;
+
+        // Prepare slides - hide all except the first
+        testimonials.forEach((testimonial, index) => {
+            testimonial.style.opacity = index === 0 ? '1' : '0';
+            testimonial.style.position = index === 0 ? 'relative' : 'absolute';
+            testimonial.style.top = '0'; // Ensure absolute slides are positioned correctly
+            testimonial.style.left = '0';
+            testimonial.setAttribute('aria-hidden', index !== 0);
+        });
+
+        function showTestimonial(index) {
+            const previousIndex = currentIndex;
+            currentIndex = (index + totalSlides) % totalSlides; // Ensure index loops correctly
+
+            if (previousIndex === currentIndex) return; // No change
+
+            const prevSlide = testimonials[previousIndex];
+            const nextSlide = testimonials[currentIndex];
+
+            // Make next slide visible and ready for transition
+            nextSlide.style.position = 'relative';
+            nextSlide.setAttribute('aria-hidden', 'false');
+
+            // Use GSAP for smoother fade transition
+            gsap.to(prevSlide, { opacity: 0, duration: 0.5, ease: "power2.inOut", onComplete: () => {
+                 prevSlide.style.position = 'absolute'; // Hide previous slide after fade out
+                 prevSlide.setAttribute('aria-hidden', 'true');
+            }});
+            gsap.to(nextSlide, { opacity: 1, duration: 0.5, ease: "power2.inOut" });
+        }
+
+        function next() { showTestimonial(currentIndex + 1); playSound('click', 0.5); }
+        function prev() { showTestimonial(currentIndex - 1); playSound('click', 0.5); }
+
+        function startAutoSlide() {
+            stopAutoSlide(); // Clear existing interval first
+            slideInterval = setInterval(next, 5500); // Increased interval slightly
+        }
+
+        function stopAutoSlide() {
+            clearInterval(slideInterval);
+        }
+
+        nextBtn.addEventListener('click', () => { next(); stopAutoSlide(); startAutoSlide(); });
+        prevBtn.addEventListener('click', () => { prev(); stopAutoSlide(); startAutoSlide(); });
+
+        // Pause on hover
+        const container = document.querySelector('.carousel-container');
+        if(container) {
+            container.addEventListener('mouseenter', stopAutoSlide);
+            container.addEventListener('mouseleave', startAutoSlide);
+        }
+
+        startAutoSlide(); // Start the slideshow
+    }
+
+    /**
+     * Initializes the counting animation for stats numbers.
+     */
+    function initStatsCounter() {
+        const statNumbers = document.querySelectorAll(".stat-number");
+        if (statNumbers.length === 0 || typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+            // console.warn("Stats elements or GSAP/ScrollTrigger not found.");
+             // Fallback: display target number immediately if animation fails
+            statNumbers.forEach(stat => {
+                const target = parseInt(stat.getAttribute("data-target")) || 0;
+                stat.textContent = target.toLocaleString() + (stat.textContent.includes('+') ? '+' : ''); // Keep "+" if present
+            });
+            return;
+        }
+
+        gsap.registerPlugin(ScrollTrigger); // Ensure plugin is registered
+
+        statNumbers.forEach(stat => {
+            const target = parseInt(stat.getAttribute("data-target")) || 0;
+            const hasPlus = stat.nextSibling && stat.nextSibling.nodeValue && stat.nextSibling.nodeValue.trim().startsWith('+'); // Check for trailing '+'
+
+            // Use ScrollTrigger to trigger the animation when the stat item enters the viewport
+            ScrollTrigger.create({
+                trigger: stat,
+                start: "top 85%", // Trigger when 85% of the element is visible from the top
+                once: true, // Only trigger once
+                onEnter: () => {
+                    gsap.fromTo(stat,
+                        { textContent: 0 }, // Start from 0
+                        {
+                            textContent: target,
+                            duration: 2.5, // Animation duration
+                            ease: "power2.out", // Easing function
+                            snap: { textContent: 1 }, // Snap to whole numbers
+                            onUpdate: function() {
+                                // Format number with commas during animation
+                                stat.textContent = Math.ceil(this.targets()[0].textContent).toLocaleString() + (hasPlus ? '+' : '');
+                            },
+                            onComplete: function() {
+                                // Ensure final number is correctly formatted
+                                stat.textContent = target.toLocaleString() + (hasPlus ? '+' : '');
+                            }
+                        }
+                    );
+                }
+            });
+        });
+    }
+
+    /**
+     * Initializes the custom cursor behavior.
+     */
+    function initCustomCursor() {
+        const cursor = document.querySelector(".cursor");
+        if (!cursor || isTouchDevice) {
+             if(cursor) cursor.style.display = 'none';
+             return; // Don't initialize on touch devices or if element is missing
+        }
+
+        // Ensure cursor is visible initially
+        cursor.style.opacity = '1';
+
+        let mouseX = 0;
+        let mouseY = 0;
+        let currentX = 0;
+        let currentY = 0;
+        const smoothing = 0.12; // Adjust for desired smoothness (lower = smoother, more lag)
+
+        function updateCursorPosition(e) {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        }
+
+        function renderCursor() {
+            const deltaX = mouseX - currentX;
+            const deltaY = mouseY - currentY;
+
+            currentX += deltaX * smoothing;
+            currentY += deltaY * smoothing;
+
+            cursor.style.transform = `translate(${currentX - cursor.offsetWidth / 2}px, ${currentY - cursor.offsetHeight / 2}px)`;
+
+            requestAnimationFrame(renderCursor);
+        }
+
+        document.addEventListener("mousemove", updateCursorPosition);
+
+        // Start the rendering loop
+        requestAnimationFrame(renderCursor);
+
+
+        // Add interaction classes
+        document.addEventListener("mousedown", () => cursor.classList.add("click"));
+        document.addEventListener("mouseup", () => cursor.classList.remove("click"));
+
+        // Add hover effect on interactive elements
+        document.querySelectorAll(
+            'a, button, .service, .gallery-item, .nav-link, .modal-close, .carousel-control, .social-links a, .floating-action-button, .chat-bubble'
+        ).forEach(el => {
+            el.addEventListener("mouseenter", () => cursor.classList.add("hover"));
+            el.addEventListener("mouseleave", () => cursor.classList.remove("hover"));
+        });
+    }
+
+    /**
+     * Initializes modal window functionality for service items.
+     */
+    function initModals() {
+        const serviceArticles = document.querySelectorAll(".service[data-modal-target]");
+        const modals = document.querySelectorAll(".modal");
+
+        if (serviceArticles.length === 0 || modals.length === 0) return;
+
+        const modalMap = new Map();
+        modals.forEach(modal => modalMap.set(modal.id, modal));
+
+        function openModal(modalId) {
+            const modal = modalMap.get(modalId);
+            if (modal) {
+                modal.classList.add('active');
+                modal.setAttribute('aria-hidden', 'false');
+                body.classList.add('no-scroll'); // Prevent background scroll
+                // Focus the close button or the modal content itself
+                const closeButton = modal.querySelector('.modal-close');
+                if (closeButton) closeButton.focus();
+                playSound("open");
+                // Animation is handled by CSS (.modal.active .modal-content)
+            } else {
+                console.warn(`Modal with ID "${modalId}" not found.`);
+            }
+        }
+
+        function closeModal(modal) {
+             if(modal) {
+                modal.classList.remove('active');
+                modal.setAttribute('aria-hidden', 'true');
+                body.classList.remove('no-scroll');
+                 playSound("close");
+                 // Optional: return focus to the element that opened the modal
+                 // Consider storing the trigger element and focusing it here.
+             }
+        }
+
+        // Event listeners for opening modals
+        serviceArticles.forEach(article => {
+            const modalId = article.getAttribute("data-modal-target");
+            if (modalId) {
+                article.addEventListener('click', () => openModal(modalId));
+                article.addEventListener('keydown', (e) => {
+                     if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          openModal(modalId);
+                     }
+                });
+            }
+        });
+
+        // Event listeners for closing modals
+        modals.forEach(modal => {
+            const closeBtn = modal.querySelector(".modal-close");
+            const modalActions = modal.querySelectorAll(".modal-action[data-link]");
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => closeModal(modal));
+            }
+
+            // Close when clicking outside the modal content
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) { // Check if the click was directly on the modal background
+                    closeModal(modal);
+                }
+            });
+
+            // Handle action buttons within modals
+            modalActions.forEach(button => {
+                 button.addEventListener('click', (e) => {
+                     e.stopPropagation(); // Prevent modal background click from firing
+                     const targetSection = button.getAttribute('data-link');
+                     if(targetSection) {
+                          closeModal(modal);
+                          // Delay scroll slightly to allow modal close animation
+                          setTimeout(() => scrollToSection(targetSection), 100);
+                     }
+                 });
+            });
+        });
+
+         // Global listener for Escape key to close any active modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") {
+                const activeModal = document.querySelector('.modal.active');
+                if (activeModal) {
+                    closeModal(activeModal);
+                }
+            }
+        });
+    }
+
+    /**
+     * Initializes GSAP ScrollTrigger animations for sections.
+     */
+    function initScrollAnimations() {
+        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+            console.warn("GSAP or ScrollTrigger not found, skipping scroll animations.");
+            // Add 'visible' class immediately as fallback
+            document.querySelectorAll(".section-animation").forEach(section => {
+                 section.classList.add('visible');
+            });
+            return;
+        }
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        document.querySelectorAll(".section-animation").forEach(section => {
+            gsap.fromTo(section,
+                { opacity: 0, y: 50 }, // Start state
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8, // Animation duration
+                    ease: "power3.out", // Easing function
+                    scrollTrigger: {
+                        trigger: section,
+                        start: "top 85%", // Trigger point
+                        end: "bottom 15%",
+                        toggleActions: "play none none reset", // Play on enter, reset on leave back
+                        // markers: true, // Uncomment for debugging
+                        onEnter: () => section.classList.add("visible"), // Add class for potential CSS fallback/styling
+                        onLeaveBack: () => section.classList.remove("visible") // Remove class on scroll up past trigger
+                    }
+                }
+            );
+        });
+
+        // Optional: Add subtle parallax effect to specific elements if needed
+        // gsap.utils.toArray('.some-element-inside-parallax').forEach(el => {
+        //     gsap.to(el, {
+        //         yPercent: -20, // Move up 20% of its height
+        //         ease: "none",
+        //         scrollTrigger: {
+        //             trigger: el.closest('.parallax'), // Trigger based on parent section
+        //             start: "top bottom", // Start when section top hits viewport bottom
+        //             end: "bottom top", // End when section bottom hits viewport top
+        //             scrub: true // Smooth scrubbing effect
+        //         }
+        //     });
+        // });
+    }
+
+    /**
+     * Initializes the image lightbox gallery functionality.
+     */
+    function initLightbox() {
+        const galleryItems = document.querySelectorAll(".gallery-item");
+        const lightbox = document.getElementById("lightbox");
+
+        if (galleryItems.length === 0 || !lightbox) return;
+
+        const lightboxImage = lightbox.querySelector(".lightbox-image");
+        const lightboxClose = lightbox.querySelector(".lightbox-close");
+        let currentTrigger = null; // Store the element that opened the lightbox
+
+        function openLightbox(item) {
+            const imgSrc = item.getAttribute("data-src");
+            const imgAlt = item.getAttribute("data-alt") || item.querySelector("img")?.alt || "Enlarged gallery image"; // Get alt text
+
+            if (!imgSrc) {
+                console.warn("Gallery item missing data-src attribute.");
+                return;
+            }
+
+            lightboxImage.src = imgSrc;
+            lightboxImage.alt = imgAlt;
+            lightboxImage.classList.remove('zoomed'); // Reset zoom state
+            lightbox.classList.add('active');
+            lightbox.setAttribute('aria-hidden', 'false');
+            body.classList.add('no-scroll');
+            currentTrigger = item; // Store the trigger
+            lightboxClose.focus(); // Focus close button
+            playSound("open");
+            // CSS handles animation
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            lightbox.setAttribute('aria-hidden', 'true');
+            body.classList.remove('no-scroll');
+             playSound("close");
+             if (currentTrigger) {
+                currentTrigger.focus(); // Return focus
+                currentTrigger = null;
+             }
+             // Reset image src to prevent loading flicker if reopened quickly
+             // setTimeout(() => { lightboxImage.src = ''; }, 400); // Delay slightly after animation
+        }
+
+        function toggleZoom(e) {
+             e.stopPropagation(); // Prevent background click close
+             lightboxImage.classList.toggle('zoomed');
+             // Basic scale toggle (CSS could handle this more smoothly)
+             lightboxImage.style.transform = lightboxImage.classList.contains('zoomed') ? 'scale(1.5)' : 'scale(1)';
+        }
+
+
+        galleryItems.forEach(item => {
+            item.addEventListener("click", () => openLightbox(item));
+            item.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openLightbox(item);
+                }
+            });
+            item.addEventListener("mouseover", () => playSound("hover", 0.4));
+        });
+
+        lightboxClose.addEventListener("click", closeLightbox);
+        lightbox.addEventListener("click", (e) => { // Close on background click
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+        lightboxImage.addEventListener('click', toggleZoom); // Zoom on image click
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape" && lightbox.classList.contains('active')) {
+                closeLightbox();
+            }
+        });
+    }
+
+    /**
+     * Initializes the background music toggle.
+     */
+    function initMusicPlayer() {
+        const musicToggle = document.getElementById("music-toggle");
+        const backgroundMusic = document.getElementById("background-music");
+
+        if (!musicToggle || !backgroundMusic) return;
+
+        let isMusicPlaying = localStorage.getItem("musicPlaying") === "true";
+
+        function setMusicState(play) {
+             try {
+                 if (play) {
+                     backgroundMusic.play().then(() => {
+                         gsap.to(backgroundMusic, { volume: 0.4, duration: 1 }); // Fade in volume
+                         musicToggle.classList.remove("muted");
+                         musicToggle.setAttribute('aria-pressed', 'true');
+                         musicToggle.setAttribute('aria-label', 'Pause background music');
+                         localStorage.setItem("musicPlaying", "true");
+                         isMusicPlaying = true;
+                     }).catch(e => { // Handle autoplay block
+                         console.warn("Music autoplay failed:", e.message);
+                         setMusicState(false); // Ensure state reflects reality
+                     });
+                 } else {
+                     gsap.to(backgroundMusic, {
+                         volume: 0,
+                         duration: 0.8,
+                         onComplete: () => {
+                             backgroundMusic.pause();
+                             musicToggle.classList.add("muted");
+                             musicToggle.setAttribute('aria-pressed', 'false');
+                             musicToggle.setAttribute('aria-label', 'Play background music');
+                             localStorage.setItem("musicPlaying", "false");
+                             isMusicPlaying = false;
+                         }
+                     });
+                 }
+             } catch (error) {
+                 console.error("Error controlling music:", error);
+             }
+        }
+
+        musicToggle.addEventListener("click", () => {
+            setMusicState(!isMusicPlaying);
+            playSound("click");
+        });
+
+        // Initialize state based on localStorage
+        // Set initial volume low to prevent blast if autoplay works
+        backgroundMusic.volume = 0;
+        if (isMusicPlaying) {
+             // Try to play respecting potential browser restrictions
+             setTimeout(() => setMusicState(true), 50); // Slight delay can sometimes help
+        } else {
+             setMusicState(false); // Ensure UI is correct if not playing
+        }
+    }
+
+    /**
+     * Initializes floating elements like tech tips, chat bubble, scroll-to-top.
+     */
+    function initFloatingElements() {
+        // Tech Tip / Sticky Note
+        const stickyNote = document.getElementById("sticky-note");
+        const techTipText = document.getElementById("tech-tip-text");
+        const closeTechTipBtn = document.getElementById("close-tech-tip");
+
+        if (stickyNote && techTipText && closeTechTipBtn) {
+            const tips = [
+                "Ctrl+Shift+T reopens the last closed browser tab!",
+                "Regularly restarting your router can solve many connection issues.",
+                "Use a password manager for strong, unique passwords.",
+                "Enable Two-Factor Authentication (2FA) wherever possible.",
+                "Keep your software updated to patch security vulnerabilities.",
+                "Backup your important data regularly (cloud or external drive)."
+            ];
+            const tipDismissed = localStorage.getItem("techTipDismissed") === "true";
+
+            if (!tipDismissed) {
+                techTipText.textContent = tips[Math.floor(Math.random() * tips.length)];
+                // Show after a delay
+                setTimeout(() => {
+                     stickyNote.style.display = 'flex';
+                     gsap.from(stickyNote, { y: -30, opacity: 0, duration: 0.5, ease: 'back.out(1.7)'});
+                }, 3000); // Show after 3 seconds
+
+                closeTechTipBtn.addEventListener('click', () => {
+                     gsap.to(stickyNote, {
+                         scale: 0.8,
+                         opacity: 0,
+                         duration: 0.3,
+                         ease: "back.in(1.7)",
+                         onComplete: () => {
+                             stickyNote.style.display = 'none';
+                             localStorage.setItem("techTipDismissed", "true");
+                         }
+                     });
+                     playSound("close");
+                });
+            } else {
+                 stickyNote.style.display = 'none'; // Ensure it's hidden if dismissed
+            }
+        }
+
+        // Chat Bubble
+        const chatBubble = document.getElementById("chat-bubble");
+        if (chatBubble) {
+            setTimeout(() => {
+                chatBubble.style.display = 'flex';
+                gsap.from(chatBubble, { x: 50, opacity: 0, duration: 0.5, ease: "power2.out" });
+            }, 4500); // Show after sticky note potentially
+
+            chatBubble.addEventListener("click", () => {
+                alert("Live chat coming soon! For urgent help, please call or email us via the Contact section.");
+                playSound("confirm");
+            });
+            chatBubble.addEventListener("mouseover", () => playSound("hover", 0.4));
+            chatBubble.addEventListener("keydown", (e) => {
+                 if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      chatBubble.click();
+                 }
+            });
+        }
+
+        // Scroll Top Button
+        const scrollTopBtn = document.getElementById("scroll-top-button");
+        if (scrollTopBtn) {
+             function checkScrollTopVisibility() {
+                 const isVisible = window.scrollY > 350;
+                 if (isVisible && scrollTopBtn.style.display !== 'flex') {
+                      scrollTopBtn.style.display = 'flex';
+                      gsap.fromTo(scrollTopBtn, {opacity: 0, scale: 0.5}, {opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(1.7)'});
+                 } else if (!isVisible && scrollTopBtn.style.display !== 'none') {
+                      gsap.to(scrollTopBtn, {opacity: 0, scale: 0.5, duration: 0.3, ease: 'back.in(1.7)', onComplete: () => {
+                           scrollTopBtn.style.display = 'none';
+                      }});
+                 }
+             }
+
+            window.addEventListener("scroll", debounce(checkScrollTopVisibility, 100), { passive: true });
+            scrollTopBtn.addEventListener("click", () => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                playSound("click");
+            });
+            checkScrollTopVisibility(); // Initial check
+        }
+    }
+
+    /**
+     * Initializes miscellaneous interactive elements (trivia, easter egg, etc.).
+     */
+    function initMisc() {
+        // Tech Trivia Update
+        const triviaTextElement = document.getElementById("trivia-text");
+        if (triviaTextElement) {
+            const trivia = [
+                "The first computer 'bug' was literally a moth found in a relay in 1947.",
+                "The first 1GB hard drive (IBM 3380) in 1980 weighed over 500 pounds.",
+                "Domain Name System (DNS), the internet's phonebook, was introduced in 1983.",
+                "Approximately 90% of the world's data was created in the last two years.",
+                "The QWERTY keyboard layout was designed to slow typists down.",
+                "There are more devices connected to the internet than people on Earth."
+            ];
+            triviaTextElement.textContent = trivia[Math.floor(Math.random() * trivia.length)];
+        }
+
+        // Easter Egg (Konami Code or similar could be fun too)
+        const easterEggTrigger = document.querySelector(".easter-egg-trigger");
+        if (easterEggTrigger && typeof confetti !== 'undefined') { // Check if confetti library is loaded
+            let clickCount = 0;
+            const requiredClicks = 7; // Number of clicks needed
+
+            easterEggTrigger.addEventListener("click", () => {
+                clickCount++;
+                 playSound('hover', 0.2); // Subtle feedback
+                if (clickCount === requiredClicks) {
+                    confetti({
+                        particleCount: 150,
+                        spread: 80,
+                        origin: { y: 0.6 },
+                        colors: ["#00a000", "#4CAF50", "#ffffff", "#ffeb3b"], // Sysfx colors + white/yellow
+                        scalar: 1.1
+                    });
+                    alert("✨ Easter Egg Found! ✨\nThanks for visiting! Mention code 'SYSFX10' for 10% off your next service!");
+                    playSound("confirm"); // Confirmation sound
+                    clickCount = 0; // Reset count
+                }
+                // Reset if clicks are too far apart (optional)
+                setTimeout(() => { if(clickCount < requiredClicks) clickCount = 0; }, 2000);
+            });
+        }
+
+        // Update Footer Year
+        const yearSpan = document.getElementById("current-year");
+        if (yearSpan) {
+            yearSpan.textContent = new Date().getFullYear();
+        }
+
+        // Add hover sounds to social links
+         document.querySelectorAll('.social-links a').forEach(link => {
+            link.addEventListener('mouseover', () => playSound('hover', 0.3));
+         });
+    }
+
+
+    // --- Run Initializations ---
+    initHeader();
+    initNavigation();
+    initTypingEffect();
+    initDarkMode();
+    initParticles();
+    initMap(); // Initialize map after particles (less critical)
+    initTestimonialSlider();
+    initStatsCounter();
+    initCustomCursor();
+    initModals();
+    initScrollAnimations();
+    initLightbox();
+    initMusicPlayer();
+    initFloatingElements();
+    initMisc();
+
+    // Final check log
+    console.log("sysfx scripts initialized successfully.");
 
 }); // End DOMContentLoaded
