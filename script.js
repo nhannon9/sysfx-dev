@@ -1,6 +1,6 @@
 /**
  * SysFX Website Script
- * Version: 1.4
+ * Version: 1.5 (SyntaxError Fix)
  * Author: sysfx (Revised by AI Assistant)
  *
  * Features:
@@ -25,6 +25,7 @@
  * - Sticky Note & Chat Bubble Logic
  * - Easter Egg (Confetti)
  * - Preloader Hiding
+ * - Form Validation & Submission
  */
 
 'use strict';
@@ -55,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Element Selectors Cache ---
     const ELEMENTS = {
+        html: document.documentElement, // Added html element
         body: document.body,
         preloader: document.getElementById('preloader'),
         header: document.getElementById('main-header'),
@@ -90,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         customCursor: document.querySelector('.cursor'),
         form: document.querySelector('.contact-form'),
         formStatus: document.getElementById('form-status'),
-        skipLink: document.querySelector('.skip-link') // Assuming class is 'skip-link'
+        skipLink: document.querySelector('.skip-link')
     };
 
     // --- State Variables ---
@@ -102,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let testimonialInterval;
     let musicPlaying = false;
     let mapInstance = null;
-    let particlesInstance = null; // To potentially destroy later if needed
+    let particlesInstance = null;
 
     // --- Utility Functions ---
     const debounce = (func, wait) => {
@@ -179,8 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
             initializeMapMarker(); // Update marker color
         }
          // Update Particles.js colors (requires custom config or reinit)
-        // Note: Default particles.js doesn't easily support live color changes without reinit or complex config.
-        // Re-initializeParticles(); // Uncomment if particles need theme update
+        // ReInitializeParticles(); // Uncomment if particles need theme update
     };
 
     /**
@@ -189,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const adjustBodyPadding = () => {
         headerHeight = ELEMENTS.header?.offsetHeight || 0;
         ELEMENTS.body.style.paddingTop = `${headerHeight}px`;
-        html.style.scrollPaddingTop = `${headerHeight + 10}px`; // Update scroll padding too
+        ELEMENTS.html.style.scrollPaddingTop = `${headerHeight + 10}px`; // Update scroll padding too
     };
 
     /**
@@ -198,7 +199,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateScrollProgress = () => {
         if (!ELEMENTS.scrollProgress) return;
         const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const scrolled = (window.scrollY / scrollableHeight) * 100;
+        // Prevent division by zero if scrollableHeight is 0
+        const scrolled = scrollableHeight > 0 ? (window.scrollY / scrollableHeight) * 100 : 0;
         ELEMENTS.scrollProgress.style.width = `${Math.min(scrolled, 100)}%`;
     };
 
@@ -219,7 +221,13 @@ document.addEventListener('DOMContentLoaded', () => {
      * Handles the typing and deleting effect for taglines.
      */
     const typeEffectHandler = async () => {
-        if (!ELEMENTS.typingEffectElement || isTyping) return;
+        if (!ELEMENTS.typingEffectElement || isTyping || prefersReducedMotion) {
+            // If reduced motion, just set the first tagline
+            if (prefersReducedMotion && ELEMENTS.typingEffectElement) {
+                ELEMENTS.typingEffectElement.textContent = CONFIG.TAGLINES[0];
+            }
+            return;
+        };
         isTyping = true;
         const currentText = CONFIG.TAGLINES[currentTaglineIndex];
 
@@ -251,7 +259,13 @@ document.addEventListener('DOMContentLoaded', () => {
      * Initializes the Particles.js background.
      */
     const initializeParticles = () => {
-        if (typeof particlesJS !== 'undefined' && document.getElementById('particles-js')) {
+        if (prefersReducedMotion || typeof particlesJS === 'undefined' || !document.getElementById('particles-js')) {
+             console.warn('ParticlesJS skipped due to reduced motion or missing library/element.');
+             const particlesContainer = document.getElementById('particles-js');
+             if(particlesContainer) particlesContainer.style.display = 'none';
+            return;
+        }
+        try {
              // Define configurations for light and dark modes
             const lightModeConfig = {
                 particles: {
@@ -290,9 +304,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const currentConfig = ELEMENTS.body.classList.contains('dark-mode') ? darkModeConfig : lightModeConfig;
             particlesJS('particles-js', currentConfig);
-
-        } else {
-            console.warn('particlesJS not found or particles-js element missing.');
+        } catch(error) {
+             console.error("Error initializing particles.js:", error);
+             const particlesContainer = document.getElementById('particles-js');
+             if(particlesContainer) particlesContainer.style.display = 'none';
         }
     };
      // Function to potentially re-initialize particles on theme change (use carefully)
@@ -322,16 +337,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Add click listener to enable scroll wheel zoom
             mapInstance.on('click', () => {
-                mapInstance.scrollWheelZoom.enable();
+                if(mapInstance) mapInstance.scrollWheelZoom.enable();
             });
             // Add blur listener to disable again when map loses focus
             mapInstance.on('blur', () => {
-                 mapInstance.scrollWheelZoom.disable();
+                 if(mapInstance) mapInstance.scrollWheelZoom.disable();
             });
 
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 18, // Standard max zoom
+                minZoom: 5   // Prevent zooming out too far
             }).addTo(mapInstance);
 
             initializeMapMarker(); // Add the marker
@@ -356,32 +373,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
          const isDark = ELEMENTS.body.classList.contains('dark-mode');
-         const markerColor = isDark ? 'var(--secondary-color)' : 'var(--primary-color)';
-         const borderColor = isDark ? 'var(--text-dark)' : 'var(--text-light)';
+         // Get computed styles for colors
+         const computedStyle = getComputedStyle(ELEMENTS.body);
+         const markerColor = computedStyle.getPropertyValue(isDark ? '--secondary-color' : '--primary-color').trim();
+         const borderColor = computedStyle.getPropertyValue(isDark ? '--text-dark' : '--text-light').trim(); // Ensure trim
+         const pulseColor = isDark ? 'rgba(76, 175, 80, 0.5)' : 'rgba(0, 160, 0, 0.5)';
+         const pulseEndColor = isDark ? 'rgba(76, 175, 80, 0)' : 'rgba(0, 160, 0, 0)';
 
         // Create a custom pulsing marker with DivIcon
          const pulsingIcon = L.divIcon({
              className: 'custom-map-marker', // Can add custom CSS rules for this class
+             // Inject styles directly - safer than relying on global CSS for dynamic parts
              html: `<div style="
                         background-color: ${markerColor};
                         width: 18px;
                         height: 18px;
                         border-radius: 50%;
                         border: 3px solid ${borderColor};
-                        box-shadow: 0 0 0 rgba(0, 160, 0, 0.4);
+                        box-shadow: 0 0 0 ${pulseColor};
                         animation: pulse 2s infinite;
                      "></div>
                      <style>
                         @keyframes pulse {
-                            0% { box-shadow: 0 0 0 0 rgba(0, 160, 0, 0.5); }
-                            70% { box-shadow: 0 0 0 15px rgba(0, 160, 0, 0); }
-                            100% { box-shadow: 0 0 0 0 rgba(0, 160, 0, 0); }
-                        }
-                        /* Adjust animation color for dark mode if needed */
-                        body.dark-mode @keyframes pulse {
-                             0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.5); }
-                            70% { box-shadow: 0 0 0 15px rgba(76, 175, 80, 0); }
-                            100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+                            0% { box-shadow: 0 0 0 0 ${pulseColor}; }
+                            70% { box-shadow: 0 0 0 15px ${pulseEndColor}; }
+                            100% { box-shadow: 0 0 0 0 ${pulseEndColor}; }
                         }
                      </style>`,
              iconSize: [24, 24],
@@ -392,8 +408,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         L.marker([41.2793, -72.4310], { icon: pulsingIcon })
             .addTo(mapInstance)
-            .bindPopup("<b>sysfx HQ</b><br>123 Main Street<br>Clinton, CT 06413")
-            .openPopup();
+            .bindPopup("<b>sysfx HQ</b><br>123 Main Street<br>Clinton, CT 06413");
+            // Optionally open popup by default: .openPopup();
     };
 
 
@@ -424,7 +440,8 @@ document.addEventListener('DOMContentLoaded', () => {
             closeButton?.addEventListener('click', () => closeModal(modal));
             // Close on backdrop click
             modal.addEventListener('click', (event) => {
-                if (event.target === modal) { // Check if click is on backdrop itself
+                // Check if the direct target of the click is the modal backdrop itself
+                if (event.target === modal) {
                     closeModal(modal);
                 }
             });
@@ -443,29 +460,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
      /**
      * Opens a specific modal.
-     * @param {HTMLElement} modal - The modal element to open.
+     * @param {HTMLElement | null} modal - The modal element to open.
      */
      const openModal = (modal) => {
         if (!modal) return;
         // Lazy load modal content here if implemented
-        modal.classList.add('active');
-        ELEMENTS.body.classList.add('no-scroll'); // Prevent background scroll
-        modal.setAttribute('aria-hidden', 'false');
-         // Focus management: focus the close button or the modal itself
-         const focusableElement = modal.querySelector('.modal-close') || modal;
-         setTimeout(() => focusableElement?.focus(), 50); // Delay focus slightly for transition
+        modal.style.display = 'flex'; // Set display before adding class for transition
+        requestAnimationFrame(() => { // Allow display change to paint
+            modal.classList.add('active');
+            ELEMENTS.body.classList.add('no-scroll'); // Prevent background scroll
+            modal.setAttribute('aria-hidden', 'false');
+            // Focus management: focus the close button or the modal content wrapper
+             const focusableElement = modal.querySelector('.modal-close') || modal.querySelector('.modal-content');
+             setTimeout(() => focusableElement?.focus(), 50); // Delay focus slightly for transition
+        });
      };
 
      /**
       * Closes a specific modal.
-      * @param {HTMLElement} modal - The modal element to close.
+      * @param {HTMLElement | null} modal - The modal element to close.
       */
      const closeModal = (modal) => {
-        if (!modal) return;
+        if (!modal || !modal.classList.contains('active')) return;
+
         modal.classList.remove('active');
         ELEMENTS.body.classList.remove('no-scroll');
         modal.setAttribute('aria-hidden', 'true');
-        // Optional: return focus to the element that opened the modal
+
+        // Wait for opacity transition to finish before setting display: none
+        modal.addEventListener('transitionend', () => {
+             if (!modal.classList.contains('active')) { // Check again in case reopened quickly
+                 modal.style.display = 'none';
+             }
+        }, { once: true }); // Remove listener after it runs once
+
+        // Fallback timeout if transitionend doesn't fire reliably
+         setTimeout(() => {
+             if (!modal.classList.contains('active')) {
+                 modal.style.display = 'none';
+             }
+         }, 500); // Adjust timeout based on CSS transition duration
+
+
+        // Optional: return focus to the element that opened the modal (requires tracking)
      };
 
 
@@ -478,17 +515,23 @@ document.addEventListener('DOMContentLoaded', () => {
         let currentTarget = null; // To return focus
 
         ELEMENTS.galleryItems?.forEach(item => {
+             item.setAttribute('role', 'button'); // Make it clear it's interactive
+             item.setAttribute('tabindex', '0'); // Make it focusable
+
             item.addEventListener('click', () => {
                 currentTarget = item; // Store the clicked item
                 const highResSrc = item.getAttribute('data-src');
                 const altText = item.getAttribute('data-alt') || item.querySelector('img')?.alt || 'Gallery image';
-                if (highResSrc) {
+                if (highResSrc && ELEMENTS.lightbox && ELEMENTS.lightboxImage) {
                     ELEMENTS.lightboxImage.setAttribute('src', highResSrc);
                     ELEMENTS.lightboxImage.setAttribute('alt', altText);
-                    ELEMENTS.lightbox.classList.add('active');
-                    ELEMENTS.body.classList.add('no-scroll');
-                    ELEMENTS.lightbox.setAttribute('aria-hidden', 'false');
-                    setTimeout(() => ELEMENTS.lightboxClose.focus(), 50); // Focus close button
+                    ELEMENTS.lightbox.style.display = 'flex'; // Set display before class for transition
+                     requestAnimationFrame(() => {
+                         ELEMENTS.lightbox.classList.add('active');
+                         ELEMENTS.body.classList.add('no-scroll');
+                         ELEMENTS.lightbox.setAttribute('aria-hidden', 'false');
+                         setTimeout(() => ELEMENTS.lightboxClose.focus(), 50); // Focus close button
+                    });
                 }
             });
              // Add keyboard accessibility
@@ -502,12 +545,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Close lightbox
         const closeLightboxAction = () => {
+            if (!ELEMENTS.lightbox || !ELEMENTS.lightboxImage) return;
              ELEMENTS.lightbox.classList.remove('active');
              ELEMENTS.body.classList.remove('no-scroll');
              ELEMENTS.lightbox.setAttribute('aria-hidden', 'true');
-             ELEMENTS.lightboxImage.setAttribute('src', ''); // Clear src
-             ELEMENTS.lightboxImage.setAttribute('alt', '');
-             currentTarget?.focus(); // Return focus to the item that opened it
+
+             // Wait for transition before hiding and clearing src
+             ELEMENTS.lightbox.addEventListener('transitionend', () => {
+                 if (!ELEMENTS.lightbox.classList.contains('active')) {
+                     ELEMENTS.lightbox.style.display = 'none';
+                     ELEMENTS.lightboxImage.setAttribute('src', ''); // Clear src
+                     ELEMENTS.lightboxImage.setAttribute('alt', '');
+                     currentTarget?.focus(); // Return focus to the item that opened it
+                 }
+             }, { once: true });
+              // Fallback timeout
+             setTimeout(() => {
+                 if (!ELEMENTS.lightbox.classList.contains('active')) {
+                     ELEMENTS.lightbox.style.display = 'none';
+                     ELEMENTS.lightboxImage.setAttribute('src', '');
+                     ELEMENTS.lightboxImage.setAttribute('alt', '');
+                     currentTarget?.focus();
+                 }
+             }, 500); // Match transition duration
         };
 
         ELEMENTS.lightboxClose.addEventListener('click', closeLightboxAction);
@@ -517,7 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && ELEMENTS.lightbox.classList.contains('active')) {
+            if (event.key === 'Escape' && ELEMENTS.lightbox?.classList.contains('active')) {
                  closeLightboxAction();
             }
         });
@@ -533,13 +593,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalTestimonials = ELEMENTS.testimonials.length;
 
         const showTestimonial = (index) => {
+             if(index < 0 || index >= totalTestimonials) index = 0; // Safety check
             ELEMENTS.testimonials.forEach((testimonial, i) => {
-                if (i === index) {
-                    testimonial.setAttribute('aria-hidden', 'false');
-                    // Opacity/visibility handled by CSS [.testimonial[aria-hidden="false"]]
-                } else {
-                    testimonial.setAttribute('aria-hidden', 'true');
-                }
+                testimonial.setAttribute('aria-hidden', i !== index);
+                // CSS handles opacity/visibility: .testimonial[aria-hidden="false"] { opacity: 1; ... }
             });
             currentTestimonialIndex = index;
         };
@@ -572,7 +629,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Auto-play
         const startInterval = () => {
             if (testimonialInterval) clearInterval(testimonialInterval); // Clear existing interval
-            testimonialInterval = setInterval(nextTestimonial, CONFIG.CAROUSEL_INTERVAL_MS);
+            // Only start interval if not reduced motion
+            if (!prefersReducedMotion) {
+                 testimonialInterval = setInterval(nextTestimonial, CONFIG.CAROUSEL_INTERVAL_MS);
+            }
         };
 
         const resetInterval = () => {
@@ -584,53 +644,52 @@ document.addEventListener('DOMContentLoaded', () => {
         showTestimonial(0); // Show the first testimonial initially
         startInterval(); // Start auto-play
 
-        // Pause on hover
-        ELEMENTS.testimonialSlider.addEventListener('mouseenter', () => clearInterval(testimonialInterval));
-        ELEMENTS.testimonialSlider.addEventListener('mouseleave', startInterval);
-        ELEMENTS.testimonialSlider.addEventListener('focusin', () => clearInterval(testimonialInterval));
-        ELEMENTS.testimonialSlider.addEventListener('focusout', startInterval);
+        // Pause on hover/focus
+        const container = ELEMENTS.testimonialSlider.parentElement; // Assuming slider is inside container
+        container?.addEventListener('mouseenter', () => clearInterval(testimonialInterval));
+        container?.addEventListener('mouseleave', startInterval);
+        container?.addEventListener('focusin', () => clearInterval(testimonialInterval));
+        container?.addEventListener('focusout', startInterval);
     };
 
     /**
      * Animates the stats numbers using GSAP when they become visible.
      */
     const animateStats = () => {
-        if (prefersReducedMotion || typeof gsap === 'undefined') {
-            // If reduced motion or GSAP unavailable, just set final values
-            ELEMENTS.statsNumbers?.forEach(num => {
-                num.textContent = num.dataset.target || '0';
-            });
-            return;
-        }
+         if (!ELEMENTS.statsNumbers || typeof gsap === 'undefined') {
+              ELEMENTS.statsNumbers?.forEach(num => { // Fallback if GSAP fails
+                  num.textContent = parseInt(num.dataset.target || '0').toLocaleString();
+              });
+             return; // Skip if GSAP not loaded
+         }
 
-        ELEMENTS.statsNumbers?.forEach(statNum => {
+        ELEMENTS.statsNumbers.forEach(statNum => {
             const target = parseInt(statNum.dataset.target, 10) || 0;
-            // Use Intersection Observer to trigger animation
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        gsap.to(statNum, {
-                            textContent: target,
-                            duration: 2,
-                            ease: "power1.inOut",
-                            snap: { textContent: 1 }, // Snap to whole numbers
-                            stagger: 0.1, // Add stagger if animating multiple stats at once
-                            onUpdate: function() {
-                                // Format number with commas if needed
-                                // statNum.textContent = parseInt(statNum.textContent).toLocaleString();
-                                statNum.textContent = Math.round(this.targets()[0].textContent); // Ensure integer display
-                            },
-                            onComplete: function() {
-                                // Ensure final value is exact and formatted
-                                statNum.textContent = target.toLocaleString();
-                            }
-                        });
-                        observer.unobserve(statNum); // Animate only once
-                    }
-                });
-            }, { threshold: 0.5 }); // Trigger when 50% visible
 
-            observer.observe(statNum);
+            // Use GSAP ScrollTrigger for triggering
+            gsap.from(statNum, {
+                textContent: 0,
+                duration: prefersReducedMotion ? 0 : 2, // No duration if reduced motion
+                ease: "power1.inOut",
+                snap: { textContent: 1 },
+                scrollTrigger: {
+                    trigger: statNum,
+                    start: "top 90%", // Trigger when 90% from top enters viewport
+                    toggleActions: "play none none none", // Play once
+                     onEnter: () => { // Ensure final value is set correctly even with reduced motion
+                         statNum.textContent = target.toLocaleString();
+                     }
+                },
+                onUpdate: function() {
+                    // Format number with commas during animation
+                    if (!prefersReducedMotion) {
+                        this.targets()[0].textContent = parseInt(this.targets()[0].textContent).toLocaleString();
+                    }
+                },
+                 onComplete: () => { // Ensure final formatted value on completion
+                     statNum.textContent = target.toLocaleString();
+                 }
+            });
         });
     };
 
@@ -638,44 +697,42 @@ document.addEventListener('DOMContentLoaded', () => {
      * Handles section reveal animations using GSAP and ScrollTrigger.
      */
     const revealSections = () => {
-        if (prefersReducedMotion || typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-             // Remove opacity if animations disabled
+        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+             console.warn('GSAP or ScrollTrigger not loaded. Skipping reveal animations.');
             ELEMENTS.animatedSections?.forEach(section => section.style.opacity = 1);
-            ELEMENTS.footer?.classList.add('visible'); // Make footer visible immediately
+            ELEMENTS.footer?.classList.add('visible');
             return;
         }
 
         gsap.registerPlugin(ScrollTrigger);
 
         ELEMENTS.animatedSections?.forEach((section) => {
-            gsap.from(section, {
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top 85%", // Trigger when 85% from top enters viewport
-                    end: "bottom 20%",
-                    // markers: true, // Uncomment for debugging
-                    toggleActions: "play none none none", // Play animation once on enter
-                    // scrub: true, // Uncomment for scroll-linked animation
-                },
-                y: 50, // Start 50px down
-                opacity: 0, // Start invisible
-                duration: 0.8, // Animation duration
-                ease: "power2.out",
-            });
+            // Use a common class if needed, or animate each section individually
+             gsap.to(section, { // Animate TO visible state
+                 opacity: 1,
+                 y: 0,
+                 duration: prefersReducedMotion ? 0 : 0.8,
+                 ease: "power2.out",
+                 scrollTrigger: {
+                     trigger: section,
+                     start: "top 85%",
+                     toggleActions: "play none none none",
+                 }
+             });
+             // Set initial state (hidden) if not handled by CSS
+             if (!section.style.opacity) { // Check if opacity already set
+                 gsap.set(section, { opacity: 0, y: 50 });
+             }
         });
 
-        // Separate animation for the footer
+        // Separate animation for the footer visibility class toggle
         if (ELEMENTS.footer) {
-            gsap.to(ELEMENTS.footer, {
-                scrollTrigger: {
-                    trigger: ELEMENTS.footer,
-                    start: "top 95%", // Trigger when footer is almost visible
-                    end: "bottom top", // End when bottom hits top (fully visible)
-                    // markers: true, // Debugging
-                    onEnter: () => ELEMENTS.footer.classList.add('visible'),
-                    onLeaveBack: () => ELEMENTS.footer.classList.remove('visible') // Optional: hide if scrolling back up past trigger
-                }
-                // CSS handles the actual animation via .visible class
+            ScrollTrigger.create({
+                 trigger: ELEMENTS.footer,
+                 start: "top 95%",
+                 // markers: true, // Debugging
+                 onEnter: () => ELEMENTS.footer.classList.add('visible'),
+                 onLeaveBack: () => ELEMENTS.footer.classList.remove('visible')
             });
         }
     };
@@ -687,7 +744,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!ELEMENTS.triviaTextElement) return;
         ELEMENTS.triviaTextElement.textContent = 'Loading tech fact...';
         try {
-            // Using a simple placeholder as the API might be unreliable/require sign-up
+            // Using placeholder facts as API might be unreliable/require sign-up
             const trivia = [
                 "The first computer mouse was invented by Doug Engelbart in 1964 and was made of wood.",
                 "Approximately 90% of the world's data has been created in the last few years.",
@@ -698,18 +755,19 @@ document.addEventListener('DOMContentLoaded', () => {
              const randomFact = trivia[Math.floor(Math.random() * trivia.length)];
              ELEMENTS.triviaTextElement.textContent = randomFact;
 
-            // Example using Fetch API (replace URL if needed)
+            // --- Commented out API fetch example ---
             // const response = await fetch(CONFIG.TECH_TRIVIA_URL);
             // if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             // const data = await response.json();
             // if (data.results && data.results.length > 0) {
-            //     // Decode HTML entities often found in OpenTDB
             //     const txt = document.createElement("textarea");
-            //     txt.innerHTML = data.results[0].question + " A: " + data.results[0].correct_answer; // Combine Q&A for trivia format
+            //     txt.innerHTML = data.results[0].question + " A: " + data.results[0].correct_answer;
             //     ELEMENTS.triviaTextElement.textContent = txt.value;
             // } else {
-            //     ELEMENTS.triviaTextElement.textContent = 'Could not fetch a tech fact right now.';
+            //     throw new Error('No trivia results found.');
             // }
+            // --- End commented out API fetch ---
+
         } catch (error) {
             console.error("Error fetching tech trivia:", error);
             ELEMENTS.triviaTextElement.textContent = 'Did you know? The first gigabyte hard drive (IBM 3380) in 1980 weighed over 500 pounds!'; // Fallback fact
@@ -729,15 +787,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 ELEMENTS.musicToggle.setAttribute('aria-label', 'Play background music');
             } else {
                 // Play might return a promise, handle potential errors
-                ELEMENTS.backgroundMusic.play().then(() => {
-                    ELEMENTS.musicToggle.classList.remove('muted');
-                    ELEMENTS.musicToggle.setAttribute('aria-pressed', 'true');
+                const playPromise = ELEMENTS.backgroundMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        // Autoplay started!
+                        ELEMENTS.musicToggle.classList.remove('muted');
+                        ELEMENTS.musicToggle.setAttribute('aria-pressed', 'true');
+                        ELEMENTS.musicToggle.setAttribute('aria-label', 'Pause background music');
+                    }).catch(error => {
+                        console.warn("Background music playback failed. User interaction might be required first.", error);
+                         musicPlaying = !musicPlaying; // Revert state if play failed
+                         // Display a message if needed
+                    });
+                } else {
+                     // Fallback for older browsers? Assume playback started.
+                     ELEMENTS.musicToggle.classList.remove('muted');
+                     ELEMENTS.musicToggle.setAttribute('aria-pressed', 'true');
                      ELEMENTS.musicToggle.setAttribute('aria-label', 'Pause background music');
-                }).catch(error => {
-                    console.warn("Background music playback failed. User interaction might be required first.", error);
-                     musicPlaying = !musicPlaying; // Revert state if play failed
-                     // Optionally display a message to the user
-                });
+                }
             }
             musicPlaying = !musicPlaying;
         } catch(e) {
@@ -746,23 +813,32 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Shows/hides the scroll-to-top button.
+     * Shows/hides the scroll-to-top button with animation.
      */
     const handleScrollTopButton = () => {
         if (!ELEMENTS.scrollTopButton) return;
-        if (window.scrollY > window.innerHeight * 0.5) { // Show after scrolling 50% of viewport height
-            ELEMENTS.scrollTopButton.style.display = 'flex'; // Use flex to show
-             ELEMENTS.scrollTopButton.style.opacity = '1';
-             ELEMENTS.scrollTopButton.style.transform = 'scale(1)';
+        const scrollThreshold = window.innerHeight * 0.5;
+
+        if (window.scrollY > scrollThreshold) {
+            if (ELEMENTS.scrollTopButton.style.display === 'none' || ELEMENTS.scrollTopButton.style.display === '') {
+                ELEMENTS.scrollTopButton.style.display = 'flex'; // Make it visible for animation
+                gsap.to(ELEMENTS.scrollTopButton, { opacity: 1, scale: 1, duration: 0.3, ease: 'power1.out' });
+            }
         } else {
-             ELEMENTS.scrollTopButton.style.opacity = '0';
-             ELEMENTS.scrollTopButton.style.transform = 'scale(0.8)';
-             // Use timeout to set display none after transition
-             setTimeout(() => {
-                 if (window.scrollY <= window.innerHeight * 0.5) { // Double check condition
-                     ELEMENTS.scrollTopButton.style.display = 'none';
-                 }
-             }, 300); // Match CSS transition duration
+             if (ELEMENTS.scrollTopButton.style.opacity === '1' || ELEMENTS.scrollTopButton.style.opacity === '') {
+                 gsap.to(ELEMENTS.scrollTopButton, {
+                     opacity: 0,
+                     scale: 0.8,
+                     duration: 0.3,
+                     ease: 'power1.in',
+                     onComplete: () => {
+                         // Check condition again before hiding to prevent race conditions
+                         if (window.scrollY <= scrollThreshold) {
+                             ELEMENTS.scrollTopButton.style.display = 'none';
+                         }
+                     }
+                 });
+            }
         }
     };
 
@@ -772,7 +848,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
-            behavior: 'smooth'
+            behavior: prefersReducedMotion ? 'auto' : 'smooth'
         });
     };
 
@@ -780,20 +856,20 @@ document.addEventListener('DOMContentLoaded', () => {
      * Handles the custom cursor movement and interactions.
      */
     const handleCustomCursor = () => {
-        if (!ELEMENTS.customCursor || prefersReducedMotion) {
-            ELEMENTS.customCursor?.remove(); // Remove cursor element if not needed
+        if (!ELEMENTS.customCursor || prefersReducedMotion || typeof gsap === 'undefined') {
+            ELEMENTS.customCursor?.remove();
             return;
         }
 
         ELEMENTS.body.classList.add('cursor-ready'); // Show cursor after JS init
 
+        // Use GSAP QuickTo for smoother cursor following
+        const xTo = gsap.quickTo(ELEMENTS.customCursor, "x", { duration: 0.3, ease: "power1.out" });
+        const yTo = gsap.quickTo(ELEMENTS.customCursor, "y", { duration: 0.3, ease: "power1.out" });
+
         window.addEventListener('mousemove', (e) => {
-            gsap.to(ELEMENTS.customCursor, {
-                x: e.clientX,
-                y: e.clientY,
-                duration: 0.1, // Faster update
-                ease: 'power1.out'
-            });
+             xTo(e.clientX);
+             yTo(e.clientY);
         });
 
         document.addEventListener('mousedown', () => ELEMENTS.customCursor.classList.add('click'));
@@ -801,8 +877,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add hover effect for specific elements
         const hoverTargets = document.querySelectorAll(
-            'a, button, .service, .gallery-item, .testimonial, .card-hover, .event-card, .timeline-item, .social-links a, .floating-action-button, .hamburger, input, textarea, [role="button"]'
-        );
+            'a, button, .service, .gallery-item, .testimonial, .card-hover, .event-card, .timeline-item, .social-links a, .floating-action-button, .hamburger, input[type="text"], input[type="email"], input[type="tel"], textarea, select, [role="button"]'
+        ); // Added form inputs
         hoverTargets.forEach(el => {
             el.addEventListener('mouseenter', () => ELEMENTS.customCursor.classList.add('hover'));
             el.addEventListener('mouseleave', () => ELEMENTS.customCursor.classList.remove('hover'));
@@ -815,18 +891,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const handleMobileNav = () => {
         if (!ELEMENTS.hamburgerButton || !ELEMENTS.mobileNav) return;
 
+        const mainContent = document.getElementById('main-content');
+        const footerContent = document.querySelector('.main-footer');
+
         ELEMENTS.hamburgerButton.addEventListener('click', () => {
             const isActive = ELEMENTS.hamburgerButton.classList.toggle('is-active');
             ELEMENTS.body.classList.toggle('nav-active');
-            ELEMENTS.hamburgerButton.setAttribute('aria-expanded', isActive ? 'true' : 'false');
-            ELEMENTS.mobileNav.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+            ELEMENTS.hamburgerButton.setAttribute('aria-expanded', String(isActive)); // Use String()
+            ELEMENTS.mobileNav.setAttribute('aria-hidden', String(!isActive));
+
              // Toggle inert state for main content (accessibility)
-             const mainContent = document.getElementById('main-content');
-             const footerContent = document.querySelector('.main-footer');
              if (isActive) {
                  mainContent?.setAttribute('inert', '');
                  footerContent?.setAttribute('inert', '');
-                 ELEMENTS.mobileNav.focus(); // Focus nav panel when opened
+                 // Focus first focusable item in nav, or nav itself
+                 const firstFocusable = ELEMENTS.mobileNav.querySelector('a[href], button') || ELEMENTS.mobileNav;
+                 setTimeout(() => firstFocusable.focus(), 50); // Delay focus
              } else {
                  mainContent?.removeAttribute('inert');
                  footerContent?.removeAttribute('inert');
@@ -837,13 +917,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Close nav when a link is clicked
         ELEMENTS.mobileNav.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
-                ELEMENTS.hamburgerButton.classList.remove('is-active');
-                ELEMENTS.body.classList.remove('nav-active');
-                ELEMENTS.hamburgerButton.setAttribute('aria-expanded', 'false');
-                ELEMENTS.mobileNav.setAttribute('aria-hidden', 'true');
-                 // Remove inert state
-                document.getElementById('main-content')?.removeAttribute('inert');
-                document.querySelector('.main-footer')?.removeAttribute('inert');
+                if (ELEMENTS.body.classList.contains('nav-active')) { // Only close if active
+                     ELEMENTS.hamburgerButton.click(); // Simulate click to ensure all states toggle
+                }
             });
         });
 
@@ -854,8 +930,7 @@ document.addEventListener('DOMContentLoaded', () => {
              }
          });
 
-         // Close nav on overlay click (using the body::before pseudo-element)
-         // We can detect clicks *not* on the nav itself when it's active
+         // Close nav on overlay click (body::before)
          document.addEventListener('click', (event) => {
             if (ELEMENTS.body.classList.contains('nav-active') &&
                 !ELEMENTS.mobileNav.contains(event.target) &&
@@ -878,16 +953,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const sections = document.querySelectorAll('main section[id]'); // Select only sections in main with IDs
         sections.forEach(section => {
             const sectionTop = section.offsetTop;
-            const sectionHeight = section.offsetHeight;
-
-            // Check if section is within the scroll position (+/- height for accuracy)
-             if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-                currentSectionId = section.id;
-             }
+            // Optimization: Check if section is even potentially visible before getting height
+            if (sectionTop < (window.scrollY + window.innerHeight) && (sectionTop + section.offsetHeight) > window.scrollY) {
+                 const sectionHeight = section.offsetHeight;
+                 if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                    currentSectionId = section.id;
+                 }
+            }
         });
 
          // Fallback for top/bottom of page
-        if (window.scrollY < window.innerHeight * 0.5 && !currentSectionId) {
+        if (window.scrollY < window.innerHeight * 0.3 && !currentSectionId) { // Smaller threshold for top
             currentSectionId = 'home'; // Default to home if near top
         } else if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50 && !currentSectionId) {
             // If near the bottom, check if contact is the last section
@@ -900,22 +976,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update nav link styles
         ELEMENTS.navLinks.forEach(link => {
-            link.classList.remove('active');
-            const sectionId = link.getAttribute('href')?.substring(1); // Get ID from href
-            // Use dataset if available, otherwise fallback to href
-            // const sectionId = link.dataset.sectionId || link.getAttribute('href')?.substring(1);
-            if (sectionId && sectionId === currentSectionId) {
-                link.classList.add('active');
+            const linkSectionId = link.getAttribute('href')?.substring(1);
+            if (linkSectionId && linkSectionId === currentSectionId) {
+                if (!link.classList.contains('active')) {
+                     link.classList.add('active');
+                     link.setAttribute('aria-current', 'section');
+                }
+            } else {
+                 if (link.classList.contains('active')) {
+                     link.classList.remove('active');
+                     link.removeAttribute('aria-current');
+                 }
             }
         });
     }, CONFIG.SCROLLSPY_THROTTLE_MS);
 
 
     /**
-     * Shows the sticky note after a delay.
+     * Shows the sticky note after a delay using GSAP.
      */
     const showStickyNote = () => {
-        if (!ELEMENTS.stickyNote) return;
+        if (!ELEMENTS.stickyNote || typeof gsap === 'undefined' || prefersReducedMotion) return;
         setTimeout(() => {
             ELEMENTS.stickyNote.style.display = 'flex';
             gsap.fromTo(ELEMENTS.stickyNote, { opacity: 0, scale: 0.8, rotation: -10 }, { opacity: 1, scale: 1, rotation: -4, duration: 0.5, ease: 'back.out(1.7)' });
@@ -928,16 +1009,18 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Shows the chat bubble after a delay.
+     * Shows the chat bubble after a delay using GSAP.
      */
     const showChatBubble = () => {
-        if (!ELEMENTS.chatBubble) return;
+        if (!ELEMENTS.chatBubble || typeof gsap === 'undefined' || prefersReducedMotion) return;
         setTimeout(() => {
              ELEMENTS.chatBubble.style.display = 'flex';
              gsap.fromTo(ELEMENTS.chatBubble, { opacity: 0, x: 50 }, { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out' });
 
              ELEMENTS.chatBubble.addEventListener('click', () => {
                 alert('Live chat coming soon!'); // Placeholder action
+                 // Optionally hide bubble after interaction
+                 gsap.to(ELEMENTS.chatBubble, { opacity: 0, x: 50, duration: 0.3, onComplete: () => ELEMENTS.chatBubble.style.display = 'none' });
             });
         }, CONFIG.CHAT_BUBBLE_DELAY_MS);
     };
@@ -946,11 +1029,15 @@ document.addEventListener('DOMContentLoaded', () => {
      * Handles the confetti easter egg.
      */
     const handleEasterEgg = () => {
-        if (!ELEMENTS.easterEggTrigger || typeof confetti === 'undefined') return;
+        if (!ELEMENTS.easterEggTrigger || typeof confetti === 'undefined' || prefersReducedMotion) return;
+
         ELEMENTS.easterEggTrigger.addEventListener('click', () => {
              const duration = 5 * 1000; // 5 seconds
-            const animationEnd = Date.now() + duration;
-            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: var(--z-modal-content) + 10 }; // Ensure confetti is high
+             const animationEnd = Date.now() + duration;
+
+             // FIX: Get z-index safely or use a fixed high number
+             const modalZ = parseInt(getComputedStyle(ELEMENTS.html).getPropertyValue('--z-modal-content'), 10) || 1210;
+             const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: modalZ + 10 }; // Corrected zIndex
 
             function randomInRange(min, max) {
                 return Math.random() * (max - min) + min;
@@ -966,8 +1053,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.6, 0.9), y: Math.random() - 0.2 } });
             }, 250);
 
-             // Add a little burst at the end
-             setTimeout(() => confetti({ particleCount: 100, spread: 200, origin: { y: 0.6 }, colors: ['#00a000', '#4CAF50', '#ffeb3b', '#ffffff'] }), duration - 100);
+             // Corrected colors array definition
+             const finalColors = ['#00a000', '#4CAF50', '#ffdd00', '#ffffff']; // Use var(--accent-color) hex value
+             setTimeout(() => confetti({ particleCount: 100, spread: 200, origin: { y: 0.6 }, colors: finalColors }), duration - 100);
         });
     };
 
@@ -975,12 +1063,13 @@ document.addEventListener('DOMContentLoaded', () => {
      * Basic form validation.
      */
     const validateForm = () => {
+        if (!ELEMENTS.form) return true; // No form, no validation needed
         let isValid = true;
-        const requiredInputs = ELEMENTS.form?.querySelectorAll('[required]');
+        const requiredInputs = ELEMENTS.form.querySelectorAll('[required]');
 
         requiredInputs?.forEach(input => {
             const group = input.closest('.form-group') || input.parentElement;
-            const errorElement = group.querySelector('.form-error');
+            const errorElement = group?.querySelector('.form-error'); // Add safety check for group
             input.classList.remove('invalid');
             if (errorElement) errorElement.style.display = 'none';
 
@@ -1006,7 +1095,7 @@ document.addEventListener('DOMContentLoaded', () => {
              if (hasError) {
                  isValid = false;
                  input.classList.add('invalid');
-                  if (errorElement) errorElement.style.display = 'block';
+                 if (errorElement) errorElement.style.display = 'block';
              }
         });
 
@@ -1026,21 +1115,26 @@ document.addEventListener('DOMContentLoaded', () => {
                  if (ELEMENTS.formStatus) {
                      ELEMENTS.formStatus.textContent = 'Please fix the errors above.';
                      ELEMENTS.formStatus.className = 'form-status error';
+                     ELEMENTS.formStatus.style.display = 'block'; // Ensure visible
                  }
                 return;
             }
 
             const formData = new FormData(ELEMENTS.form);
             const submitButton = ELEMENTS.form.querySelector('button[type="submit"]');
-            const originalButtonText = submitButton.innerHTML;
+            const originalButtonContent = submitButton.innerHTML; // Store full HTML content
 
             // Indicate loading state
             if (ELEMENTS.formStatus) {
                  ELEMENTS.formStatus.textContent = 'Sending...';
                  ELEMENTS.formStatus.className = 'form-status';
+                 ELEMENTS.formStatus.style.display = 'block'; // Ensure visible
             }
-            submitButton.disabled = true;
-             submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...'; // Loading indicator
+            if(submitButton) {
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> <span class="button-text">Sending...</span>'; // Loading indicator
+            }
+
 
             try {
                 const response = await fetch(ELEMENTS.form.action, {
@@ -1061,14 +1155,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Clear validation states
                     ELEMENTS.form.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
                     ELEMENTS.form.querySelectorAll('.form-error').forEach(el => el.style.display = 'none');
+                     // Hide status message after a delay? Optional.
+                     // setTimeout(() => { if(ELEMENTS.formStatus) ELEMENTS.formStatus.style.display = 'none'; }, 5000);
                 } else {
                     // Handle server errors (e.g., Formspree error)
-                     const data = await response.json();
-                     if (Object.hasOwn(data, 'errors')) {
-                         throw new Error(data["errors"].map(error => error["message"]).join(", "));
-                     } else {
-                          throw new Error('Oops! There was a problem submitting your form.');
+                     const data = await response.json().catch(() => ({})); // Catch if response is not JSON
+                     let errorMessage = 'Oops! There was a problem submitting your form.'; // Default error
+                     if (data && Object.hasOwn(data, 'errors')) {
+                         errorMessage = data["errors"].map(error => error["message"]).join(", ");
                      }
+                    throw new Error(errorMessage);
                 }
             } catch (error) {
                 // Handle network errors or thrown errors
@@ -1079,82 +1175,97 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } finally {
                 // Reset button state
-                 submitButton.disabled = false;
-                submitButton.innerHTML = originalButtonText;
+                 if(submitButton) {
+                     submitButton.disabled = false;
+                     submitButton.innerHTML = originalButtonContent;
+                 }
             }
         });
     };
 
      /**
-      * Hides the preloader.
+      * Hides the preloader smoothly.
       */
     const hidePreloader = () => {
+        // Ensure this runs even if the preloader element is missing
         if (!ELEMENTS.preloader) {
-             ELEMENTS.body.classList.remove('preload'); // Ensure body becomes visible even if no preloader
+            ELEMENTS.body.classList.remove('preload');
+            console.warn("Preloader element not found.");
             return;
         }
+
+         const removePreloader = () => {
+             ELEMENTS.preloader.style.display = 'none';
+             ELEMENTS.body.classList.remove('preload'); // Make body visible AFTER preloader is gone
+        };
+
         // Use GSAP for smooth fade out if available
-        if (typeof gsap !== 'undefined') {
+        if (typeof gsap !== 'undefined' && !prefersReducedMotion) {
             gsap.to(ELEMENTS.preloader, {
                 opacity: 0,
                 duration: 0.5,
                 ease: 'power1.inOut',
-                onComplete: () => {
-                    ELEMENTS.preloader.style.display = 'none';
-                     ELEMENTS.body.classList.remove('preload'); // Make body visible
-                }
+                onComplete: removePreloader
             });
         } else {
              ELEMENTS.preloader.style.opacity = '0';
-             setTimeout(() => {
-                 ELEMENTS.preloader.style.display = 'none';
-                  ELEMENTS.body.classList.remove('preload');
-             }, 500); // Match potential CSS transition
+             // Use transitionend event for smoother fallback
+            ELEMENTS.preloader.addEventListener('transitionend', removePreloader, { once: true });
+             // Safety timeout if transitionend doesn't fire
+             setTimeout(removePreloader, 600); // Slightly longer than typical transition
         }
     };
 
 
     // --- Initialization Function ---
     const initialize = () => {
+        console.log("Initializing SysFX Script..."); // Log start
+
+        // Run preloader hiding logic early, but wait for window.onload for final removal
+        window.addEventListener('load', hidePreloader);
+        // Fallback timeout for hiding preloader
+        setTimeout(hidePreloader, 3000); // Increased timeout
+
+
         initializeDarkMode();
         adjustBodyPadding(); // Initial padding adjustment
         displayTime();
         setInterval(displayTime, 60000); // Update time every minute
+
         if (!prefersReducedMotion) {
-            initializeParticles();
-            typeEffectHandler(); // Start typing effect
-            handleCustomCursor();
-            revealSections(); // Init GSAP animations
+            // Start non-critical animations later to allow critical content rendering
+            requestAnimationFrame(() => { // Defer slightly
+                 initializeParticles();
+                 typeEffectHandler();
+                 handleCustomCursor();
+                 showStickyNote();
+                 showChatBubble();
+                 handleEasterEgg();
+            });
+            revealSections(); // Init GSAP section animations
             animateStats(); // Init GSAP stat animations
-             showStickyNote();
-             showChatBubble();
         } else {
-             // Handle non-animated fallbacks if needed (stats, sections visible)
-            ELEMENTS.statsNumbers?.forEach(num => num.textContent = num.dataset.target || '0');
+             // Handle non-animated fallbacks
+            ELEMENTS.statsNumbers?.forEach(num => num.textContent = parseInt(num.dataset.target || '0').toLocaleString());
             ELEMENTS.animatedSections?.forEach(section => section.style.opacity = 1);
             ELEMENTS.footer?.classList.add('visible');
-             // Ensure cursor element is removed if motion is reduced
-             ELEMENTS.customCursor?.remove();
+            ELEMENTS.customCursor?.remove();
+            if (ELEMENTS.typingEffectElement) ELEMENTS.typingEffectElement.textContent = CONFIG.TAGLINES[0]; // Set static tagline
         }
+
         initializeMap();
         handleModals();
         handleLightbox();
         handleTestimonialCarousel();
-        fetchTechTrivia(); // Fetch trivia on load
+        fetchTechTrivia();
         handleMobileNav();
-        handleScrollTopButton(); // Initial check for scroll button
-        handleEasterEgg();
+        handleScrollTopButton(); // Initial check
         handleFormSubmission();
-
-        // Hide preloader after everything else is potentially set up
-        // Use window.onload for better accuracy (waits for images etc)
-        window.onload = hidePreloader;
-        // Fallback if onload doesn't fire quickly
-        setTimeout(hidePreloader, 2500);
-
 
         // Initial Scrollspy Call
         handleScrollspy();
+
+         console.log("SysFX Script Initialized."); // Log end
     };
 
 
@@ -1168,7 +1279,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateScrollProgress();
         handleScrollspy();
         handleScrollTopButton();
-    }, 50)); // Throttle scroll events more aggressively
+    }, 100), { passive: true }); // Use passive listener for scroll
 
     window.addEventListener('resize', debounce(() => {
         adjustBodyPadding();
@@ -1176,12 +1287,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }, CONFIG.RESIZE_DEBOUNCE_MS));
 
      // Add focus handler for skip link
+     ELEMENTS.skipLink?.addEventListener('focus', () => {
+          if (ELEMENTS.skipLink) ELEMENTS.skipLink.style.left = '0';
+     });
      ELEMENTS.skipLink?.addEventListener('blur', () => {
-         ELEMENTS.skipLink.style.left = '-999px'; // Hide again on blur
+         if (ELEMENTS.skipLink) ELEMENTS.skipLink.style.left = '-999px'; // Hide again on blur
      });
 
 
     // --- Start Initialization ---
-    initialize();
+    // Ensure critical elements are selected before init
+    if (ELEMENTS.body && ELEMENTS.header) {
+         initialize();
+    } else {
+        console.error("Critical elements (body or header) not found. Initialization aborted.");
+        // Attempt to hide preloader anyway to prevent getting stuck
+        hidePreloader();
+    }
+
 
 }); // End DOMContentLoaded
