@@ -1,6 +1,6 @@
 /**
  * SysFX Website Script
- * Version: 1.7 (Professional Refinements & Integration Fixes)
+ * Version: 1.8 (Final Revisions incorporating user feedback)
  * Author: sysfx (Revised by Professional Web Developer - Gemini)
  *
  * Purpose: Manages dynamic interactions, animations, and third-party
@@ -13,16 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Configuration & Feature Flags ---
     const CONFIG = {
-        SCROLLSPY_THROTTLE_MS: 150,     // Slightly increased throttle for potentially complex checks
+        SCROLLSPY_THROTTLE_MS: 150,
         RESIZE_DEBOUNCE_MS: 300,
-        TYPING_SPEED_MS: 90,            // Slightly faster typing
-        TYPING_DELETE_SPEED_MS: 45,     // Slightly faster deletion
-        TYPING_PAUSE_MS: 2200,
-        CAROUSEL_INTERVAL_MS: 5500,
-        STICKY_NOTE_DELAY_MS: 8000,     // Delay for non-critical popups
+        TYPING_SPEED_MS: 85,            // Slightly adjusted
+        TYPING_DELETE_SPEED_MS: 40,     // Slightly adjusted
+        TYPING_PAUSE_MS: 2500,          // Slightly longer pause
+        CAROUSEL_INTERVAL_MS: 6000,     // Slightly longer interval
+        STICKY_NOTE_DELAY_MS: 8000,
         CHAT_BUBBLE_DELAY_MS: 12000,
-        FORM_STATUS_TIMEOUT_MS: 6000,   // How long success/error messages stay visible
-        PRELOADER_TIMEOUT_MS: 4000,     // Max time preloader stays visible
+        FORM_STATUS_TIMEOUT_MS: 6000,
+        PRELOADER_TIMEOUT_MS: 4000,
+        MUSIC_FADE_DURATION_MS: 600,    // Duration for music fade
         TAGLINES: [
             "Your Partner in Tech Solutions.",
             "Expert Computer Repair Services.",
@@ -31,15 +32,14 @@ document.addEventListener('DOMContentLoaded', () => {
             "Reliable Networking & IT Support.",
             "Serving Clinton, CT and Beyond."
         ],
-        // Using placeholder trivia to avoid external API dependency issues
-        TECH_TRIVIA: [
+        TECH_TRIVIA: [ // Using local array as requested
             "The first computer mouse, invented by Doug Engelbart in 1964, was made of wood.",
             "An estimated 90% of the world's data has been created in just the last few years.",
-            "The QWERTY keyboard layout was initially designed to slow typists down, preventing jams on early typewriters.",
+            "The QWERTY keyboard layout was initially designed to slow typists down.",
             "On average, a smartphone user checks their device over 150 times per day.",
             "Registering a domain name was free until 1995.",
-            "The first 1GB hard drive (IBM 3380, 1980) weighed over 500 pounds and cost $40,000.",
-            "The term 'bug' originated when a real moth caused a malfunction in the Harvard Mark II computer in 1947."
+            "The first 1GB hard drive (1980) weighed over 500 pounds.",
+            "The term 'bug' originated from a real moth in the Harvard Mark II computer (1947)."
         ],
         // Map Settings
         MAP_COORDS: [41.2793, -72.4310], // Clinton, CT (Approx)
@@ -51,11 +51,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const FEATURE_FLAGS = {
         enableParticles: true,
         enableCustomCursor: true,
-        enableStickyNote: false, // Example: Disable if not fully implemented
-        enableChatBubble: false, // Example: Disable if not fully implemented
+        enableStickyNote: false, // Disabled as per previous context/refinement
+        enableChatBubble: false, // Disabled as per previous context/refinement
         enableEasterEgg: true,
         enableBackgroundMusic: true,
-        enableFormspree: true // Set to false if not using Formspree or similar
+        enableFormspree: true // Set to false if not using a service like Formspree
     };
 
     // --- Utility Functions ---
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return function executedFunction(...args) {
             const later = () => {
                 clearTimeout(timeout);
-                func.apply(this, args); // Use apply to preserve 'this' context
+                func.apply(this, args);
             };
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let inThrottle;
         return function executedFunction(...args) {
             if (!inThrottle) {
-                func.apply(this, args); // Use apply to preserve 'this' context
+                func.apply(this, args);
                 inThrottle = true;
                 setTimeout(() => inThrottle = false, limit);
             }
@@ -85,27 +85,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const logError = (message, error = '') => {
         console.error(`[SysFX Script Error] ${message}`, error);
     };
+    const logWarn = (message) => { console.warn(`[SysFX Script Warn] ${message}`); };
+    const logInfo = (message) => { console.info(`[SysFX Script Info] ${message}`); };
 
-    const logWarn = (message) => {
-        console.warn(`[SysFX Script Warn] ${message}`);
-    };
-
-    const logInfo = (message) => {
-        console.info(`[SysFX Script Info] ${message}`);
-    };
-
-    /**
-     * Safely selects a single DOM element.
-     * @param {string} selector - The CSS selector.
-     * @param {HTMLElement} [context=document] - The context to search within.
-     * @returns {HTMLElement|null} The found element or null.
-     */
     const selectElement = (selector, context = document) => {
         try {
             const element = context.querySelector(selector);
-            if (!element) {
-                // logWarn(`Element not found for selector: ${selector}`);
-            }
+            // No warning needed here, function designed to return null if not found
             return element;
         } catch (e) {
             logError(`Invalid selector: ${selector}`, e);
@@ -113,42 +99,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    /**
-     * Safely selects multiple DOM elements.
-     * @param {string} selector - The CSS selector.
-     * @param {HTMLElement} [context=document] - The context to search within.
-     * @returns {NodeListOf<Element>} An empty NodeList if none found or error.
-     */
     const selectElements = (selector, context = document) => {
         try {
-            const elements = context.querySelectorAll(selector);
-            // if (elements.length === 0) {
-            //     logWarn(`No elements found for selector: ${selector}`);
-            // }
-            return elements;
+            return context.querySelectorAll(selector);
         } catch (e) {
             logError(`Invalid selector: ${selector}`, e);
-            return document.querySelectorAll('.non-existent-selector-to-return-empty-nodelist'); // Return empty NodeList
+            return document.querySelectorAll('.non-existent-selector'); // Return empty NodeList
         }
     };
 
-
     // --- State Variables ---
     let headerHeight = 0;
-    let currentTypingIndex = 0;
     let currentTaglineIndex = 0;
     let isTypingPaused = false;
     let currentTestimonialIndex = 0;
     let testimonialInterval = null;
     let musicPlaying = false;
     let mapInstance = null;
-    let particlesInstance = null; // Store pJS instance if needed
-    let activeModal = null; // Track the currently open modal
-    let activeLightboxTarget = null; // Track element that opened lightbox
+    let activeModal = null;
+    let activeLightboxTarget = null;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let audioFadeInterval = null; // For music fading
 
-    // --- Element Selectors Cache (using safe selectors) ---
-    // Using an IIFE to create a private scope for ELEMENTS
+    // --- Element Selectors Cache ---
     const ELEMENTS = (() => {
         const selectors = {
             html: 'html',
@@ -156,9 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
             preloader: '#preloader',
             header: '#main-header',
             darkModeToggle: '#darkModeToggle',
+            darkModeToggleIconContainer: '#darkModeToggle .icon-container',
+            darkModeToggleText: '#darkModeToggle .mode-button-text',
             hamburgerButton: '#hamburger-button',
             mobileNav: '#main-navigation',
-            navLinks: '.nav-link[data-section-id]', // More specific selector
+            navLinks: '.nav-link[data-section-id]',
             scrollProgress: '.scroll-progress',
             currentTimeDisplay: '#current-time',
             typingEffectElement: '#typing-effect',
@@ -166,12 +141,14 @@ document.addEventListener('DOMContentLoaded', () => {
             serviceCards: '.service[data-modal-target]',
             modalContainer: '.modal-container',
             modals: '.modal',
-            galleryItems: '.gallery-item[data-src]', // Ensure it has a source
+            galleryItems: '.gallery-item[data-src]',
             lightbox: '#lightbox',
-            lightboxImage: '.lightbox-image',
+            lightboxImage: '#lightbox-image',
+            lightboxAltText: '#lightbox-alt-text', // For screen reader text
             lightboxClose: '.lightbox-close',
             testimonialSlider: '.testimonial-slider',
             testimonials: '.testimonial',
+            testimonialLiveRegion: '#testimonial-live-region', // Optional ARIA live region
             carouselPrev: '.carousel-prev',
             carouselNext: '.carousel-next',
             statsNumbers: '.stat-number[data-target]',
@@ -181,29 +158,23 @@ document.addEventListener('DOMContentLoaded', () => {
             musicToggle: '#music-toggle',
             backgroundMusic: '#background-music',
             scrollTopButton: '#scroll-top-button',
-            stickyNote: '#sticky-note', // Assuming ID exists if feature enabled
-            stickyNoteClose: '#sticky-note .close-btn', // Assuming class exists
-            chatBubble: '#chat-bubble', // Assuming ID exists if feature enabled
             easterEggTrigger: '.easter-egg-trigger',
             customCursor: '.cursor',
             form: '.contact-form',
             formStatus: '#form-status',
             skipLink: '.skip-link',
-            mainContent: '#main-content' // Added for inert toggling
+            mainContent: '#main-content'
         };
 
         const elements = {};
         for (const key in selectors) {
-            if (key === 'modals' || key === 'navLinks' || key === 'serviceCards' || key === 'galleryItems' || key === 'testimonials' || key === 'statsNumbers' || key === 'animatedSections') {
-                elements[key] = selectElements(selectors[key]);
-            } else {
-                elements[key] = selectElement(selectors[key]);
-            }
+            const isNodeList = ['modals', 'navLinks', 'serviceCards', 'galleryItems', 'testimonials', 'statsNumbers', 'animatedSections'].includes(key);
+            elements[key] = isNodeList ? selectElements(selectors[key]) : selectElement(selectors[key]);
         }
 
-        // Add checks for critical elements
         if (!elements.body) console.error("FATAL: Body element not found!");
         if (!elements.header) logWarn("Header element not found, layout adjustments might fail.");
+        if (!elements.mainContent) logWarn("Main content element (#main-content) not found, inert attribute cannot be applied.");
 
         return elements;
     })();
@@ -216,35 +187,31 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     const initializeDarkMode = () => {
         if (!ELEMENTS.body || !ELEMENTS.darkModeToggle) return;
-
-        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
         const savedTheme = localStorage.getItem('theme');
         const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
-
         ELEMENTS.body.classList.toggle('dark-mode', isDark);
         updateDarkModeButton(isDark);
-
-        // Add transition class slightly after load to prevent initial flash
-        setTimeout(() => ELEMENTS.body.classList.add('theme-transitions-active'), 150);
+        setTimeout(() => ELEMENTS.body?.classList.add('theme-transitions-active'), 150);
     };
 
     /**
-     * Updates the Dark Mode toggle button's appearance and ARIA attributes.
+     * Item 12: Updates the Dark Mode toggle button text, icon, and ARIA attributes.
+     * CSS handles the background gradient change based on body class.
      * @param {boolean} isDarkMode - Whether dark mode is active.
      */
     const updateDarkModeButton = (isDarkMode) => {
-        if (!ELEMENTS.darkModeToggle) return;
-        const icon = selectElement('i', ELEMENTS.darkModeToggle);
-        const text = selectElement('.mode-button-text', ELEMENTS.darkModeToggle);
+        if (!ELEMENTS.darkModeToggle || !ELEMENTS.darkModeToggleIconContainer || !ELEMENTS.darkModeToggleText) return;
+        const icon = selectElement('i', ELEMENTS.darkModeToggleIconContainer);
 
         ELEMENTS.darkModeToggle.setAttribute('aria-pressed', String(isDarkMode));
         if (isDarkMode) {
-            icon?.classList.replace('fa-moon', 'fa-sun');
-            if (text) text.textContent = ' Light Mode';
+            icon?.classList.replace('fa-sun', 'fa-moon'); // Show Moon Icon in Dark Mode
+            ELEMENTS.darkModeToggleText.textContent = 'Dark Mode'; // Text shows current mode
             ELEMENTS.darkModeToggle.setAttribute('aria-label', 'Switch to light mode');
         } else {
-            icon?.classList.replace('fa-sun', 'fa-moon');
-            if (text) text.textContent = ' Dark Mode';
+            icon?.classList.replace('fa-moon', 'fa-sun'); // Show Sun Icon in Light Mode
+            ELEMENTS.darkModeToggleText.textContent = 'Light Mode'; // Text shows current mode
             ELEMENTS.darkModeToggle.setAttribute('aria-label', 'Switch to dark mode');
         }
     };
@@ -258,51 +225,65 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
         updateDarkModeButton(isDark);
         if (mapInstance) initializeMapMarker(); // Update map marker color
-        // ReInitializeParticles(); // Consider if particles truly need full reinit
+        if (particlesJS) ReInitializeParticles(); // Re-init particles if library exists
     };
 
     /**
-     * Adjusts body padding-top and scroll-padding-top based on the header's actual height.
-     * Debounced for performance on resize.
+     * Re-initializes Particles.js for theme change.
+     * Only call if particlesJS library is loaded and feature enabled.
+     */
+    const ReInitializeParticles = () => {
+        if (!FEATURE_FLAGS.enableParticles || prefersReducedMotion || typeof particlesJS === 'undefined') return;
+        const particlesElement = selectElement('#particles-js');
+        if (particlesElement) {
+            // Remove existing canvas if present to avoid duplicates
+            const existingCanvas = selectElement('canvas.particles-js-canvas-el', particlesElement);
+            if (existingCanvas) existingCanvas.remove();
+             // Re-run initialization which checks theme
+            initializeParticles();
+        } else {
+            logWarn("Could not re-initialize particles: Container #particles-js not found.");
+        }
+    };
+
+
+    /**
+     * Adjusts body/scroll padding based on header height. Debounced.
      */
     const adjustLayoutPadding = debounce(() => {
         if (!ELEMENTS.header || !ELEMENTS.body || !ELEMENTS.html) return;
         headerHeight = ELEMENTS.header.offsetHeight;
         ELEMENTS.body.style.paddingTop = `${headerHeight}px`;
-        ELEMENTS.html.style.scrollPaddingTop = `${headerHeight + 20}px`; // Add a bit more buffer
-        logInfo(`Layout padding adjusted. Header height: ${headerHeight}px`);
-    }, 100); // Short debounce for this adjustment
+        ELEMENTS.html.style.scrollPaddingTop = `${headerHeight + 20}px`; // Extra buffer
+    }, CONFIG.RESIZE_DEBOUNCE_MS); // Use configured debounce time
 
     /**
-     * Shrinks header on scroll down, expands on scroll up.
+     * Handles header shrinking/expanding based on scroll direction.
      */
     let lastScrollTop = 0;
     const handleHeaderShrink = () => {
         if (!ELEMENTS.header) return;
         const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-        const shrinkThreshold = 100; // Pixels scrolled before shrinking
+        const shrinkThreshold = 100;
 
         if (currentScroll > lastScrollTop && currentScroll > shrinkThreshold) {
-            // Scroll Down
             ELEMENTS.header.classList.add('header-shrunk');
         } else if (currentScroll < lastScrollTop || currentScroll <= shrinkThreshold) {
-            // Scroll Up or near top
             ELEMENTS.header.classList.remove('header-shrunk');
         }
-        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // For Mobile or negative scrolling
+        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
     };
 
-
     /**
-     * Updates the scroll progress bar width. Throttled for performance.
+     * Updates the scroll progress bar. Throttled.
      */
     const updateScrollProgress = throttle(() => {
-        if (!ELEMENTS.scrollProgress) return;
+        if (!ELEMENTS.scrollProgress || !ELEMENTS.html) return;
         const scrollableHeight = ELEMENTS.html.scrollHeight - window.innerHeight;
         const scrolled = scrollableHeight > 0 ? (window.scrollY / scrollableHeight) * 100 : 0;
         ELEMENTS.scrollProgress.style.width = `${Math.min(scrolled, 100)}%`;
-        ELEMENTS.scrollProgress.setAttribute('aria-valuenow', Math.round(scrolled));
-    }, 50); // Throttle slightly less aggressively
+        ELEMENTS.scrollProgress.setAttribute('aria-valuenow', String(Math.round(scrolled)));
+    }, 50); // Slightly more frequent update
 
     /**
      * Displays the current time and date.
@@ -313,11 +294,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const now = new Date();
             const optionsTime = { hour: '2-digit', minute: '2-digit', hour12: true };
             const optionsDate = { weekday: 'short', month: 'short', day: 'numeric' };
-            // Use locale strings for better internationalization potential
             const timeString = now.toLocaleTimeString(navigator.language || 'en-US', optionsTime);
             const dateString = now.toLocaleDateString(navigator.language || 'en-US', optionsDate);
-            // Use innerHTML cautiously, ensure no user input is involved here
-            ELEMENTS.currentTimeDisplay.innerHTML = `<i class="far fa-calendar-alt" aria-hidden="true"></i> ${dateString}    <i class="far fa-clock" aria-hidden="true"></i> ${timeString}`;
+            // Using textContent for security - create elements for structure if needed
+            ELEMENTS.currentTimeDisplay.textContent = ''; // Clear previous
+            const dateIcon = document.createElement('i'); dateIcon.className = 'far fa-calendar-alt'; dateIcon.setAttribute('aria-hidden', 'true');
+            const timeIcon = document.createElement('i'); timeIcon.className = 'far fa-clock'; timeIcon.setAttribute('aria-hidden', 'true');
+            ELEMENTS.currentTimeDisplay.append(dateIcon, ` ${dateString} \u00A0\u00A0 `, timeIcon, ` ${timeString}`); // Non-breaking spaces
         } catch (e) {
             logError('Failed to display time', e);
             ELEMENTS.currentTimeDisplay.textContent = 'Could not load time.';
@@ -325,18 +308,27 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Handles the typing and deleting effect for taglines using async/await.
+     * Handles the typing effect using async/await. Includes pause check.
+     * Initial HTML should have ` ` inside the p tag.
      */
     const typeEffectHandler = async () => {
         if (!ELEMENTS.typingEffectElement || prefersReducedMotion) {
             if (prefersReducedMotion && ELEMENTS.typingEffectElement && CONFIG.TAGLINES.length > 0) {
-                ELEMENTS.typingEffectElement.textContent = CONFIG.TAGLINES[0]; // Set static tagline if reduced motion
+                ELEMENTS.typingEffectElement.textContent = CONFIG.TAGLINES[0];
+            } else if (ELEMENTS.typingEffectElement) {
+                // Ensure the nbsp is present if no animation
+                ELEMENTS.typingEffectElement.innerHTML = ' ';
             }
-            return; // Exit if no element or reduced motion
+            return;
         }
 
-        while (true) { // Loop indefinitely
-            if (isTypingPaused) { // Allow pausing
+        // Ensure initial non-breaking space to prevent collapse
+        if (ELEMENTS.typingEffectElement.textContent.trim() === '') {
+             ELEMENTS.typingEffectElement.innerHTML = ' ';
+        }
+
+        while (true) {
+            if (isTypingPaused) {
                 await new Promise(resolve => setTimeout(resolve, 500));
                 continue;
             }
@@ -345,11 +337,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Typing
             for (let i = 0; i <= currentText.length; i++) {
-                if (isTypingPaused) break; // Check pause during typing
-                ELEMENTS.typingEffectElement.textContent = currentText.substring(0, i);
+                if (isTypingPaused) break;
+                ELEMENTS.typingEffectElement.textContent = currentText.substring(0, i) || '\u00A0'; // Use nbsp if empty
                 await new Promise(resolve => setTimeout(resolve, CONFIG.TYPING_SPEED_MS));
             }
-            if (isTypingPaused) continue; // Restart loop if paused
+            if (isTypingPaused) continue;
 
             // Pause after typing
             await new Promise(resolve => setTimeout(resolve, CONFIG.TYPING_PAUSE_MS));
@@ -357,11 +349,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Deleting
             for (let i = currentText.length; i >= 0; i--) {
-                 if (isTypingPaused) break;
-                ELEMENTS.typingEffectElement.textContent = currentText.substring(0, i);
+                if (isTypingPaused) break;
+                ELEMENTS.typingEffectElement.textContent = currentText.substring(0, i) || '\u00A0'; // Use nbsp if empty
                 await new Promise(resolve => setTimeout(resolve, CONFIG.TYPING_DELETE_SPEED_MS));
             }
-             if (isTypingPaused) continue;
+            if (isTypingPaused) continue;
 
             // Pause before next line
             await new Promise(resolve => setTimeout(resolve, CONFIG.TYPING_DELETE_SPEED_MS * 3));
@@ -370,20 +362,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Functions to pause/resume typing effect if needed (e.g., on window blur/focus)
-    // const pauseTyping = () => { isTypingPaused = true; };
-    // const resumeTyping = () => { isTypingPaused = false; };
-    // window.addEventListener('blur', pauseTyping);
-    // window.addEventListener('focus', resumeTyping);
 
     /**
-     * Initializes the Particles.js background if enabled and library is available.
+     * Initializes Particles.js background if enabled.
      */
     const initializeParticles = () => {
         if (!FEATURE_FLAGS.enableParticles || prefersReducedMotion || typeof particlesJS === 'undefined') {
             logInfo('ParticlesJS skipped (disabled, reduced motion, or library missing).');
-            const particlesContainer = selectElement('#particles-js');
-            if (particlesContainer) particlesContainer.style.display = 'none';
+            selectElement('#particles-js')?.style.setProperty('display', 'none', 'important'); // Force hide
             return;
         }
 
@@ -394,330 +380,224 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const commonConfig = { // Base config, reduce repetition
+            // Define configs inside function to check theme at runtime
+            const isDark = ELEMENTS.body?.classList.contains('dark-mode');
+            const config = { // Shared base config
                 interactivity: {
-                    detect_on: "canvas", // Use 'window' if issues with canvas detection
-                    events: { resize: true },
-                     modes: { // Define all modes used
-                         repulse: { distance: 100, duration: 0.4 },
-                         push: { particles_nb: 4 },
-                         grab: { distance: 140, line_opacity: 0.7 },
-                         bubble: { distance: 200, size: 6, duration: 0.3 }
-                    }
+                    detect_on: "canvas",
+                    events: { resize: true, onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" } },
+                    modes: { repulse: { distance: 80, duration: 0.4 }, push: { particles_nb: 4 }, grab: { distance: 140, line_opacity: 0.7 }, bubble: { distance: 200, size: 6, duration: 0.3 } }
                 },
                 retina_detect: true
             };
 
-            const lightModeConfig = {
-                ...commonConfig, // Spread common config
-                particles: {
-                    number: { value: 80, density: { enable: true, value_area: 900 } },
-                    color: { value: "#00a000" }, // Use CSS var? getComputedStyle('--primary-color') is complex here
-                    shape: { type: "circle" },
-                    opacity: { value: 0.4, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false } },
-                    size: { value: 3, random: true },
-                    line_linked: { enable: true, distance: 150, color: "#cccccc", opacity: 0.4, width: 1 },
-                    move: { enable: true, speed: 2, direction: "none", random: false, straight: false, out_mode: "out", bounce: false }
-                },
-                 interactivity: {
-                     ...commonConfig.interactivity,
-                     events: { ...commonConfig.interactivity.events, onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" } },
-                 }
-            };
+            if (isDark) {
+                // Dark Mode Specific Particles
+                Object.assign(config, {
+                    particles: {
+                        number: { value: 100, density: { enable: true, value_area: 800 } },
+                        color: { value: "#4CAF50" }, // Secondary green
+                        shape: { type: "circle" },
+                        opacity: { value: 0.45, random: true, anim: { enable: true, speed: 0.8, opacity_min: 0.1, sync: false } },
+                        size: { value: 3, random: true },
+                        line_linked: { enable: true, distance: 130, color: "#444444", opacity: 0.5, width: 1 },
+                        move: { enable: true, speed: 1.5, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
+                    },
+                    interactivity: { // Override interactivity for dark if needed
+                        ...config.interactivity,
+                         events: { ...config.interactivity.events, onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "bubble" } },
+                    }
+                });
+            } else {
+                // Light Mode Specific Particles
+                Object.assign(config, {
+                    particles: {
+                        number: { value: 80, density: { enable: true, value_area: 900 } },
+                        color: { value: "#00a000" }, // Primary green
+                        shape: { type: "circle" },
+                        opacity: { value: 0.35, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false } },
+                        size: { value: 3, random: true },
+                        line_linked: { enable: true, distance: 150, color: "#cccccc", opacity: 0.4, width: 1 },
+                        move: { enable: true, speed: 2, direction: "none", random: false, straight: false, out_mode: "out", bounce: false }
+                    }
+                    // Inherits base interactivity from 'config'
+                });
+            }
 
-            const darkModeConfig = {
-                 ...commonConfig,
-                 particles: {
-                    number: { value: 100, density: { enable: true, value_area: 800 } },
-                    color: { value: "#4CAF50" },
-                    shape: { type: "circle" },
-                    opacity: { value: 0.5, random: true, anim: { enable: true, speed: 0.8, opacity_min: 0.15, sync: false } },
-                    size: { value: 3.5, random: true },
-                    line_linked: { enable: true, distance: 130, color: "#444444", opacity: 0.6, width: 1 },
-                    move: { enable: true, speed: 1.5, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
-                },
-                 interactivity: {
-                     ...commonConfig.interactivity,
-                     events: { ...commonConfig.interactivity.events, onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "bubble" } },
-                 }
-            };
+            particlesJS(particlesElementId, config, () => { logInfo('Particles.js initialized.'); });
 
-            const currentConfig = ELEMENTS.body.classList.contains('dark-mode') ? darkModeConfig : lightModeConfig;
-             // Store the instance if needed for later manipulation
-             // window.pJSDom[0].pJS holds the instance after init
-             particlesJS(particlesElementId, currentConfig, () => {
-                logInfo('Particles.js initialized successfully.');
-                // Example: Access instance after init if pJSDom is available globally
-                // if (window.pJSDom && window.pJSDom[0]) {
-                //     particlesInstance = window.pJSDom[0].pJS;
-                // }
-            });
         } catch (error) {
             logError("Error initializing particles.js", error);
-            const particlesContainer = selectElement(`#${particlesElementId}`);
-            if (particlesContainer) particlesContainer.style.display = 'none';
+            selectElement(`#${particlesElementId}`)?.style.setProperty('display', 'none', 'important');
         }
     };
 
+
     /**
-     * Initializes the Leaflet map if the library is available and element exists.
+     * Initializes the Leaflet map.
      */
     const initializeMap = () => {
         if (typeof L === 'undefined') {
-            logWarn('Leaflet library (L) not found. Skipping map initialization.');
+            logWarn('Leaflet library (L) not found.');
             if (ELEMENTS.mapElement) ELEMENTS.mapElement.innerHTML = '<p>Map library failed to load.</p>';
             return;
         }
         if (!ELEMENTS.mapElement) {
-            logWarn('Map element (#map) not found. Skipping map initialization.');
+            logWarn('Map element (#map) not found.');
             return;
         }
 
         try {
-            // Check if map is already initialized
-            if (mapInstance && mapInstance.remove) {
-                 mapInstance.remove(); // Remove previous instance if re-initializing
-                 mapInstance = null;
-            }
-
-            mapInstance = L.map(ELEMENTS.mapElement, {
-                scrollWheelZoom: false, // Start with scroll zoom disabled
-                attributionControl: false // Disable default attribution, add custom later
-            }).setView(CONFIG.MAP_COORDS, CONFIG.MAP_ZOOM);
-
-            // Enable scroll zoom on click, disable on blur
+            if (mapInstance) mapInstance.remove(); // Remove previous instance
+            mapInstance = L.map(ELEMENTS.mapElement, { scrollWheelZoom: false, attributionControl: false })
+                         .setView(CONFIG.MAP_COORDS, CONFIG.MAP_ZOOM);
             mapInstance.on('click', () => mapInstance?.scrollWheelZoom.enable());
             mapInstance.on('blur', () => mapInstance?.scrollWheelZoom.disable());
-
-            // Add Tile Layer
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                // attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors', // Handled by custom control
-                maxZoom: CONFIG.MAP_MAX_ZOOM,
-                minZoom: CONFIG.MAP_MIN_ZOOM
-            }).addTo(mapInstance);
-
-            // Add custom attribution control to the bottom right
-            L.control.attribution({
-                prefix: false, // Don't show 'Leaflet' prefix
-                position: 'bottomright'
-            }).addAttribution('© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors').addTo(mapInstance);
-
-
-            initializeMapMarker(); // Add the marker
-
-            logInfo('Leaflet map initialized successfully.');
-
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: CONFIG.MAP_MAX_ZOOM, minZoom: CONFIG.MAP_MIN_ZOOM }).addTo(mapInstance);
+            L.control.attribution({ prefix: false, position: 'bottomright' })
+                     .addAttribution('© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors')
+                     .addTo(mapInstance);
+            initializeMapMarker();
+            logInfo('Leaflet map initialized.');
         } catch (error) {
             logError("Error initializing Leaflet map", error);
-            ELEMENTS.mapElement.innerHTML = '<p>Map could not be loaded due to an error.</p>';
-            mapInstance = null; // Ensure instance is null on error
+            if (ELEMENTS.mapElement) ELEMENTS.mapElement.innerHTML = '<p>Map could not be loaded.</p>';
+            mapInstance = null;
         }
     };
 
     /**
-      * Creates and adds/updates the map marker based on the current theme.
-      * Uses CSS variables for dynamic colors.
-      */
+     * Creates/updates the map marker with dynamic pulsing effect.
+     */
     const initializeMapMarker = () => {
-        if (!mapInstance || typeof L === 'undefined') return;
+        if (!mapInstance || typeof L === 'undefined' || !ELEMENTS.body) return;
 
-        // Remove existing marker layer(s) reliably
-        mapInstance.eachLayer((layer) => {
-            if (layer instanceof L.Marker || layer instanceof L.DivIcon) { // Check for both marker types
-                 try {
-                     mapInstance.removeLayer(layer);
-                 } catch (e) {
-                    logWarn("Could not remove previous map marker layer.", e);
-                 }
+        mapInstance.eachLayer((layer) => { // Remove previous marker layers
+            if (layer instanceof L.Marker || (layer.options && layer.options.icon instanceof L.DivIcon)) {
+                try { mapInstance.removeLayer(layer); } catch (e) { logWarn("Could not remove previous map marker.", e); }
             }
         });
 
         try {
-             const isDark = ELEMENTS.body.classList.contains('dark-mode');
-             // Get computed styles - ensure body is available
-             const computedStyle = getComputedStyle(ELEMENTS.body);
-             // Safely get CSS variable values with fallbacks
-             const markerColor = computedStyle.getPropertyValue('--primary-color').trim() || '#00a000'; // Fallback green
-             const markerColorDark = computedStyle.getPropertyValue('--secondary-color').trim() || '#4CAF50'; // Fallback lighter green
-             const borderColor = computedStyle.getPropertyValue('--text-light').trim() || '#f8f9fa';
-             const borderColorDark = computedStyle.getPropertyValue('--text-dark').trim() || '#212529';
+            const computedStyle = getComputedStyle(ELEMENTS.body);
+            const markerColor = ELEMENTS.body.classList.contains('dark-mode')
+                ? (computedStyle.getPropertyValue('--secondary-color').trim() || '#4CAF50')
+                : (computedStyle.getPropertyValue('--primary-color').trim() || '#00a000');
+            const borderColor = ELEMENTS.body.classList.contains('dark-mode')
+                ? (computedStyle.getPropertyValue('--text-dark').trim() || '#212529') // Black border in dark mode
+                : (computedStyle.getPropertyValue('--text-light').trim() || '#f8f9fa'); // White border in light mode
+            const pulseColor = markerColor + '80'; // Add 50% opacity hex code (approx)
+            const pulseEndColor = markerColor + '00'; // Fully transparent
 
-             const currentMarkerColor = isDark ? markerColorDark : markerColor;
-             const currentBorderColor = isDark ? borderColorDark : borderColor;
-             const pulseColor = isDark ? 'rgba(76, 175, 80, 0.5)' : 'rgba(0, 160, 0, 0.5)';
-             const pulseEndColor = isDark ? 'rgba(76, 175, 80, 0)' : 'rgba(0, 160, 0, 0)';
+            const keyframes = `@keyframes pulseMarker { 0% { box-shadow: 0 0 0 0 ${pulseColor}; } 70% { box-shadow: 0 0 0 15px ${pulseEndColor}; } 100% { box-shadow: 0 0 0 0 ${pulseEndColor}; } }`;
+            const styleElement = document.createElement('style');
+            styleElement.textContent = keyframes;
+            document.head.appendChild(styleElement); // Add keyframes globally (simpler than per marker)
 
-
-            // Define the keyframes directly in the style block for broader compatibility
-             const keyframes = `@keyframes pulseMarker {
-                                 0% { box-shadow: 0 0 0 0 ${pulseColor}; }
-                                 70% { box-shadow: 0 0 0 15px ${pulseEndColor}; }
-                                 100% { box-shadow: 0 0 0 0 ${pulseEndColor}; }
-                             }`;
-
-             const pulsingIcon = L.divIcon({
-                 className: 'custom-map-marker', // Base class for potential global styles
-                 html: `<style>${keyframes}</style>
-                        <div style="
-                            background-color: ${currentMarkerColor};
-                            width: 18px;
-                            height: 18px;
-                            border-radius: 50%;
-                            border: 3px solid ${currentBorderColor};
-                            box-shadow: 0 0 0 ${pulseColor};
-                            animation: pulseMarker 2s infinite;
-                            transition: background-color 0.3s ease, border-color 0.3s ease; /* Smooth theme transition */
-                         "></div>`,
-                 iconSize: [24, 24],
-                 iconAnchor: [12, 12], // Center the icon anchor
-                 popupAnchor: [0, -15] // Position popup above the icon center
-             });
+            const pulsingIcon = L.divIcon({
+                className: 'custom-map-marker',
+                html: `<div style="background-color: ${markerColor}; width: 18px; height: 18px; border-radius: 50%; border: 3px solid ${borderColor}; animation: pulseMarker 2s infinite; transition: background-color 0.3s ease, border-color 0.3s ease;"></div>`,
+                iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [0, -15]
+            });
 
             L.marker(CONFIG.MAP_COORDS, { icon: pulsingIcon, title: 'sysfx Location' })
                 .addTo(mapInstance)
                 .bindPopup("<b>sysfx HQ</b><br>123 Main Street<br>Clinton, CT 06413");
 
-        } catch(error) {
-             logError("Failed to create or update map marker", error);
-        }
+            // Cleanup style element if map is removed later? (Consider if necessary)
+            // mapInstance.on('remove', () => styleElement.remove());
+
+        } catch(error) { logError("Failed to create map marker", error); }
     };
 
     /**
-     * Handles opening and closing modals with focus management and accessibility.
+     * Handles modal opening/closing, focus, and accessibility.
      */
     const handleModals = () => {
         if (ELEMENTS.serviceCards.length === 0 && ELEMENTS.modals.length === 0) return;
 
-        // Open modal via service card click/keypress
+        // Open modal triggers
         ELEMENTS.serviceCards?.forEach(card => {
-             const modalId = card.getAttribute('data-modal-target');
-             if (!modalId) {
-                 logWarn("Service card missing data-modal-target attribute.", card);
-                 return;
-             }
-             const modal = selectElement(`#${modalId}`);
-             if (!modal) {
-                 logWarn(`Modal with ID #${modalId} not found for service card.`, card);
-                 return;
-             }
-
-            const openTrigger = () => openModal(modal, card); // Pass trigger element
-
-            card.addEventListener('click', openTrigger);
-            card.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    openTrigger();
-                }
-            });
+            const modalId = card.getAttribute('data-modal-target');
+            if (!modalId) return;
+            const modal = selectElement(`#${modalId}`);
+            if (!modal) return;
+            card.addEventListener('click', () => openModal(modal, card));
+            card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(modal, card); } });
         });
 
-        // Handle closing modals
+        // Close triggers within each modal
         ELEMENTS.modals?.forEach(modal => {
-            const closeButtons = selectElements('.modal-close, .modal-close-alt', modal); // Select all close triggers
-
-            // Close via button clicks
-            closeButtons.forEach(button => {
+            selectElements('.modal-close, .modal-close-alt', modal).forEach(button => {
                 button.addEventListener('click', () => closeModal(modal));
             });
-
-            // Close via backdrop click
-            modal.addEventListener('click', (event) => {
-                if (event.target === modal) { // Only if clicking the backdrop itself
-                    closeModal(modal);
-                }
+            modal.addEventListener('click', (event) => { if (event.target === modal) closeModal(modal); }); // Backdrop click
+             // Modal action buttons (e.g., link to contact)
+            selectElements('.modal-action[data-link]', modal).forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetSelector = button.getAttribute('data-link');
+                    const targetElement = selectElement(targetSelector);
+                    closeModal(modal); // Close first
+                    setTimeout(() => {
+                       if (targetElement) {
+                            targetElement.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+                            targetElement.focus({ preventScroll: true });
+                        }
+                    }, 100);
+                });
             });
-
-             // Handle actions within modals (e.g., buttons linking to sections)
-             const actionButtons = selectElements('.modal-action[data-link]', modal);
-             actionButtons.forEach(button => {
-                 button.addEventListener('click', () => {
-                     const targetSelector = button.getAttribute('data-link');
-                     const targetElement = selectElement(targetSelector);
-                     closeModal(modal); // Close modal first
-                     // Scroll to target section after modal closes (add slight delay)
-                     setTimeout(() => {
-                        if (targetElement) {
-                             targetElement.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
-                             // Optionally focus the target section or a focusable element within it
-                             targetElement.focus({ preventScroll: true }); // preventScroll might be needed
-                         } else {
-                             logWarn(`Modal action target not found: ${targetSelector}`);
-                         }
-                     }, 100); // Small delay to allow modal close animation
-                 });
-             });
         });
 
-        // Global Escape key listener for modals
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && activeModal) {
-                closeModal(activeModal);
-            }
-        });
+        // Global Escape key listener
+        document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && activeModal) closeModal(activeModal); });
     };
 
-    /**
-     * Opens a specific modal, manages focus and accessibility attributes.
-     * @param {HTMLElement} modal - The modal element to open.
-     * @param {HTMLElement} [triggerElement=null] - The element that triggered the modal opening (optional, for returning focus).
-     */
     const openModal = (modal, triggerElement = null) => {
-        if (!modal || modal === activeModal) return; // Don't open if already open or doesn't exist
+        if (!modal || modal === activeModal) return;
+        activeModal = modal;
+        if (triggerElement) activeModal.triggerElement = triggerElement;
 
-        activeModal = modal; // Set as active
-        if (triggerElement) activeModal.triggerElement = triggerElement; // Store trigger element
-
-        modal.style.display = 'flex'; // Set display before transition class
-        // Force reflow before adding class (more reliable transition)
+        modal.style.display = 'flex';
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const reflow = modal.offsetHeight;
+        const reflow = modal.offsetHeight; // Force reflow
 
         requestAnimationFrame(() => {
             modal.classList.add('active');
             ELEMENTS.body?.classList.add('no-scroll');
+            ELEMENTS.mainContent?.setAttribute('inert', ''); // Make background content inert
+            ELEMENTS.footer?.setAttribute('inert', '');
             modal.setAttribute('aria-hidden', 'false');
-
-            // Focus management: Find first focusable element or modal itself
-            const focusableElements = selectElements('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', modal);
-            const firstFocusable = focusableElements.length > 0 ? focusableElements[0] : modal;
-            setTimeout(() => firstFocusable.focus(), 100); // Delay focus slightly
+            const firstFocusable = selectElement('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', modal) || modal;
+            setTimeout(() => firstFocusable.focus(), 100);
         });
     };
 
-    /**
-     * Closes the currently active modal, manages focus and accessibility.
-     * @param {HTMLElement} modal - The modal element to close.
-     */
     const closeModal = (modal) => {
         if (!modal || modal !== activeModal || !modal.classList.contains('active')) return;
 
+        const triggerElement = activeModal.triggerElement;
+        activeModal.triggerElement = null;
+        activeModal = null;
+
         modal.classList.remove('active');
         modal.setAttribute('aria-hidden', 'true');
+        ELEMENTS.mainContent?.removeAttribute('inert'); // Restore background content
+        ELEMENTS.footer?.removeAttribute('inert');
 
-        const triggerElement = activeModal.triggerElement; // Retrieve trigger
-        activeModal.triggerElement = null; // Clear stored trigger
-        activeModal = null; // Clear active modal state
-
-        // Use transitionend event for reliable hiding and focus return
         const onTransitionEnd = (event) => {
-            // Ensure the transition is for the modal itself and for opacity or transform
-             if (event.target !== modal || !['opacity', 'transform'].includes(event.propertyName)) {
-                 return;
-             }
+            if (event.target !== modal || !['opacity', 'transform'].includes(event.propertyName)) return;
             modal.style.display = 'none';
-            ELEMENTS.body?.classList.remove('no-scroll'); // Remove only when fully closed
-            triggerElement?.focus(); // Return focus to the element that opened it
-             modal.removeEventListener('transitionend', onTransitionEnd); // Clean up listener
+            ELEMENTS.body?.classList.remove('no-scroll');
+            triggerElement?.focus();
+            modal.removeEventListener('transitionend', onTransitionEnd);
         };
-
         modal.addEventListener('transitionend', onTransitionEnd);
 
-        // Fallback timeout in case transitionend doesn't fire (e.g., display:none interrupt)
+        // Fallback timeout
         setTimeout(() => {
-            if (!activeModal && modal.style.display !== 'none') { // Check if still needs hiding
-                 logWarn(`TransitionEnd fallback triggered for modal: ${modal.id}`);
-                 modal.removeEventListener('transitionend', onTransitionEnd); // Clean up listener
+            if (!activeModal && modal.style.display !== 'none') {
+                 logWarn(`Modal transitionEnd fallback triggered: ${modal.id}`);
+                 modal.removeEventListener('transitionend', onTransitionEnd);
                  modal.style.display = 'none';
                  ELEMENTS.body?.classList.remove('no-scroll');
                  triggerElement?.focus();
@@ -727,474 +607,397 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /**
-     * Handles opening/closing the gallery lightbox with focus management.
+     * Handles lightbox opening/closing.
      */
     const handleLightbox = () => {
-        if (!ELEMENTS.lightbox || !ELEMENTS.lightboxImage || !ELEMENTS.lightboxClose) return;
+        if (!ELEMENTS.lightbox || !ELEMENTS.lightboxImage || !ELEMENTS.lightboxClose || !ELEMENTS.lightboxAltText) return;
 
         const openLightbox = (item) => {
-            activeLightboxTarget = item; // Store the clicked item
+            activeLightboxTarget = item;
             const highResSrc = item.getAttribute('data-src');
             const altText = item.getAttribute('data-alt') || selectElement('img', item)?.alt || 'Gallery image';
 
-            if (highResSrc) {
-                ELEMENTS.lightboxImage.setAttribute('src', highResSrc);
-                ELEMENTS.lightboxImage.setAttribute('alt', altText);
-                ELEMENTS.lightbox.style.display = 'flex';
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const reflow = ELEMENTS.lightbox.offsetHeight; // Force reflow
+            if (!highResSrc) { logWarn("Gallery item has no data-src.", item); return; }
 
-                requestAnimationFrame(() => {
-                    ELEMENTS.lightbox.classList.add('active');
-                    ELEMENTS.body?.classList.add('no-scroll');
-                    ELEMENTS.lightbox.setAttribute('aria-hidden', 'false');
-                    setTimeout(() => ELEMENTS.lightboxClose.focus(), 100); // Focus close button
-                });
-            } else {
-                logWarn("Gallery item clicked has no data-src attribute.", item);
-            }
+            ELEMENTS.lightboxImage.setAttribute('src', highResSrc);
+            ELEMENTS.lightboxImage.setAttribute('alt', altText);
+            ELEMENTS.lightboxAltText.textContent = altText; // Update sr-only text
+            ELEMENTS.lightbox.style.display = 'flex';
+             // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const reflow = ELEMENTS.lightbox.offsetHeight;
+
+            requestAnimationFrame(() => {
+                ELEMENTS.lightbox.classList.add('active');
+                ELEMENTS.body?.classList.add('no-scroll');
+                ELEMENTS.mainContent?.setAttribute('inert', '');
+                ELEMENTS.footer?.setAttribute('inert', '');
+                ELEMENTS.lightbox.setAttribute('aria-hidden', 'false');
+                setTimeout(() => ELEMENTS.lightboxClose.focus(), 100);
+            });
         };
 
         const closeLightbox = () => {
             if (!ELEMENTS.lightbox.classList.contains('active')) return;
+            const trigger = activeLightboxTarget;
+            activeLightboxTarget = null;
 
             ELEMENTS.lightbox.classList.remove('active');
             ELEMENTS.lightbox.setAttribute('aria-hidden', 'true');
-
-             const trigger = activeLightboxTarget; // Get trigger before clearing
-             activeLightboxTarget = null; // Clear target
+            ELEMENTS.mainContent?.removeAttribute('inert');
+            ELEMENTS.footer?.removeAttribute('inert');
 
             const onTransitionEnd = (event) => {
                  if (event.target !== ELEMENTS.lightbox || !['opacity', 'transform'].includes(event.propertyName)) return;
-
                  ELEMENTS.lightbox.style.display = 'none';
-                 ELEMENTS.lightboxImage.setAttribute('src', ''); // Clear src for next use
+                 ELEMENTS.lightboxImage.setAttribute('src', '');
                  ELEMENTS.lightboxImage.setAttribute('alt', '');
+                 ELEMENTS.lightboxAltText.textContent = '';
                  ELEMENTS.body?.classList.remove('no-scroll');
-                 trigger?.focus(); // Return focus
+                 trigger?.focus();
                  ELEMENTS.lightbox.removeEventListener('transitionend', onTransitionEnd);
             };
-
-             ELEMENTS.lightbox.addEventListener('transitionend', onTransitionEnd);
-
-             // Fallback timeout
+            ELEMENTS.lightbox.addEventListener('transitionend', onTransitionEnd);
+             // Fallback
              setTimeout(() => {
-                 if (ELEMENTS.lightbox.style.display !== 'none' && !activeLightboxTarget) { // Check if still needs hiding
-                     logWarn(`TransitionEnd fallback triggered for lightbox.`);
+                 if (ELEMENTS.lightbox.style.display !== 'none' && !activeLightboxTarget) {
+                     logWarn(`Lightbox transitionEnd fallback.`);
                      ELEMENTS.lightbox.removeEventListener('transitionend', onTransitionEnd);
                      ELEMENTS.lightbox.style.display = 'none';
                      ELEMENTS.lightboxImage.setAttribute('src', '');
                      ELEMENTS.lightboxImage.setAttribute('alt', '');
+                     ELEMENTS.lightboxAltText.textContent = '';
                      ELEMENTS.body?.classList.remove('no-scroll');
                      trigger?.focus();
                  }
-             }, 500); // Match transition + buffer
+             }, 500);
         };
 
         ELEMENTS.galleryItems?.forEach(item => {
-            item.setAttribute('role', 'button');
-            item.setAttribute('tabindex', '0');
             item.addEventListener('click', () => openLightbox(item));
-            item.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    openLightbox(item);
-                }
-            });
+            item.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(item); } });
         });
 
         ELEMENTS.lightboxClose.addEventListener('click', closeLightbox);
-        ELEMENTS.lightbox.addEventListener('click', (event) => {
-            if (event.target === ELEMENTS.lightbox) { // Backdrop click
-                closeLightbox();
-            }
-        });
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && ELEMENTS.lightbox.classList.contains('active')) {
-                closeLightbox();
-            }
-        });
+        ELEMENTS.lightbox.addEventListener('click', (event) => { if (event.target === ELEMENTS.lightbox) closeLightbox(); });
+        document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && ELEMENTS.lightbox.classList.contains('active')) closeLightbox(); });
     };
 
+
     /**
-     * Handles the testimonial carousel (fade transition) with improved controls and accessibility.
+     * Handles the testimonial carousel (fade transition).
      */
     const handleTestimonialCarousel = () => {
         if (!ELEMENTS.testimonialSlider || ELEMENTS.testimonials.length === 0) {
-            // Hide controls if no testimonials
-            if(ELEMENTS.carouselPrev) ELEMENTS.carouselPrev.style.display = 'none';
-            if(ELEMENTS.carouselNext) ELEMENTS.carouselNext.style.display = 'none';
+            selectElement('.carousel-container', document)?.style.setProperty('display', 'none'); // Hide whole container if no slides
             return;
         }
 
         const totalTestimonials = ELEMENTS.testimonials.length;
-        const container = ELEMENTS.testimonialSlider.parentElement; // Carousel container
+        const container = ELEMENTS.testimonialSlider.parentElement;
 
         const showTestimonial = (index) => {
-            if (index < 0 || index >= totalTestimonials) {
-                logWarn(`Invalid testimonial index: ${index}`);
-                index = 0; // Default to first
-            }
-
+            currentTestimonialIndex = (index + totalTestimonials) % totalTestimonials; // Ensure positive index
             ELEMENTS.testimonials.forEach((testimonial, i) => {
-                const isActive = i === index;
-                testimonial.setAttribute('aria-hidden', String(!isActive));
-                // Using CSS attribute selector for visibility/opacity transitions
-                // .testimonial[aria-hidden="false"] { opacity: 1; visibility: visible; position: relative; }
-                // .testimonial[aria-hidden="true"] { opacity: 0; visibility: hidden; position: absolute; }
+                testimonial.setAttribute('aria-hidden', String(i !== currentTestimonialIndex));
             });
-            currentTestimonialIndex = index;
-
-            // Update ARIA live region if one exists (recommended for accessibility)
-            const liveRegion = selectElement('#testimonial-live-region'); // Add this element to HTML if needed
-            if (liveRegion) {
-                liveRegion.textContent = `Showing testimonial ${index + 1} of ${totalTestimonials}.`;
+            if (ELEMENTS.testimonialLiveRegion) {
+                ELEMENTS.testimonialLiveRegion.textContent = `Showing testimonial ${currentTestimonialIndex + 1} of ${totalTestimonials}.`;
             }
         };
 
-        const nextTestimonial = () => {
-            const nextIndex = (currentTestimonialIndex + 1) % totalTestimonials;
-            showTestimonial(nextIndex);
-        };
-
-        const prevTestimonial = () => {
-            const prevIndex = (currentTestimonialIndex - 1 + totalTestimonials) % totalTestimonials;
-            showTestimonial(prevIndex);
-        };
-
-        // Auto-play Management
+        const nextTestimonial = () => showTestimonial(currentTestimonialIndex + 1);
+        const prevTestimonial = () => showTestimonial(currentTestimonialIndex - 1);
         const stopInterval = () => clearInterval(testimonialInterval);
         const startInterval = () => {
-            stopInterval(); // Clear existing first
+            stopInterval();
             if (!prefersReducedMotion) {
                 testimonialInterval = setInterval(nextTestimonial, CONFIG.CAROUSEL_INTERVAL_MS);
             }
         };
-        const resetInterval = () => {
-             stopInterval();
-             startInterval();
-        };
+        const resetInterval = () => { stopInterval(); startInterval(); };
 
-
-        // Event Listeners for Controls
         ELEMENTS.carouselNext?.addEventListener('click', () => { nextTestimonial(); resetInterval(); });
         ELEMENTS.carouselPrev?.addEventListener('click', () => { prevTestimonial(); resetInterval(); });
-
-        // Keyboard accessibility for controls
         [ELEMENTS.carouselPrev, ELEMENTS.carouselNext].forEach((btn, i) => {
             btn?.addEventListener('keydown', e => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                     (i === 0 ? prevTestimonial : nextTestimonial)();
-                     resetInterval();
-                }
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); (i === 0 ? prevTestimonial : nextTestimonial)(); resetInterval(); }
             });
         });
 
-        // Pause on hover/focus of the container
-        if (container) {
+        if (container) { // Pause on hover/focus
              container.addEventListener('mouseenter', stopInterval);
              container.addEventListener('mouseleave', startInterval);
              container.addEventListener('focusin', stopInterval);
              container.addEventListener('focusout', startInterval);
         }
 
-        // Initial setup
-        showTestimonial(0);
+        showTestimonial(0); // Show first slide initially
         startInterval();
     };
 
 
     /**
-     * Animates the stats numbers using GSAP when they become visible.
+     * Animates stats numbers using GSAP if available.
      */
     const animateStats = () => {
-        if (ELEMENTS.statsNumbers.length === 0) return; // Exit if no stat elements
+        if (ELEMENTS.statsNumbers.length === 0) return;
 
-        // Fallback for no GSAP or reduced motion
         const runFallback = () => {
-            ELEMENTS.statsNumbers?.forEach(statNum => {
-                const target = parseInt(statNum.dataset.target || '0', 10);
-                statNum.textContent = target.toLocaleString(); // Display final number formatted
-            });
+            ELEMENTS.statsNumbers?.forEach(n => n.textContent = (parseInt(n.dataset.target || '0')).toLocaleString());
         };
 
-        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-            logWarn('GSAP or ScrollTrigger not loaded. Using fallback for stats animation.');
+        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || prefersReducedMotion) {
+            logInfo('GSAP/ScrollTrigger missing or reduced motion. Using fallback for stats.');
             runFallback();
             return;
         }
-        if (prefersReducedMotion) {
-             logInfo('Reduced motion preferred. Using fallback for stats animation.');
-             runFallback();
-            return;
-        }
 
-        // GSAP Animation
         gsap.registerPlugin(ScrollTrigger);
-
         ELEMENTS.statsNumbers.forEach(statNum => {
-            const target = parseInt(statNum.dataset.target, 10) || 0;
-            // Use a proxy object for animation to handle formatting
+            const target = parseInt(statNum.dataset.target || '0');
             let proxy = { val: 0 };
-
             ScrollTrigger.create({
-                 trigger: statNum,
-                 start: "top 90%", // Trigger when element is 90% from top of viewport
-                 once: true, // Trigger only once
-                 onEnter: () => {
-                     gsap.to(proxy, {
-                         val: target,
-                         duration: 2,
-                         ease: "power2.out",
-                         onUpdate: () => {
-                             statNum.textContent = Math.round(proxy.val).toLocaleString();
-                         },
-                         onComplete: () => {
-                              statNum.textContent = target.toLocaleString(); // Ensure final value is exact
-                         }
-                     });
-                 }
+                trigger: statNum, start: "top 90%", once: true,
+                onEnter: () => {
+                    gsap.to(proxy, {
+                        val: target, duration: 2.5, ease: "power2.out", // Slightly longer duration
+                        onUpdate: () => { statNum.textContent = Math.round(proxy.val).toLocaleString(); },
+                        onComplete: () => { statNum.textContent = target.toLocaleString(); } // Final value
+                    });
+                }
             });
         });
     };
 
     /**
-     * Handles section reveal animations using GSAP and ScrollTrigger.
+     * Handles section reveal animations using GSAP.
      */
     const revealSections = () => {
-        if (ELEMENTS.animatedSections.length === 0 && !ELEMENTS.footer) return; // Exit if nothing to animate
+        if (ELEMENTS.animatedSections.length === 0 && !ELEMENTS.footer) return;
 
-        // Fallback for no GSAP or reduced motion
-         const runFallback = () => {
-             ELEMENTS.animatedSections?.forEach(section => {
-                 section.style.opacity = '1';
-                 section.style.transform = 'translateY(0)';
-             });
-             ELEMENTS.footer?.classList.add('visible'); // Make footer visible directly
-         };
+        const runFallback = () => {
+            ELEMENTS.animatedSections?.forEach(s => { s.style.opacity = '1'; s.style.transform = 'none'; });
+            ELEMENTS.footer?.classList.add('visible');
+        };
 
-         if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-             logWarn('GSAP or ScrollTrigger not loaded. Using fallback for reveal animations.');
+        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || prefersReducedMotion) {
+             logInfo('GSAP/ScrollTrigger missing or reduced motion. Using fallback for reveals.');
              runFallback();
              return;
-         }
-         if (prefersReducedMotion) {
-              logInfo('Reduced motion preferred. Using fallback for reveal animations.');
-              runFallback();
-             return;
-         }
+        }
 
-        // GSAP Animations
         gsap.registerPlugin(ScrollTrigger);
-
-        // Animate sections
         ELEMENTS.animatedSections?.forEach((section, index) => {
-            // Set initial state via GSAP for consistency
-            gsap.set(section, { opacity: 0, y: 60 });
-
-            gsap.to(section, {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top 88%", // Adjust trigger point as needed
-                    toggleActions: "play none none none", // Play once on enter
-                    // markers: true, // Uncomment for debugging
-                },
-                delay: index * 0.05 // Stagger animation slightly
-            });
+            gsap.fromTo(section,
+                { opacity: 0, y: 60 },
+                {
+                    opacity: 1, y: 0, duration: 0.8, ease: "power3.out",
+                    scrollTrigger: { trigger: section, start: "top 88%", toggleActions: "play none none none" },
+                    delay: index * 0.05 // Stagger effect
+                }
+            );
         });
 
-        // Animate footer visibility class toggle
-        if (ELEMENTS.footer) {
-             // Set initial state for footer if CSS doesn't handle it (safer)
-             // Note: CSS should ideally handle initial state via .main-footer selector
-             // gsap.set(ELEMENTS.footer, { opacity: 0, y: 40 });
-
+        if (ELEMENTS.footer) { // Footer fade-in class toggle
             ScrollTrigger.create({
-                trigger: ELEMENTS.footer,
-                start: "top 95%", // When top of footer is 95% from top of viewport
-                // markers: true, // Uncomment for debugging
+                trigger: ELEMENTS.footer, start: "top 95%",
                 onEnter: () => ELEMENTS.footer.classList.add('visible'),
-                onLeaveBack: () => ELEMENTS.footer.classList.remove('visible') // Hide if scrolling back up past it
-                 // Optionally add GSAP animation alongside class toggle:
-                 // onEnter: () => {
-                 //     ELEMENTS.footer.classList.add('visible');
-                 //     gsap.to(ELEMENTS.footer, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' });
-                 // },
-                 // onLeaveBack: () => {
-                 //     gsap.to(ELEMENTS.footer, { opacity: 0, y: 40, duration: 0.4, ease: 'power1.in', onComplete: () => ELEMENTS.footer.classList.remove('visible') });
-                 // }
+                onLeaveBack: () => ELEMENTS.footer.classList.remove('visible')
             });
         }
     };
 
-
     /**
-     * Fetches and displays a tech trivia fact from the local array.
+     * Displays a random tech trivia fact from the local array.
      */
     const displayTechTrivia = () => {
         if (!ELEMENTS.triviaTextElement) return;
-
         if (CONFIG.TECH_TRIVIA && CONFIG.TECH_TRIVIA.length > 0) {
              const randomIndex = Math.floor(Math.random() * CONFIG.TECH_TRIVIA.length);
-             const randomFact = CONFIG.TECH_TRIVIA[randomIndex];
-             // Use textContent for security (prevents HTML injection)
-             ELEMENTS.triviaTextElement.textContent = randomFact;
+             ELEMENTS.triviaTextElement.textContent = CONFIG.TECH_TRIVIA[randomIndex];
         } else {
-            logWarn("Tech trivia array is empty or missing.");
-            ELEMENTS.triviaTextElement.textContent = 'Tech insights coming soon!'; // Fallback message
+            ELEMENTS.triviaTextElement.textContent = 'Tech insights loading...';
         }
-        // Optionally, cycle trivia periodically
-        // setInterval(displayTechTrivia, 30000); // Change every 30 seconds
+        // Optional: Cycle trivia
+        // setTimeout(displayTechTrivia, 30000);
     };
 
-
     /**
-     * Toggles background music playback if enabled.
+     * Item 11: Toggles background music with fade effect using GSAP if available.
      */
     const toggleMusic = () => {
         if (!FEATURE_FLAGS.enableBackgroundMusic || !ELEMENTS.backgroundMusic || !ELEMENTS.musicToggle) return;
 
-        try {
-            if (musicPlaying) {
-                ELEMENTS.backgroundMusic.pause();
-            } else {
-                 // Play returns a promise which should be handled
-                 const playPromise = ELEMENTS.backgroundMusic.play();
-                 if (playPromise !== undefined) {
-                     playPromise.catch(error => {
-                         // Autoplay was prevented.
-                         logWarn("Background music autoplay failed. User interaction likely required.", error);
-                         // Optionally, provide feedback to the user that music needs manual start
-                          ELEMENTS.musicToggle.classList.add('muted'); // Keep muted style if failed
-                          ELEMENTS.musicToggle.setAttribute('aria-pressed', 'false');
-                         musicPlaying = false; // Ensure state reflects reality
-                     });
-                 }
-            }
-            // Toggle state optimistically, but catch handles failure
-             musicPlaying = !musicPlaying;
-             ELEMENTS.musicToggle.classList.toggle('muted', !musicPlaying);
-             ELEMENTS.musicToggle.setAttribute('aria-pressed', String(musicPlaying));
-             ELEMENTS.musicToggle.setAttribute('aria-label', musicPlaying ? 'Pause background music' : 'Play background music');
+        const audio = ELEMENTS.backgroundMusic;
+        const button = ELEMENTS.musicToggle;
+        const fadeDurationSeconds = CONFIG.MUSIC_FADE_DURATION_MS / 1000;
 
-        } catch (e) {
-            logError("Error toggling music", e);
-            // Reset state visually if error occurs
-            ELEMENTS.musicToggle.classList.add('muted');
-            ELEMENTS.musicToggle.setAttribute('aria-pressed', 'false');
+        // Clear any existing fade interval/tween
+        if (audioFadeInterval) clearInterval(audioFadeInterval);
+        if (gsap) gsap.killTweensOf(audio); // Kill GSAP tweens if using GSAP
+
+        if (musicPlaying) {
+            // Fade Out
+            if (typeof gsap !== 'undefined') {
+                gsap.to(audio, { volume: 0, duration: fadeDurationSeconds, ease: "linear", onComplete: () => audio.pause() });
+            } else {
+                // Manual Fade Out
+                 let currentVolume = audio.volume;
+                 audioFadeInterval = setInterval(() => {
+                     currentVolume -= 0.1 / (fadeDurationSeconds * 10); // Decrement volume smoothly
+                     if (currentVolume <= 0) {
+                         audio.volume = 0;
+                         audio.pause();
+                         clearInterval(audioFadeInterval);
+                     } else {
+                         audio.volume = currentVolume;
+                     }
+                 }, 100); // Update every 100ms
+            }
             musicPlaying = false;
+            button.classList.add('muted');
+            button.setAttribute('aria-pressed', 'false');
+            button.setAttribute('aria-label', 'Play background music');
+        } else {
+            // Fade In
+            audio.volume = 0; // Start silent
+            const playPromise = audio.play();
+
+            if (playPromise !== undefined) {
+                 playPromise.then(() => {
+                    // Play started successfully
+                    if (typeof gsap !== 'undefined') {
+                         gsap.to(audio, { volume: 1, duration: fadeDurationSeconds, ease: "linear" });
+                     } else {
+                          // Manual Fade In
+                          let currentVolume = 0;
+                          audioFadeInterval = setInterval(() => {
+                              currentVolume += 0.1 / (fadeDurationSeconds * 10);
+                              if (currentVolume >= 1) {
+                                  audio.volume = 1;
+                                  clearInterval(audioFadeInterval);
+                              } else {
+                                  audio.volume = currentVolume;
+                              }
+                          }, 100);
+                     }
+                     musicPlaying = true;
+                     button.classList.remove('muted');
+                     button.setAttribute('aria-pressed', 'true');
+                     button.setAttribute('aria-label', 'Pause background music');
+
+                 }).catch(error => {
+                    logWarn("Music playback failed (likely browser restriction).", error);
+                    // Ensure button stays muted if play fails
+                     button.classList.add('muted');
+                     button.setAttribute('aria-pressed', 'false');
+                     musicPlaying = false;
+                 });
+            } else {
+                 // Handle browsers where play() doesn't return a promise (older?) - less common now
+                 logWarn("Audio play() did not return a promise.");
+                 // Attempt immediate play/fade (might still be blocked)
+                  if (typeof gsap !== 'undefined') {
+                     gsap.to(audio, { volume: 1, duration: fadeDurationSeconds, ease: "linear" });
+                 } else { audio.volume = 1; } // No fade fallback
+                 musicPlaying = true;
+                 button.classList.remove('muted');
+                 button.setAttribute('aria-pressed', 'true');
+                 button.setAttribute('aria-label', 'Pause background music');
+            }
         }
     };
+
 
     /**
      * Shows/hides the scroll-to-top button based on scroll position. Throttled.
      */
     const handleScrollTopButton = throttle(() => {
         if (!ELEMENTS.scrollTopButton) return;
-        const scrollThreshold = window.innerHeight * 0.4; // Show button earlier
-
+        const scrollThreshold = window.innerHeight * 0.4;
         const shouldBeVisible = window.scrollY > scrollThreshold;
-        const isVisible = ELEMENTS.scrollTopButton.style.opacity === '1'; // Check opacity for visibility state
+        const isVisible = parseFloat(ELEMENTS.scrollTopButton.style.opacity || '0') > 0;
 
         if (shouldBeVisible && !isVisible) {
             ELEMENTS.scrollTopButton.style.display = 'flex';
-            gsap?.to(ELEMENTS.scrollTopButton, { opacity: 1, scale: 1, duration: 0.3, ease: 'power1.out' }) || (ELEMENTS.scrollTopButton.style.opacity = '1'); // Fallback
+            requestAnimationFrame(() => { // Ensure display is set before animating
+                 gsap?.to(ELEMENTS.scrollTopButton, { opacity: 1, scale: 1, duration: 0.3, ease: 'power1.out' }) || (ELEMENTS.scrollTopButton.style.opacity = '1');
+            });
         } else if (!shouldBeVisible && isVisible) {
-            if (typeof gsap !== 'undefined') {
-                gsap.to(ELEMENTS.scrollTopButton, {
-                    opacity: 0,
-                    scale: 0.8,
-                    duration: 0.3,
-                    ease: 'power1.in',
-                    onComplete: () => { if (window.scrollY <= scrollThreshold) ELEMENTS.scrollTopButton.style.display = 'none'; }
-                });
-            } else {
-                ELEMENTS.scrollTopButton.style.opacity = '0';
-                ELEMENTS.scrollTopButton.style.display = 'none';
-            }
+            const onComplete = () => { if (window.scrollY <= scrollThreshold) ELEMENTS.scrollTopButton.style.display = 'none'; };
+             gsap?.to(ELEMENTS.scrollTopButton, { opacity: 0, scale: 0.8, duration: 0.3, ease: 'power1.in', onComplete }) ||
+             (ELEMENTS.scrollTopButton.style.opacity = '0', ELEMENTS.scrollTopButton.style.display = 'none');
         }
-    }, 200); // Throttle scroll checks for this button
+    }, 200);
 
     /**
-     * Scrolls the page to the top smoothly or instantly based on motion preference.
+     * Scrolls the page to the top.
      */
     const scrollToTop = () => {
-        ELEMENTS.html?.scrollTo({ // Scroll on html element for better compatibility
-            top: 0,
-            behavior: prefersReducedMotion ? 'auto' : 'smooth'
-        });
+        ELEMENTS.html?.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
     };
 
     /**
-     * Handles the custom cursor movement and interactions if enabled.
+     * Item 10: Handles the custom cursor movement using GSAP quickTo.
      */
     const handleCustomCursor = () => {
         if (!FEATURE_FLAGS.enableCustomCursor || !ELEMENTS.customCursor || prefersReducedMotion || typeof gsap === 'undefined') {
-            ELEMENTS.customCursor?.remove(); // Remove element if not used
+            ELEMENTS.customCursor?.remove();
+            ELEMENTS.body?.classList.remove('cursor-ready'); // Ensure class removed
             return;
         }
 
         ELEMENTS.body?.classList.add('cursor-ready');
 
-        const xTo = gsap.quickTo(ELEMENTS.customCursor, "x", { duration: 0.4, ease: "power2.out" });
-        const yTo = gsap.quickTo(ELEMENTS.customCursor, "y", { duration: 0.4, ease: "power2.out" });
+        // Use GSAP's quickTo for direct, smooth positioning - more performant than updating style directly
+        const xTo = gsap.quickTo(ELEMENTS.customCursor, "x", { duration: 0.3, ease: "power2.out" });
+        const yTo = gsap.quickTo(ELEMENTS.customCursor, "y", { duration: 0.3, ease: "power2.out" });
 
-        const moveCursor = (e) => {
-            xTo(e.clientX);
-            yTo(e.clientY);
-        };
-
-        const addClickEffect = () => ELEMENTS.customCursor.classList.add('click');
-        const removeClickEffect = () => ELEMENTS.customCursor.classList.remove('click');
-
-        const addHoverEffect = () => ELEMENTS.customCursor.classList.add('hover');
-        const removeHoverEffect = () => ELEMENTS.customCursor.classList.remove('hover');
+        const moveCursor = (e) => { xTo(e.clientX); yTo(e.clientY); };
+        const addClickEffect = () => ELEMENTS.customCursor?.classList.add('click');
+        const removeClickEffect = () => ELEMENTS.customCursor?.classList.remove('click');
+        const addHoverEffect = () => ELEMENTS.customCursor?.classList.add('hover');
+        const removeHoverEffect = () => ELEMENTS.customCursor?.classList.remove('hover');
 
         window.addEventListener('mousemove', moveCursor, { passive: true });
         document.addEventListener('mousedown', addClickEffect);
         document.addEventListener('mouseup', removeClickEffect);
 
-        // Add hover effect for interactive elements using event delegation on body
-         const interactiveSelector = 'a, button, .service, .gallery-item, .testimonial, .card-hover, .event-card, .timeline-item, .social-links a, .floating-action-button, .hamburger, input, textarea, select, [role="button"], [tabindex="0"]';
-         ELEMENTS.body.addEventListener('mouseover', (e) => {
-             if (e.target.closest(interactiveSelector)) {
-                 addHoverEffect();
-             } else {
-                 removeHoverEffect(); // Ensure hover removed if moving off target quickly
-             }
-         });
-         ELEMENTS.body.addEventListener('mouseout', (e) => {
-             if (e.target.closest(interactiveSelector)) {
-                 removeHoverEffect();
-             }
-         });
+        // Event delegation for hover effects
+        const interactiveSelector = 'a[href], button, input, textarea, select, .card-hover, [role="button"], [tabindex="0"]';
+        ELEMENTS.body?.addEventListener('mouseover', (e) => { if (e.target?.closest(interactiveSelector)) addHoverEffect(); });
+        ELEMENTS.body?.addEventListener('mouseout', (e) => { if (e.target?.closest(interactiveSelector)) removeHoverEffect(); });
+        ELEMENTS.body?.addEventListener('focusin', (e) => { if (e.target?.closest(interactiveSelector)) addHoverEffect(); });
+        ELEMENTS.body?.addEventListener('focusout', (e) => { if (e.target?.closest(interactiveSelector)) removeHoverEffect(); });
 
-         // Hide cursor when leaving the window
-         document.addEventListener('mouseleave', () => {
-            gsap.to(ELEMENTS.customCursor, { opacity: 0, duration: 0.2 });
-         });
-         document.addEventListener('mouseenter', () => {
-            gsap.to(ELEMENTS.customCursor, { opacity: 1, duration: 0.2 });
-         });
+        // Hide/show cursor on window leave/enter
+        document.addEventListener('mouseleave', () => gsap.to(ELEMENTS.customCursor, { opacity: 0, duration: 0.2 }));
+        document.addEventListener('mouseenter', () => gsap.to(ELEMENTS.customCursor, { opacity: 1, duration: 0.2 }));
     };
 
     /**
-     * Handles the mobile navigation toggle, closing, and accessibility (inert).
+     * Handles mobile navigation toggle and accessibility.
      */
     const handleMobileNav = () => {
-        if (!ELEMENTS.hamburgerButton || !ELEMENTS.mobileNav) return;
+        if (!ELEMENTS.hamburgerButton || !ELEMENTS.mobileNav || !ELEMENTS.body) return;
 
-        const mainContent = ELEMENTS.mainContent; // Use cached element
+        const mainContent = ELEMENTS.mainContent;
         const footerContent = ELEMENTS.footer;
+        const overlay = document.createElement('div'); // Create overlay dynamically
+        overlay.className = 'mobile-nav-overlay';
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        overlay.style.zIndex = String(parseInt(getComputedStyle(ELEMENTS.html).getPropertyValue('--z-nav-overlay') || '1049')); // Use CSS var
+        overlay.style.opacity = '0';
+        overlay.style.visibility = 'hidden';
+        overlay.style.transition = 'opacity 0.4s ease, visibility 0s 0.4s';
+        overlay.style.pointerEvents = 'none'; // Start non-interactive
+        ELEMENTS.body.appendChild(overlay);
 
         const toggleNav = (forceClose = false) => {
-             const isActive = ELEMENTS.body.classList.contains('nav-active');
-             const openNav = !isActive && !forceClose; // Open if not active and not forced close
+            const isActive = ELEMENTS.body.classList.contains('nav-active');
+            const openNav = !isActive && !forceClose;
 
             ELEMENTS.body.classList.toggle('nav-active', openNav);
             ELEMENTS.hamburgerButton.classList.toggle('is-active', openNav);
@@ -1202,216 +1005,125 @@ document.addEventListener('DOMContentLoaded', () => {
             ELEMENTS.mobileNav.setAttribute('aria-hidden', String(!openNav));
 
             if (openNav) {
-                 mainContent?.setAttribute('inert', '');
-                 footerContent?.setAttribute('inert', '');
-                // Focus first focusable item in nav
-                 const firstFocusable = selectElement('a[href], button', ELEMENTS.mobileNav) || ELEMENTS.mobileNav;
-                 setTimeout(() => firstFocusable.focus(), 100); // Delay focus slightly
+                mainContent?.setAttribute('inert', '');
+                footerContent?.setAttribute('inert', '');
+                overlay.style.opacity = '1';
+                overlay.style.visibility = 'visible';
+                overlay.style.pointerEvents = 'auto'; // Make interactive
+                overlay.style.transition = 'opacity 0.4s ease, visibility 0s 0s';
+                const firstFocusable = selectElement('a[href], button', ELEMENTS.mobileNav) || ELEMENTS.mobileNav;
+                setTimeout(() => firstFocusable.focus(), 100);
             } else {
-                 mainContent?.removeAttribute('inert');
-                 footerContent?.removeAttribute('inert');
-                 ELEMENTS.hamburgerButton.focus(); // Return focus to toggle button
+                mainContent?.removeAttribute('inert');
+                footerContent?.removeAttribute('inert');
+                overlay.style.opacity = '0';
+                overlay.style.visibility = 'hidden';
+                overlay.style.pointerEvents = 'none';
+                overlay.style.transition = 'opacity 0.4s ease, visibility 0s 0.4s';
+                 // Only focus hamburger if it's visible (avoids errors if closed programmatically)
+                if (ELEMENTS.hamburgerButton.offsetParent !== null) {
+                    ELEMENTS.hamburgerButton.focus();
+                }
             }
         };
 
         ELEMENTS.hamburgerButton.addEventListener('click', () => toggleNav());
-
-        // Close nav when a link is clicked
-        ELEMENTS.mobileNav.addEventListener('click', (event) => {
-            if (event.target.closest('a')) {
-                 toggleNav(true); // Force close
-            }
-        });
-
-        // Close nav on Escape key
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && ELEMENTS.body.classList.contains('nav-active')) {
-                 toggleNav(true); // Force close
-            }
-        });
-
-        // Close nav on click outside (on the overlay)
-        document.addEventListener('click', (event) => {
-            if (ELEMENTS.body.classList.contains('nav-active') &&
-                !ELEMENTS.mobileNav.contains(event.target) &&
-                event.target !== ELEMENTS.hamburgerButton && // Check it wasn't the button itself
-                !ELEMENTS.hamburgerButton.contains(event.target) // Check it wasn't inside the button
-            ) {
-                 toggleNav(true); // Force close
-            }
-        });
+        ELEMENTS.mobileNav.addEventListener('click', (event) => { if (event.target.closest('a')) toggleNav(true); });
+        document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && ELEMENTS.body.classList.contains('nav-active')) toggleNav(true); });
+        overlay.addEventListener('click', () => { if (ELEMENTS.body.classList.contains('nav-active')) toggleNav(true); }); // Use overlay click
     };
 
     /**
-     * Handles the scrollspy functionality to highlight active nav link. Throttled.
+     * Handles scrollspy functionality. Throttled.
      */
     const handleScrollspy = throttle(() => {
         if (ELEMENTS.navLinks.length === 0) return;
 
         let currentSectionId = null;
-        const scrollPosition = window.scrollY + headerHeight + 60; // Adjusted offset
-        const sections = selectElements('main section[id]'); // Get sections dynamically
+        const adjustedHeaderHeight = ELEMENTS.header?.offsetHeight || 0; // Get current header height
+        const scrollPosition = window.scrollY + adjustedHeaderHeight + 60; // Offset below header
+        const sections = selectElements('main section[id]');
 
         sections.forEach(section => {
-            // Basic visibility check before offset calculation
              const rect = section.getBoundingClientRect();
-             const isPotentiallyVisible = rect.top < window.innerHeight && rect.bottom >= 0;
-
-            if (isPotentiallyVisible) {
+             // Check if section is within a reasonable viewport range before calculating offsetTop
+             if (rect.top < window.innerHeight && rect.bottom >= 0) {
                  const sectionTop = section.offsetTop;
-                 const sectionHeight = section.offsetHeight;
-                 if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                 if (scrollPosition >= sectionTop && scrollPosition < sectionTop + section.offsetHeight) {
                      currentSectionId = section.id;
                  }
-            }
+             }
         });
 
-        // Refined Fallbacks
+        // Fallbacks for top/bottom of page
         if (!currentSectionId) {
-            if (window.scrollY < window.innerHeight * 0.2) { // Near top
-                currentSectionId = 'home';
-            } else if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) { // Near bottom
-                const lastSection = sections[sections.length - 1];
-                if (lastSection) currentSectionId = lastSection.id; // Assume last section is the target near bottom
+            if (window.scrollY < window.innerHeight * 0.2) currentSectionId = 'home';
+            else if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 150) { // Near bottom threshold
+                 const lastNavigableSectionId = ELEMENTS.navLinks[ELEMENTS.navLinks.length - 1]?.getAttribute('href')?.substring(1);
+                 const lastSectionElement = selectElement(`#${lastNavigableSectionId}`);
+                 if (lastSectionElement && lastSectionElement.offsetTop <= scrollPosition) {
+                     currentSectionId = lastNavigableSectionId; // Target last nav item if near bottom
+                 }
             }
         }
 
-        // Update nav link styles
+        // Update nav links
         ELEMENTS.navLinks.forEach(link => {
-            // Ensure href exists and is a valid ID selector
-             const href = link.getAttribute('href');
-             if (!href || !href.startsWith('#') || href.length === 1) return;
-
-             const linkSectionId = href.substring(1);
-             const isActive = linkSectionId === currentSectionId;
-
-             link.classList.toggle('active', isActive);
-             if (isActive) {
-                link.setAttribute('aria-current', 'section');
-             } else {
-                link.removeAttribute('aria-current');
-             }
+            const linkSectionId = link.getAttribute('href')?.substring(1);
+            if (!linkSectionId) return;
+            const isActive = linkSectionId === currentSectionId;
+            link.classList.toggle('active', isActive);
+            link.setAttribute('aria-current', isActive ? 'section' : 'false'); // Use 'false' string
         });
     }, CONFIG.SCROLLSPY_THROTTLE_MS);
 
 
     /**
-     * Shows the sticky note after a delay using GSAP, if enabled.
-     */
-    const showStickyNote = () => {
-        if (!FEATURE_FLAGS.enableStickyNote || !ELEMENTS.stickyNote || typeof gsap === 'undefined' || prefersReducedMotion) return;
-
-        setTimeout(() => {
-            ELEMENTS.stickyNote.style.display = 'flex';
-            gsap.fromTo(ELEMENTS.stickyNote,
-                { opacity: 0, scale: 0.8, rotation: -15 },
-                { opacity: 1, scale: 1, rotation: -4, duration: 0.6, ease: 'back.out(1.7)' }
-            );
-
-            ELEMENTS.stickyNoteClose?.addEventListener('click', () => {
-                gsap.to(ELEMENTS.stickyNote, {
-                    opacity: 0, scale: 0.7, rotation: 15, duration: 0.4, ease: 'power1.in',
-                    onComplete: () => ELEMENTS.stickyNote.style.display = 'none'
-                });
-            }, { once: true }); // Ensure listener only fires once
-
-        }, CONFIG.STICKY_NOTE_DELAY_MS);
-    };
-
-    /**
-     * Shows the chat bubble after a delay using GSAP, if enabled.
-     */
-    const showChatBubble = () => {
-        if (!FEATURE_FLAGS.enableChatBubble || !ELEMENTS.chatBubble || typeof gsap === 'undefined' || prefersReducedMotion) return;
-
-        setTimeout(() => {
-            ELEMENTS.chatBubble.style.display = 'flex';
-            gsap.fromTo(ELEMENTS.chatBubble,
-                 { opacity: 0, x: 60 },
-                 { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out' }
-            );
-
-            ELEMENTS.chatBubble.addEventListener('click', () => {
-                alert('Live chat functionality coming soon!'); // Placeholder
-                // Optionally hide after click
-                gsap.to(ELEMENTS.chatBubble, {
-                     opacity: 0, x: 60, duration: 0.3,
-                     onComplete: () => ELEMENTS.chatBubble.style.display = 'none'
-                });
-            }, { once: true }); // Interact once
-
-        }, CONFIG.CHAT_BUBBLE_DELAY_MS);
-    };
-
-    /**
-     * Handles the confetti easter egg if enabled and library is available.
+     * Handles confetti easter egg.
      */
     const handleEasterEgg = () => {
         if (!FEATURE_FLAGS.enableEasterEgg || !ELEMENTS.easterEggTrigger || typeof confetti === 'undefined' || prefersReducedMotion) return;
-
         ELEMENTS.easterEggTrigger.addEventListener('click', () => {
-            const duration = 4 * 1000; // 4 seconds
+            const duration = 4 * 1000;
             const animationEnd = Date.now() + duration;
-            const colors = ['#00a000', '#4CAF50', '#ffdd00', '#ffffff', '#dddddd']; // Sysfx colors + white/grey
-
-            // Get a high z-index dynamically or use a fixed high value
-             const zIndex = parseInt(getComputedStyle(ELEMENTS.html).getPropertyValue('--z-modal-content'), 10) + 50 || 1500;
-
+            const colors = ['#00a000', '#4CAF50', '#ffdd00', '#ffffff', '#dddddd'];
+            const zIndex = parseInt(getComputedStyle(ELEMENTS.html).getPropertyValue('--z-modal-content'), 10) + 50 || 1500;
             const randomInRange = (min, max) => Math.random() * (max - min) + min;
-
             const interval = setInterval(() => {
                 const timeLeft = animationEnd - Date.now();
                 if (timeLeft <= 0) return clearInterval(interval);
-
-                const particleCount = 40 * (timeLeft / duration);
-                // Launch confetti from multiple points
                 confetti({
-                    startVelocity: 30,
-                    spread: 360,
-                    ticks: 60,
-                    zIndex: zIndex,
-                    particleCount,
+                    startVelocity: 30, spread: 360, ticks: 60, zIndex: zIndex,
+                    particleCount: 40 * (timeLeft / duration),
                     origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 },
                     colors: colors
                 });
             }, 200);
-
-             logInfo("Easter egg triggered!");
+            logInfo("Confetti!");
         });
     };
 
     /**
-     * Basic form validation with improved feedback.
-     * @returns {boolean} - True if the form is valid, false otherwise.
+     * Basic form validation.
+     * @returns {boolean} True if valid.
      */
     const validateForm = () => {
-        if (!ELEMENTS.form) return true; // No form, valid by default
-
+        if (!ELEMENTS.form) return true;
         let isValid = true;
-        const requiredFields = selectElements('[required]', ELEMENTS.form);
+        selectElements('.form-error', ELEMENTS.form).forEach(el => el.textContent = '');
+        selectElements('.invalid', ELEMENTS.form).forEach(el => el.classList.remove('invalid'));
 
-        // Clear previous errors
-        selectElements('.form-group .form-error', ELEMENTS.form).forEach(el => el.textContent = '');
-        selectElements('.form-input.invalid, .form-textarea.invalid', ELEMENTS.form).forEach(el => el.classList.remove('invalid'));
-
-        requiredFields.forEach(input => {
+        selectElements('[required]', ELEMENTS.form).forEach(input => {
             const group = input.closest('.form-group');
-            if (!group) return; // Skip if structure is unexpected
-
+            if (!group) return;
             const errorElement = selectElement('.form-error', group);
             let errorMessage = '';
 
-            // Check specific types
-            if (input.type === 'email') {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!input.value.trim() || !emailRegex.test(input.value.trim())) {
-                    errorMessage = 'Please enter a valid email address.';
-                }
-            } else if (input.type === 'checkbox') {
-                if (!input.checked) {
-                    errorMessage = 'Please confirm this field is checked.';
-                }
-            } else if (input.value.trim() === '') { // General check for text, textarea, etc.
+            if (input.type === 'email' && (!input.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim()))) {
+                errorMessage = 'Please enter a valid email address.';
+            } else if (input.type === 'checkbox' && !input.checked) {
+                errorMessage = 'This field must be checked.';
+            } else if (input.value.trim() === '') {
                  errorMessage = 'This field is required.';
             }
 
@@ -1419,31 +1131,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 isValid = false;
                 input.classList.add('invalid');
                 if (errorElement) errorElement.textContent = errorMessage;
-                 // Optionally focus the first invalid field
-                 // if (isValid === false && !document.querySelector('.form-input.invalid:focus')) {
-                 //     input.focus();
-                 // }
             }
         });
-
+        if (!isValid) {
+             selectElement('.invalid', ELEMENTS.form)?.focus(); // Focus first invalid field
+        }
         return isValid;
     };
 
     /**
-      * Handles form submission using Fetch API (e.g., for Formspree).
-      */
+     * Handles form submission (e.g., for Formspree).
+     */
     const handleFormSubmission = () => {
-        if (!FEATURE_FLAGS.enableFormspree || !ELEMENTS.form) return;
-        if (!ELEMENTS.form.action || !ELEMENTS.form.action.includes('formspree.io')) {
-            logWarn('Form action is not set or does not point to Formspree. Submission disabled.');
-            return;
+        if (!FEATURE_FLAGS.enableFormspree || !ELEMENTS.form || !ELEMENTS.form.action || !ELEMENTS.form.action.includes('formspree.io')) {
+            if(ELEMENTS.form && (!ELEMENTS.form.action || !ELEMENTS.form.action.includes('formspree.io'))) {
+                logWarn('Form action does not point to Formspree or is missing. Submission disabled.');
+            }
+            return; // Exit if no form, no formspree, or action invalid
         }
 
         ELEMENTS.form.addEventListener('submit', async (event) => {
             event.preventDefault();
-
             if (!validateForm()) {
-                updateFormStatus('Please check the errors above.', 'error');
+                updateFormStatus('Please correct the errors above.', 'error');
                 return;
             }
 
@@ -1451,207 +1161,120 @@ document.addEventListener('DOMContentLoaded', () => {
             const submitButton = selectElement('button[type="submit"]', ELEMENTS.form);
             const originalButtonContent = submitButton?.innerHTML;
 
-            // Set loading state
             updateFormStatus('Sending message...', 'loading');
-            if (submitButton) {
-                 submitButton.disabled = true;
-                 submitButton.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Sending...';
-            }
+            if (submitButton) { submitButton.disabled = true; submitButton.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Sending...'; }
 
             try {
-                const response = await fetch(ELEMENTS.form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: { 'Accept': 'application/json' }
-                });
-
+                const response = await fetch(ELEMENTS.form.action, { method: 'POST', body: formData, headers: { 'Accept': 'application/json' } });
                 if (response.ok) {
                     updateFormStatus('Message sent successfully! We\'ll be in touch.', 'success');
                     ELEMENTS.form.reset();
-                     setTimeout(() => updateFormStatus('', 'idle'), CONFIG.FORM_STATUS_TIMEOUT_MS); // Clear status after delay
+                    setTimeout(() => updateFormStatus('', 'idle'), CONFIG.FORM_STATUS_TIMEOUT_MS);
                 } else {
-                    // Try to parse Formspree error response
-                    const data = await response.json().catch(() => ({})); // Default empty object if JSON parse fails
-                     let errorMsg = 'Submission failed. Please try again.'; // Default server error
-                     if (data && data.errors && data.errors.length > 0) {
-                         // Extract Formspree specific error message
-                         errorMsg = data.errors.map(err => err.message || String(err)).join('. ');
-                     } else if (response.statusText) {
-                         errorMsg = `Submission failed: ${response.statusText} (Code: ${response.status})`;
-                     }
+                    const data = await response.json().catch(() => ({}));
+                    let errorMsg = data?.errors?.map(e => e.message).join('. ') || response.statusText || 'Submission failed.';
                     throw new Error(errorMsg);
                 }
             } catch (error) {
                 logError('Form submission error', error);
                 updateFormStatus(`Error: ${error.message || 'Could not send message.'}`, 'error');
-                 // Optionally leave error message visible longer or indefinitely
-                 // setTimeout(() => updateFormStatus('', 'idle'), CONFIG.FORM_STATUS_TIMEOUT_MS * 2);
+                // Optionally keep error visible longer
             } finally {
-                // Reset button state
-                if (submitButton) {
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = originalButtonContent;
-                }
+                if (submitButton) { submitButton.disabled = false; submitButton.innerHTML = originalButtonContent; }
             }
         });
     };
 
     /**
      * Updates the form status message area.
-     * @param {string} message - The message to display.
-     * @param {'idle'|'loading'|'success'|'error'} state - The current state.
      */
     const updateFormStatus = (message, state = 'idle') => {
         if (!ELEMENTS.formStatus) return;
-
         ELEMENTS.formStatus.textContent = message;
-        ELEMENTS.formStatus.className = `form-status ${state}`; // Use state for class styling
-        ELEMENTS.formStatus.style.display = (state === 'idle' || !message) ? 'none' : 'block'; // Hide if idle or no message
-
-        // Set ARIA live region attributes
-        if (state === 'error' || state === 'success') {
-            ELEMENTS.formStatus.setAttribute('role', 'alert');
-            ELEMENTS.formStatus.setAttribute('aria-live', 'assertive');
-        } else {
-            ELEMENTS.formStatus.setAttribute('role', 'status');
-            ELEMENTS.formStatus.setAttribute('aria-live', 'polite');
-        }
+        ELEMENTS.formStatus.className = `form-status ${state}`;
+        ELEMENTS.formStatus.style.display = (state === 'idle' || !message) ? 'none' : 'block';
+        ELEMENTS.formStatus.setAttribute('role', (state === 'error' || state === 'success') ? 'alert' : 'status');
+        ELEMENTS.formStatus.setAttribute('aria-live', (state === 'error' || state === 'success') ? 'assertive' : 'polite');
     };
 
     /**
-     * Hides the preloader smoothly when the window finishes loading.
+     * Hides the preloader when the window finishes loading.
      */
     const hidePreloader = () => {
         if (!ELEMENTS.preloader) {
-            ELEMENTS.body?.classList.remove('preload'); // Ensure body is visible even if preloader missing
-            logWarn("Preloader element not found, cannot hide smoothly.");
+            ELEMENTS.body?.classList.remove('preload');
             return;
         }
-
         const removePreloader = () => {
-            ELEMENTS.preloader.remove(); // Remove from DOM entirely
+            ELEMENTS.preloader?.remove();
             ELEMENTS.body?.classList.remove('preload');
             logInfo("Preloader removed.");
         };
-
-        // Fallback timeout: If window.load doesn't fire or takes too long
         const fallbackTimeout = setTimeout(() => {
-            logWarn("Preloader fallback timeout reached. Forcing removal.");
-             removePreloader();
+            logWarn("Preloader fallback timeout."); removePreloader();
         }, CONFIG.PRELOADER_TIMEOUT_MS);
 
-
-        // Primary method: Wait for window load event
         window.addEventListener('load', () => {
-            clearTimeout(fallbackTimeout); // Clear fallback if load event fires
-
-            // Use GSAP for fade if available and no reduced motion
+            clearTimeout(fallbackTimeout);
             if (typeof gsap !== 'undefined' && !prefersReducedMotion) {
-                gsap.to(ELEMENTS.preloader, {
-                    opacity: 0,
-                    duration: 0.6,
-                    ease: 'power1.inOut',
-                    onComplete: removePreloader
-                });
+                gsap.to(ELEMENTS.preloader, { opacity: 0, duration: 0.6, ease: 'power1.inOut', onComplete: removePreloader });
             } else {
-                // Fallback to CSS transition or immediate removal
-                ELEMENTS.preloader.style.transition = 'opacity 0.5s ease-out';
-                ELEMENTS.preloader.style.opacity = '0';
-                // Use transitionend for smoother removal
-                ELEMENTS.preloader.addEventListener('transitionend', removePreloader, { once: true });
-                // Safety net if transitionend doesn't fire
-                setTimeout(removePreloader, 600);
+                 ELEMENTS.preloader.style.transition = 'opacity 0.5s ease-out';
+                 ELEMENTS.preloader.style.opacity = '0';
+                 ELEMENTS.preloader.addEventListener('transitionend', removePreloader, { once: true });
+                 setTimeout(removePreloader, 600); // Safety net
             }
         });
     };
-
 
     // --- Initialization Function ---
     const initialize = () => {
-        logInfo("Initializing SysFX Script...");
+        logInfo("Initializing SysFX Script v1.8...");
 
-        // Run preloader hiding logic immediately (it waits for window.load)
-        hidePreloader();
-
-        // Initial setup that doesn't depend on external libraries or complex DOM
+        hidePreloader(); // Start preloader hiding process
         initializeDarkMode();
         adjustLayoutPadding(); // Initial call
-        displayTime();
-        setInterval(displayTime, 60000); // Update time every minute
-        displayTechTrivia(); // Display initial trivia
+        displayTime(); setInterval(displayTime, 60000);
+        displayTechTrivia();
         handleMobileNav();
-        handleScrollTopButton(); // Initial visibility check
+        handleScrollTopButton(); // Initial check
         handleModals();
         handleLightbox();
         handleTestimonialCarousel();
+        if (FEATURE_FLAGS.enableFormspree) handleFormSubmission();
 
-        // Initialize features that might depend on libraries or need slight delay
+        // Libraries and animations that might need DOM ready
         requestAnimationFrame(() => {
             initializeParticles();
-            initializeMap(); // Map might need DOM ready for dimensions
-            if (FEATURE_FLAGS.enableFormspree) handleFormSubmission();
-
-            // Start animations after main content is likely painted
-            if (!prefersReducedMotion) {
-                 typeEffectHandler(); // Start typing animation
-                 animateStats();    // Set up stats animations
-                 revealSections(); // Set up section reveal animations
-                 if(FEATURE_FLAGS.enableCustomCursor) handleCustomCursor();
-                 if(FEATURE_FLAGS.enableStickyNote) showStickyNote();
-                 if(FEATURE_FLAGS.enableChatBubble) showChatBubble();
-                 if(FEATURE_FLAGS.enableEasterEgg) handleEasterEgg();
-            } else {
-                 // Apply final states directly if reduced motion
-                 ELEMENTS.animatedSections?.forEach(s => { s.style.opacity = '1'; s.style.transform = 'none'; });
-                 ELEMENTS.footer?.classList.add('visible');
-                 ELEMENTS.statsNumbers?.forEach(n => n.textContent = parseInt(n.dataset.target || '0').toLocaleString());
-                 if (ELEMENTS.typingEffectElement && CONFIG.TAGLINES.length > 0) ELEMENTS.typingEffectElement.textContent = CONFIG.TAGLINES[0];
-            }
+            initializeMap();
+            animateStats();
+            revealSections();
+            if (FEATURE_FLAGS.enableCustomCursor) handleCustomCursor();
+            if (FEATURE_FLAGS.enableEasterEgg) handleEasterEgg();
+            if (!prefersReducedMotion) typeEffectHandler();
         });
 
-
-        // Initial Scrollspy Call after potential layout shifts
-        setTimeout(handleScrollspy, 200);
+        // Initial Scrollspy Call after libraries/layout likely settled
+        setTimeout(handleScrollspy, 250);
 
         logInfo("SysFX Script Initialized.");
     };
-
 
     // --- Global Event Listeners ---
     ELEMENTS.darkModeToggle?.addEventListener('click', toggleDarkMode);
     if(FEATURE_FLAGS.enableBackgroundMusic) ELEMENTS.musicToggle?.addEventListener('click', toggleMusic);
     ELEMENTS.scrollTopButton?.addEventListener('click', scrollToTop);
-
-    // Throttled and Debounced Listeners
-    window.addEventListener('scroll', () => {
+    window.addEventListener('scroll', throttle(() => { // Combine throttled scroll listeners
         updateScrollProgress();
         handleScrollspy();
         handleScrollTopButton();
-        handleHeaderShrink(); // Add header shrink handler
-    }, { passive: true }); // Use passive listener for scroll performance
-
-    window.addEventListener('resize', () => {
-        adjustLayoutPadding(); // Use the debounced version defined earlier
-        handleScrollspy(); // Re-check scrollspy immediately on resize finish
-    });
-
-    // Skip Link Focus Handling
-    ELEMENTS.skipLink?.addEventListener('focus', () => ELEMENTS.skipLink.style.left = '0');
-    ELEMENTS.skipLink?.addEventListener('blur', () => ELEMENTS.skipLink.style.left = '-999px');
-
+        handleHeaderShrink();
+    }, 100), { passive: true }); // Throttle more aggressively
+    window.addEventListener('resize', adjustLayoutPadding); // Uses its own debounce
+    ELEMENTS.skipLink?.addEventListener('blur', () => { if(ELEMENTS.skipLink) ELEMENTS.skipLink.style.left = '-9999px'; }); // Ensure blur resets position
 
     // --- Start Initialization ---
-    // Ensure body exists before running anything complex
-    if (ELEMENTS.body) {
-        initialize();
-    } else {
-        console.error("FATAL: Body element not found. SysFX script cannot initialize.");
-        // Attempt to hide preloader anyway as a last resort
-        const preloader = document.getElementById('preloader');
-        if (preloader) {
-            window.addEventListener('load', () => preloader.remove());
-            setTimeout(() => preloader?.remove(), CONFIG.PRELOADER_TIMEOUT_MS);
-        }
-    }
+    if (ELEMENTS.body) initialize();
+    else console.error("FATAL: Body element not found. Initialization cancelled.");
 
 }); // End DOMContentLoaded
