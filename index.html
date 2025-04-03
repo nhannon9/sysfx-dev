@@ -38,8 +38,8 @@
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"></noscript>
     <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" onload="this.onload=null;this.rel='stylesheet'"> <!-- Preload Leaflet CSS -->
     <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>
-    <!-- UPDATE CSS VERSION -->
-    <link rel="stylesheet" href="styles.css?v=1.6"> <!-- Version bump -->
+    <!-- UPDATE CSS VERSION - Increment version number -->
+    <link rel="stylesheet" href="styles.css?v=1.7"> <!-- Version bump -->
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,24 +47,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <!-- Defer non-critical JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js" defer></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
+    <!-- GSAP Core, ScrollTrigger (Ensure these are loaded before script.js if script depends on them immediately) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-    <!-- Note: TextPlugin is mainly for advanced text effects, simple counter doesn't strictly need it -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js" defer></script> -->
+    <!-- Other deferred libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js" defer></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
 
     <!-- Main Script (defer loading) -->
-    <!-- UPDATE JS VERSION -->
-    <script src="script.js?v=1.6" defer></script> <!-- Version bump -->
+    <!-- UPDATE JS VERSION - Increment version number -->
+    <script src="script.js?v=1.7" defer></script> <!-- Version bump -->
 </head>
 
 <body class="preload"> <!-- Add preload class to prevent flashes -->
     <!-- Preloader -->
     <div id="preloader" class="preloader" aria-live="polite" aria-busy="true">
         <div class="preloader-logo">
-             <img src="assets/images/logo.png" alt="sysfx loading..." width="100" height="100"> <!-- Use PNG/SVG, specify dimensions -->
+             <!-- Assuming logo.png is correct based on your HTML -->
+             <img src="assets/images/logo.png" alt="sysfx loading..." width="100" height="100">
         </div>
         <div class="preloader-dots" aria-hidden="true">
             <div class="dot"></div>
@@ -75,7 +76,7 @@
     </div>
 
     <!-- Screen Reader Skip Link -->
-    <a href="#main-content" class="skip-link">Skip to main content</a> <!-- Changed class for clarity -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <!-- Scroll Progress Bar -->
     <div class="scroll-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Page scroll progress"></div>
@@ -83,58 +84,54 @@
     <!-- Particles Background Container -->
     <div id="particles-js" class="particles-container" aria-hidden="true"></div>
 
-    <!-- Custom Cursor (Optional Enhancement) -->
+    <!-- Custom Cursor -->
     <div class="cursor" aria-hidden="true"></div>
 
     <!-- Header -->
     <header id="main-header" class="glass-morphism" role="banner">
         <div class="header-top-bar">
             <div id="current-time" aria-live="polite">Loading time...</div>
-            <!-- MOVED TECH TRIVIA HERE -->
             <div class="tech-trivia-container" role="note">
                 <div class="tech-trivia">
                     <span id="trivia-icon" aria-hidden="true">💡</span> <span id="trivia-text">Loading tech fact...</span>
                 </div>
             </div>
-            <button id="darkModeToggle" class="mode-button modern-button" aria-label="Toggle dark mode" aria-pressed="false">
-                <i class="fas fa-moon" aria-hidden="true"></i> <!-- Icon will be toggled via JS/CSS -->
-                <span class="mode-button-text"> Dark Mode</span>
+            <!-- Dark Mode Toggle: JS will manage text and icon -->
+            <button id="darkModeToggle" class="mode-button modern-button" aria-label="Switch to dark mode" aria-pressed="false">
+                <!-- Icon and text span structure for easier JS targeting -->
+                <span class="icon-container"><i class="fas fa-moon" aria-hidden="true"></i></span>
+                <span class="mode-button-text">Dark Mode</span>
             </button>
         </div>
         <div class="header-main">
             <div class="logo-container">
-                <!-- Make logo a link to home -->
                 <a href="#home" aria-label="sysfx Home">
-                    <!-- Using logo path from user's full HTML -->
-                    <img src="assets/images/logo.png" alt="sysfx Logo - stylized circuit design" class="flipping-logo" width="60" height="60" loading="lazy">
+                     <!-- Logo: Corrected alt text based on user description, ensured png path -->
+                     <!-- The flip animation is controlled by CSS class 'flipping-logo' -->
+                    <img src="assets/images/logo.png" alt="sysfx logo - stylized circuit design" class="flipping-logo" width="60" height="60" loading="eager"> <!-- Eager load logo -->
                 </a>
             </div>
             <div class="header-titles">
-                <!-- Applied glow and outline -->
-                <h1 class="glow-text centered-text outlined-text">sysfx</h1>
-                <p id="typing-effect" class="gradient-text centered-text" aria-label="Company Tagline - changes dynamically"></p>
+                <!-- Applied glow and outline classes (styling handled in CSS) -->
+                <h1 class="glow-text outlined-text centered-text">sysfx</h1>
+                <!-- Typing Effect: Added non-breaking space for stability when empty -->
+                <p id="typing-effect" class="gradient-text centered-text" aria-label="Company Tagline - changes dynamically"> </p>
             </div>
             <button class="hamburger" id="hamburger-button" aria-label="Toggle Navigation Menu" aria-expanded="false" aria-controls="main-navigation">
-                <!-- Hamburger lines created with CSS -->
                 <span class="hamburger-box" aria-hidden="true">
                     <span class="hamburger-inner"></span>
                 </span>
             </button>
         </div>
-        <!-- NAV: ADDED aria-hidden -->
+        <!-- Navigation: Trimmed to 6 main links per request #3 -->
         <nav id="main-navigation" class="main-nav" role="navigation" aria-label="Main website navigation" aria-hidden="true">
-             <!-- Using data-section-id consistently for scrollspy target -->
-            <a href="#home" class="nav-link" data-section-id="home"><i class="fas fa-home fa-fw" aria-hidden="true"></i> Home</a> <!-- Added fa-fw for fixed width -->
+            <a href="#home" class="nav-link" data-section-id="home"><i class="fas fa-home fa-fw" aria-hidden="true"></i> Home</a>
             <a href="#services" class="nav-link" data-section-id="services"><i class="fas fa-cogs fa-fw" aria-hidden="true"></i> Services</a>
-            <a href="#location" class="nav-link" data-section-id="location"><i class="fas fa-map-marker-alt fa-fw" aria-hidden="true"></i> Location</a>
-            <a href="#gallery" class="nav-link" data-section-id="gallery"><i class="fas fa-image fa-fw" aria-hidden="true"></i> Our Work</a>
-            <a href="#events" class="nav-link" data-section-id="events"><i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i> Events</a>
-            <a href="#case-studies" class="nav-link" data-section-id="case-studies"><i class="fas fa-briefcase fa-fw" aria-hidden="true"></i> Case Studies</a>
-            <a href="#testimonials" class="nav-link" data-section-id="testimonials"><i class="fas fa-star fa-fw" aria-hidden="true"></i> Testimonials</a>
             <a href="#about" class="nav-link" data-section-id="about"><i class="fas fa-info-circle fa-fw" aria-hidden="true"></i> About</a>
-            <a href="#community" class="nav-link" data-section-id="community"><i class="fas fa-users fa-fw" aria-hidden="true"></i> Community</a>
+            <a href="#gallery" class="nav-link" data-section-id="gallery"><i class="fas fa-image fa-fw" aria-hidden="true"></i> Our Work</a>
             <a href="#blog" class="nav-link" data-section-id="blog"><i class="fas fa-blog fa-fw" aria-hidden="true"></i> Tech Insights</a>
             <a href="#contact" class="nav-link" data-section-id="contact"><i class="fas fa-envelope fa-fw" aria-hidden="true"></i> Contact</a>
+            <!-- Removed Links: Location (Covered in Contact), Events, Case Studies, Testimonials (Can be sub-pages later), Community -->
         </nav>
     </header>
 
@@ -151,114 +148,111 @@
 
         <!-- Hero Section -->
         <section id="home" class="hero section-animation" aria-labelledby="hero-title">
-            <!-- Subtle Animated Overlay -->
             <div class="hero-overlay-animated" aria-hidden="true"></div>
-            <!-- Video Background -->
-             <!-- NOTE: Video might be blocked by CORS. Consider hosting locally or using a different source. -->
+            <!-- NOTE: Ensure video source is reliable or host locally -->
             <video class="hero-video" autoplay muted loop playsinline aria-hidden="true" poster="assets/images/hero-poster.jpg"> <!-- Use a real poster image path -->
                 <source src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-4326-large.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
             <div class="hero-content">
-                <!-- Applied glow and outline -->
+                <!-- Applied glow and outline classes -->
                 <h2 id="hero-title" class="hero-title gradient-text glow-text centered-text outlined-text">Welcome to sysfx!</h2>
                 <p class="hero-text">Unlock cutting-edge technology with Sys Fix—your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support in Clinton, CT.</p>
                 <div class="button-container">
-                    <a href="#contact" class="modern-button primary action-button" aria-label="Get started with sysfx services"> <!-- Changed to link -->
+                    <a href="#contact" class="modern-button primary action-button" aria-label="Get started with sysfx services">
                         <i class="fas fa-paper-plane" aria-hidden="true"></i> <span class="button-text">Get Started</span>
                     </a>
-                    <a href="#services" class="modern-button secondary action-button explore-services" aria-label="Explore sysfx services list"> <!-- Changed to link -->
+                    <a href="#services" class="modern-button secondary action-button explore-services" aria-label="Explore sysfx services list">
                         <i class="fas fa-cogs"></i> <span class="button-text">Explore Services</span>
                     </a>
                 </div>
             </div>
         </section>
 
-        <!-- Welcome Section -->
+        <!-- Welcome Section: Reduced padding and potentially enhanced look via CSS -->
         <section id="welcome" class="welcome glass-morphism section-animation" aria-labelledby="welcome-title">
-             <!-- Applied glow and outline -->
+             <!-- Applied glow and outline classes -->
             <h2 id="welcome-title" class="gradient-text glow-text centered-text outlined-text">Why Choose sysfx?</h2>
             <p>At sysfx, we deliver expert tech solutions tailored to your needs. Our certified technicians specialize in computer repairs, cybersecurity, web development, networking, cloud solutions, and 24/7 IT support, ensuring your business thrives in the digital age.</p>
             <p>With over a decade of experience, Sys Fix is committed to precision, innovation, and customer satisfaction. Based in Clinton, CT, we serve clients regionally and remotely, offering personalized service that transforms your tech infrastructure.</p>
-            <p>Contact us for support at: <a href="mailto:nick@sysfx.net" class="email-link" id="email-display" aria-label="Contact email address: nick@sysfx.net">nick@sysfx.net</a></p> <!-- Improved aria-label -->
+            <p>Contact us for support at: <a href="mailto:nick@sysfx.net" class="email-link" id="email-display" aria-label="Contact email address: nick@sysfx.net">nick@sysfx.net</a></p>
             <div class="button-container">
-                <a href="#contact" class="modern-button action-button" aria-label="Request a free quote from sysfx"><span class="button-text">Request a Quote</span></a> <!-- Changed to link -->
-                <a href="#services" class="modern-button secondary action-button" aria-label="Discover our range of services"><span class="button-text">Discover Services</span></a> <!-- Changed to link -->
+                <a href="#contact" class="modern-button action-button" aria-label="Request a free quote from sysfx"><span class="button-text">Request a Quote</span></a>
+                <a href="#services" class="modern-button secondary action-button" aria-label="Discover our range of services"><span class="button-text">Discover Services</span></a>
             </div>
         </section>
 
         <!-- Location Section -->
         <section id="location" class="location-section section-animation" aria-labelledby="location-title">
             <div class="location-content glass-morphism">
-                 <!-- Applied glow and outline -->
+                 <!-- Applied glow and outline classes -->
                 <h2 id="location-title" class="gradient-text glow-text centered-text outlined-text">Find Us in Clinton, CT</h2>
+                <!-- Text Padding/Margin fixed in CSS -->
                 <p>Visit our headquarters at 123 Main Street, Clinton, CT, or reach out for remote support. We serve clients across the region with top-tier tech solutions.</p>
                 <div id="map" aria-label="Interactive map showing sysfx location in Clinton, CT"></div>
                 <div class="button-container">
-                    <!-- Use target="_blank" with rel="noopener noreferrer" for external links -->
                     <a href="https://maps.google.com/?q=123+Main+Street,+Clinton,+CT" target="_blank" rel="noopener noreferrer" class="modern-button action-button" aria-label="Get directions to sysfx via Google Maps"><span class="button-text">Get Directions</span></a>
-                    <a href="#contact" class="modern-button secondary action-button" aria-label="Schedule an appointment or visit"><span class="button-text">Schedule a Visit</span></a> <!-- Changed to link -->
+                    <a href="#contact" class="modern-button secondary action-button" aria-label="Schedule an appointment or visit"><span class="button-text">Schedule a Visit</span></a>
                 </div>
             </div>
         </section>
 
         <!-- Services Section -->
-        <section id="services" class="services glass-morphism parallax bliss-background section-animation" aria-labelledby="services-title">
-            <!-- Applied glow (no outline on parallax) -->
+        <section id="services" class="services glass-morphism parallax section-animation" aria-labelledby="services-title">
+            <!-- Applied glow class (no outline on parallax) -->
             <h2 id="services-title" class="gradient-text glow-text centered-text">Our Services</h2>
             <p class="services-description">sysfx offers a comprehensive suite of tech services to empower your business. From hardware fixes to cloud migrations, we’re here to solve your challenges with expertise and efficiency.</p>
             <div class="service-grid">
-                <!-- Service Card Example (repeat for others) -->
-                <article class="service card-hover" data-modal-target="computer-repair-modal" tabindex="0" aria-haspopup="dialog"> <!-- Added tabindex, aria-haspopup -->
+                <!-- Service Cards: Added tabindex, aria-haspopup for accessibility -->
+                <article class="service card-hover" data-modal-target="computer-repair-modal" tabindex="0" role="button" aria-haspopup="dialog">
                     <div class="service-icon"><i class="fas fa-laptop fa-fw" aria-hidden="true"></i></div>
                     <h3>Computer Repair</h3>
                     <p>Fast, reliable repairs for desktops, laptops, and more. We fix hardware issues, optimize software, and ensure same-day service for urgent needs.</p>
                     <p class="extra-info">Our certified technicians use state-of-the-art tools to restore your devices to peak performance.</p>
-                    <button class="modern-button small action-button" aria-label="Learn more about Computer Repair services"><span class="button-text">Learn More</span></button>
+                    <span class="modern-button small action-button" aria-hidden="true"><span class="button-text">Learn More</span></span> <!-- Use span styled as button for non-interactive trigger -->
                 </article>
-                <article class="service card-hover" data-modal-target="cybersecurity-modal" tabindex="0" aria-haspopup="dialog">
+                <article class="service card-hover" data-modal-target="cybersecurity-modal" tabindex="0" role="button" aria-haspopup="dialog">
                     <div class="service-icon"><i class="fas fa-shield-alt fa-fw" aria-hidden="true"></i></div>
                     <h3>Cybersecurity</h3>
                     <p>Protect your data with advanced security solutions, including threat detection, firewalls, and monitoring to safeguard against cyber threats.</p>
                     <p class="extra-info">We provide customized plans to secure your business from evolving digital risks, ensuring peace of mind.</p>
-                    <button class="modern-button small action-button" aria-label="Learn more about Cybersecurity services"><span class="button-text">Get Protected</span></button>
+                    <span class="modern-button small action-button" aria-hidden="true"><span class="button-text">Get Protected</span></span>
                 </article>
-                 <article class="service card-hover" data-modal-target="web-development-modal" tabindex="0" aria-haspopup="dialog">
+                 <article class="service card-hover" data-modal-target="web-development-modal" tabindex="0" role="button" aria-haspopup="dialog">
                      <div class="service-icon"><i class="fas fa-code fa-fw" aria-hidden="true"></i></div>
                     <h3>Web Development</h3>
                     <p>Build a stunning online presence with custom websites tailored to your brand, featuring responsive designs and e-commerce capabilities.</p>
                     <p class="extra-info">Our developers create fast, SEO-optimized sites that drive traffic and conversions for your business.</p>
-                    <button class="modern-button small action-button" aria-label="Learn more about Web Development services"><span class="button-text">Request a Site</span></button>
+                    <span class="modern-button small action-button" aria-hidden="true"><span class="button-text">Request a Site</span></span>
                 </article>
-                <article class="service card-hover" data-modal-target="networking-modal" tabindex="0" aria-haspopup="dialog">
+                <article class="service card-hover" data-modal-target="networking-modal" tabindex="0" role="button" aria-haspopup="dialog">
                      <div class="service-icon"><i class="fas fa-network-wired fa-fw" aria-hidden="true"></i></div>
                     <h3>Networking</h3>
                     <p>Set up and maintain secure, robust networks for seamless connectivity, optimized for small businesses to large enterprises.</p>
                     <p class="extra-info">We specialize in enterprise-grade solutions to ensure speed, reliability, and security.</p>
-                    <button class="modern-button small action-button" aria-label="Learn more about Networking services"><span class="button-text">Improve Connectivity</span></button>
+                    <span class="modern-button small action-button" aria-hidden="true"><span class="button-text">Improve Connectivity</span></span>
                 </article>
-                <article class="service card-hover" data-modal-target="cloud-solutions-modal" tabindex="0" aria-haspopup="dialog">
+                <article class="service card-hover" data-modal-target="cloud-solutions-modal" tabindex="0" role="button" aria-haspopup="dialog">
                     <div class="service-icon"><i class="fas fa-cloud fa-fw" aria-hidden="true"></i></div>
                     <h3>Cloud Solutions</h3>
                     <p>Migrate to the cloud with scalable, secure systems to optimize your IT infrastructure and boost efficiency.</p>
                     <p class="extra-info">Our experts streamline your workflow with cutting-edge cloud technology for growth and flexibility.</p>
-                    <button class="modern-button small action-button" aria-label="Learn more about Cloud Solutions"><span class="button-text">Go Cloud</span></button>
+                    <span class="modern-button small action-button" aria-hidden="true"><span class="button-text">Go Cloud</span></span>
                 </article>
-                <article class="service card-hover" data-modal-target="it-support-modal" tabindex="0" aria-haspopup="dialog">
+                <article class="service card-hover" data-modal-target="it-support-modal" tabindex="0" role="button" aria-haspopup="dialog">
                     <div class="service-icon"><i class="fas fa-headset fa-fw" aria-hidden="true"></i></div>
                     <h3>IT Support</h3>
                     <p>24/7 IT support to keep your systems running smoothly, with proactive maintenance and remote/on-site assistance.</p>
                     <p class="extra-info">Our team is available anytime, anywhere, to resolve issues and maintain peak performance.</p>
-                    <button class="modern-button small action-button" aria-label="Learn more about IT Support services"><span class="button-text">Get Support</span></button>
+                    <span class="modern-button small action-button" aria-hidden="true"><span class="button-text">Get Support</span></span>
                 </article>
             </div>
              <!-- Supported OS Section -->
             <div class="supported-os" aria-labelledby="supported-os-title">
                  <h3 id="supported-os-title" class="supported-os-title centered-text">We Support <span class="gradient-text">All</span> Major Operating Systems</h3>
-                 <!-- OS Logo Scroller -->
                  <div class="os-logo-scroller" aria-label="Supported Operating Systems Logos">
                      <div class="os-logo-track">
-                        <!-- Using paths from user's HTML, added width/height -->
+                        <!-- Added width/height, lazy loading -->
                         <img src="assets/images/os/windows.svg" alt="Windows" class="os-logo" loading="lazy" width="50" height="50">
                         <img src="assets/images/os/macos.svg" alt="macOS" class="os-logo" loading="lazy" width="50" height="50">
                         <img src="assets/images/os/linux.svg" alt="Linux" class="os-logo" loading="lazy" width="50" height="50">
@@ -266,7 +260,7 @@
                         <img src="assets/images/os/ubuntu.svg" alt="Ubuntu" class="os-logo" loading="lazy" width="50" height="50">
                         <img src="assets/images/os/fedora.svg" alt="Fedora" class="os-logo" loading="lazy" width="50" height="50">
                         <img src="assets/images/os/android.svg" alt="Android" class="os-logo" loading="lazy" width="50" height="50">
-                        <img src="assets/images/os/ios.svg" alt="iOS" class="os-logo apple-dark-invert" loading="lazy" width="50" height="50"> <!-- Added class -->
+                        <img src="assets/images/os/ios.svg" alt="iOS" class="os-logo apple-dark-invert" loading="lazy" width="50" height="50">
                         <img src="assets/images/os/wearos.svg" alt="Wear OS" class="os-logo" loading="lazy" width="50" height="50">
                         <img src="assets/images/os/watchos.png" alt="watchOS" class="os-logo apple-dark-invert" loading="lazy" width="50" height="50">
                         <img src="assets/images/os/tvos.png" alt="tvOS" class="os-logo apple-dark-invert" loading="lazy" width="50" height="50">
@@ -287,58 +281,56 @@
                  </div>
             </div>
             <div class="button-container">
-                <a href="#contact" class="modern-button action-button" aria-label="Contact us for service inquiries"><span class="button-text">Contact Us</span></a> <!-- Changed to link -->
+                <a href="#contact" class="modern-button action-button" aria-label="Contact us for service inquiries"><span class="button-text">Contact Us</span></a>
             </div>
         </section>
 
         <!-- Gallery Section -->
         <section id="gallery" class="gallery glass-morphism section-animation" aria-labelledby="gallery-title">
-             <!-- Applied glow and outline -->
+             <!-- Applied glow and outline classes -->
             <h2 id="gallery-title" class="gradient-text glow-text centered-text outlined-text">Our Work</h2>
             <p>Explore our portfolio of successful projects, showcasing our expertise in tech solutions for businesses like yours.</p>
-            <div class="gallery-container" role="list"> <!-- Added role list -->
-                <!-- Gallery Item Example (Repeat) -->
-                <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-haspopup="dialog" aria-label="View image: Tech hardware repair project" data-alt="Close-up of a computer motherboard with components" data-src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80">
-                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=70" alt="Tech hardware repair project" loading="lazy" width="300" height="200"> <!-- Added dimensions -->
+            <div class="gallery-container" role="list">
+                <!-- Gallery Items: Added role, tabindex, aria-label, and data-alt for lightbox -->
+                <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-label="View image: Tech hardware repair project" data-src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" data-alt="Close-up of a computer motherboard with components">
+                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=70" alt="Tech hardware repair project" loading="lazy" width="300" height="200">
                 </div>
-                <!-- Add other gallery items similarly -->
-                 <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-haspopup="dialog" aria-label="View image: Networking setup installation" data-alt="Server room with racks of network equipment" data-src="https://images.unsplash.com/photo-1548544027-1a96c4c24c7a?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3">
+                 <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-label="View image: Networking setup installation" data-src="https://images.unsplash.com/photo-1548544027-1a96c4c24c7a?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" data-alt="Server room with racks of network equipment">
                     <img src="https://images.unsplash.com/photo-1548544027-1a96c4c24c7a?q=80&w=300&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Networking setup installation" loading="lazy" width="300" height="200">
                 </div>
-                 <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-haspopup="dialog" aria-label="View image: Web development project" data-alt="Laptop showing lines of code on screen" data-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80">
+                 <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-label="View image: Web development project" data-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" data-alt="Laptop showing lines of code on screen">
                     <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=70" alt="Web development project" loading="lazy" width="300" height="200">
                 </div>
-                 <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-haspopup="dialog" aria-label="View image: Cybersecurity implementation example" data-alt="Abstract digital security background" data-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80">
+                 <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-label="View image: Cybersecurity implementation example" data-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" data-alt="Abstract digital security background">
                     <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=70" alt="Cybersecurity implementation example" loading="lazy" width="300" height="200">
                 </div>
-                 <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-haspopup="dialog" aria-label="View image: Cloud solution deployment example" data-alt="Cloud computing concept illustration" data-src="https://images.unsplash.com/photo-1638398827627-284082155e09?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3">
+                 <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-label="View image: Cloud solution deployment example" data-src="https://images.unsplash.com/photo-1638398827627-284082155e09?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" data-alt="Cloud computing concept illustration">
                     <img src="https://images.unsplash.com/photo-1638398827627-284082155e09?q=80&w=300&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Cloud solution deployment example" loading="lazy" width="300" height="200">
                 </div>
-                 <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-haspopup="dialog" aria-label="View image: IT support session example" data-alt="Team collaborating around a laptop" data-src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80">
+                 <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-label="View image: IT support session example" data-src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" data-alt="Team collaborating around a laptop">
                     <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=70" alt="IT support session example" loading="lazy" width="300" height="200">
                 </div>
-                 <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-haspopup="dialog" aria-label="View image: Office tech setup" data-alt="Modern office interior with technology" data-src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80">
+                 <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-label="View image: Office tech setup" data-src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" data-alt="Modern office interior with technology">
                     <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=70" alt="Office tech setup" loading="lazy" width="300" height="200">
                 </div>
             </div>
             <div class="button-container">
                 <button type="button" class="modern-button action-button" onclick="alert('Full portfolio coming soon!')" aria-label="View full project portfolio"><span class="button-text">View Full Portfolio</span></button>
             </div>
-            <!-- Lightbox Structure -->
-            <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-caption" aria-hidden="true" style="display: none;">
+            <!-- Lightbox Structure: Enhanced ARIA -->
+            <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-image" aria-describedby="lightbox-alt-text" aria-hidden="true" style="display: none;">
                 <button class="lightbox-close" aria-label="Close lightbox" type="button">×</button>
-                <img src="" alt="" class="lightbox-image">
-                <div id="lightbox-caption" class="lightbox-caption sr-only"></div> <!-- Hidden caption for screen readers -->
+                <img src="" alt="" id="lightbox-image" class="lightbox-image">
+                <span id="lightbox-alt-text" class="sr-only"></span> <!-- Alt text for screen readers -->
             </div>
         </section>
 
-        <!-- Stats Section -->
+        <!-- Stats Section (No modals here, styling refinement in CSS) -->
         <section id="stats" class="stats section-animation" aria-labelledby="stats-title">
-             <!-- Applied glow and outline -->
+             <!-- Applied glow and outline classes -->
             <h2 id="stats-title" class="gradient-text glow-text centered-text outlined-text">Our Impact</h2>
             <p>Here’s how sysfx has made a difference for our clients through innovative tech solutions.</p>
             <div class="stats-container">
-                <!-- ADDED stat-label spans -->
                 <div class="stat-item card-hover">
                     <span class="stat-number" data-target="150">0</span>+
                     <span class="stat-label">Clients Served</span>
@@ -365,13 +357,13 @@
                 </div>
             </div>
             <div class="button-container">
-                <a href="#about" class="modern-button action-button" aria-label="Learn more about our company impact"><span class="button-text">Learn More About Us</span></a> <!-- Changed to link -->
+                <a href="#about" class="modern-button action-button" aria-label="Learn more about our company impact"><span class="button-text">Learn More About Us</span></a>
             </div>
         </section>
 
-        <!-- Events Section -->
+        <!-- Events Section (Removed from Nav, kept section for future) -->
         <section id="events" class="events glass-morphism parallax section-animation" aria-labelledby="events-title">
-            <!-- Applied glow (no outline on parallax) -->
+            <!-- Applied glow class (no outline on parallax) -->
             <h2 id="events-title" class="gradient-text glow-text centered-text">Events & Workshops</h2>
             <p>Stay ahead in the tech world by joining our upcoming events and workshops on cybersecurity, web development, networking, and more.</p>
             <div class="event-timeline">
@@ -382,7 +374,7 @@
                         <h3>Cybersecurity 101</h3>
                         <p>Learn the basics of protecting your digital assets in this beginner-friendly workshop.</p>
                         <p class="extra-info">Includes hands-on demos, Q&A with experts, and a certificate of completion.</p>
-                        <a href="#contact" class="modern-button small action-button" aria-label="Register for Cybersecurity 101 workshop"><span class="button-text">Register Now</span></a> <!-- Changed to link -->
+                        <a href="#contact" class="modern-button small action-button" aria-label="Register for Cybersecurity 101 workshop"><span class="button-text">Register Now</span></a>
                     </div>
                 </article>
                 <article class="event-card card-hover">
@@ -418,9 +410,9 @@
             </div>
         </section>
 
-        <!-- Case Studies Section -->
+        <!-- Case Studies Section (Removed from Nav, kept section for future) -->
         <section id="case-studies" class="case-studies glass-morphism section-animation" aria-labelledby="casestudies-title">
-             <!-- Applied glow and outline -->
+             <!-- Applied glow and outline classes -->
             <h2 id="casestudies-title" class="gradient-text glow-text centered-text outlined-text">Case Studies</h2>
             <p>Discover how sysfx has transformed businesses with our tailored tech solutions.</p>
             <div class="case-study-grid">
@@ -449,54 +441,58 @@
             </div>
         </section>
 
-        <!-- Testimonials Section -->
+        <!-- Testimonials Section (Removed from Nav, kept section for future) -->
+        <!-- Background graphic 'X' fixed/adjusted in CSS -->
         <section id="testimonials" class="testimonials glass-morphism parallax section-animation" aria-labelledby="testimonials-title">
-            <!-- Applied glow (no outline) -->
+            <!-- Applied glow class (no outline on parallax) -->
             <h2 id="testimonials-title" class="gradient-text glow-text centered-text">What Our Clients Say</h2>
             <p>Hear from businesses like yours who’ve transformed their tech with sysfx’s expertise.</p>
             <div class="carousel-container" aria-roledescription="carousel" aria-label="Client Testimonials">
                 <div class="testimonial-slider">
-                    <!-- ADDED aria-hidden -->
+                    <!-- Testimonials: Improved ARIA and structure -->
                     <article class="testimonial" role="group" aria-roledescription="slide" aria-label="1 of 4" aria-hidden="true">
-                        <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
+                        <div class="quote-icon" aria-hidden="true"><i class="fas fa-quote-left"></i></div>
                         <blockquote>
                             <p>"Sysfx provided excellent service. They fixed my computer quickly and efficiently, saving our business valuable downtime during a critical period."</p>
-                            <footer class="testimonial-author"><cite>John D., CEO of TechTrend Solutions</cite></footer> <!-- Use cite element -->
+                            <footer class="testimonial-author"><cite>John D., CEO of TechTrend Solutions</cite></footer>
                         </blockquote>
                     </article>
                     <article class="testimonial" role="group" aria-roledescription="slide" aria-label="2 of 4" aria-hidden="true">
-                        <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
+                        <div class="quote-icon" aria-hidden="true"><i class="fas fa-quote-left"></i></div>
                         <blockquote>
                             <p>"I’m absolutely thrilled with the website sysfx built for my business. It’s modern, incredibly fast, and drives significantly more traffic than our old site."</p>
                             <footer class="testimonial-author"><cite>Jane S., Founder of WebWise Co.</cite></footer>
                         </blockquote>
                     </article>
                     <article class="testimonial" role="group" aria-roledescription="slide" aria-label="3 of 4" aria-hidden="true">
-                         <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
+                         <div class="quote-icon" aria-hidden="true"><i class="fas fa-quote-left"></i></div>
                         <blockquote>
                             <p>"Their cybersecurity solutions gave us peace of mind. Our data is now secure from threats we didn’t even know existed. Highly recommended!"</p>
                             <footer class="testimonial-author"><cite>Michael J., IT Director at NetSecure Inc.</cite></footer>
                         </blockquote>
                     </article>
                      <article class="testimonial" role="group" aria-roledescription="slide" aria-label="4 of 4" aria-hidden="true">
-                        <div class="quote-icon"><i class="fas fa-quote-left" aria-hidden="true"></i></div>
+                        <div class="quote-icon" aria-hidden="true"><i class="fas fa-quote-left"></i></div>
                         <blockquote>
                             <p>"The networking setup by sysfx practically doubled our office connectivity speed—amazing work! The team was professional and efficient throughout."</p>
                             <footer class="testimonial-author"><cite>Sarah L., Office Manager at RetailPro</cite></footer>
                         </blockquote>
                     </article>
                 </div>
-                <button type="button" class="carousel-control carousel-prev" aria-label="Previous testimonial"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
-                <button type="button" class="carousel-control carousel-next" aria-label="Next testimonial"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+                <!-- Added ARIA controls association -->
+                <button type="button" class="carousel-control carousel-prev" aria-label="Previous testimonial" aria-controls="testimonial-slider"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+                <button type="button" class="carousel-control carousel-next" aria-label="Next testimonial" aria-controls="testimonial-slider"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+                <!-- Optional: Add an ARIA live region for screen reader announcements -->
+                <div id="testimonial-live-region" class="sr-only" aria-live="polite" aria-atomic="true"></div>
             </div>
             <div class="button-container">
-                <a href="#contact" class="modern-button action-button" aria-label="Share your feedback or testimonial"><span class="button-text">Share Your Story</span></a> <!-- Changed to link -->
+                <a href="#contact" class="modern-button action-button" aria-label="Share your feedback or testimonial"><span class="button-text">Share Your Story</span></a>
             </div>
         </section>
 
         <!-- About Section -->
         <section id="about" class="about glass-morphism section-animation" aria-labelledby="about-title">
-             <!-- Applied glow and outline -->
+             <!-- Applied glow and outline classes -->
             <h2 id="about-title" class="gradient-text glow-text centered-text outlined-text">About Us</h2>
             <p>sysfx is a team of experienced tech professionals dedicated to delivering top-notch solutions to our clients. With over 15 years of industry expertise, we specialize in computer repairs, cybersecurity, web development, networking, cloud solutions, and 24/7 IT support.</p>
             <p>Our mission is to empower businesses with innovative technology, ensuring precision, reliability, and exceptional customer service. Located in Clinton, CT, we serve clients across the region, helping them thrive in a digital-first world.</p>
@@ -505,12 +501,11 @@
                  <a href="#contact" class="modern-button action-button" aria-label="Contact sysfx today"><span class="button-text">Contact Us Today</span></a>
                 <a href="#services" class="modern-button secondary action-button" aria-label="Explore our technical expertise"><span class="button-text">Explore Our Expertise</span></a>
             </div>
-            <!-- REMOVED Tech Trivia from here -->
         </section>
 
-        <!-- Community Section -->
+        <!-- Community Section (Removed from Nav, kept section for future) -->
         <section id="community" class="community glass-morphism section-animation" aria-labelledby="community-title">
-             <!-- Applied glow and outline -->
+             <!-- Applied glow and outline classes -->
             <h2 id="community-title" class="gradient-text glow-text centered-text outlined-text">Join Our Community</h2>
             <p>Connect with tech enthusiasts, business owners, and IT professionals in the sysfx community. Share knowledge, attend events, and grow with us!</p>
             <div class="button-container">
@@ -520,8 +515,8 @@
         </section>
 
         <!-- CTA Section -->
-        <section id="cta" class="cta section-animation" aria-labelledby="cta-title"> <!-- Removed glass-morphism for solid gradient -->
-             <!-- Applied glow and outline -->
+        <section id="cta" class="cta section-animation" aria-labelledby="cta-title">
+             <!-- Applied glow and outline classes -->
             <h2 id="cta-title" class="cta-title glow-text centered-text outlined-text">Ready to Transform Your Tech?</h2>
             <p>Partner with sysfx for innovative solutions that drive your business forward.</p>
             <div class="button-container">
@@ -536,7 +531,7 @@
 
         <!-- Blog Teaser Section -->
         <section id="blog" class="blog-teaser glass-morphism section-animation" aria-labelledby="blog-title">
-             <!-- Applied glow and outline -->
+             <!-- Applied glow and outline classes -->
             <h2 id="blog-title" class="gradient-text glow-text centered-text outlined-text">Tech Insights</h2>
             <p>Get a sneak peek at our latest blog posts for tips, tricks, and industry news.</p>
             <div class="blog-preview-grid">
@@ -564,7 +559,7 @@
 
         <!-- Tech Timeline Section -->
         <section class="tech-timeline-section glass-morphism section-animation" aria-labelledby="timeline-title">
-             <!-- Applied glow and outline -->
+             <!-- Applied glow and outline classes -->
             <h2 id="timeline-title" class="gradient-text glow-text centered-text outlined-text">Our Tech Journey</h2>
             <p>A brief history of sysfx’s evolution in the tech world.</p>
             <div class="timeline">
@@ -594,7 +589,7 @@
 
         <!-- Contact Section -->
         <section id="contact" class="contact glass-morphism section-animation" aria-labelledby="contact-title">
-             <!-- Applied glow and outline -->
+             <!-- Applied glow and outline classes -->
             <h2 id="contact-title" class="gradient-text glow-text centered-text outlined-text">Contact Us</h2>
             <p>Ready to elevate your tech with sysfx? Contact our team for a free consultation, quote, or support. We’re here to help 24/7!</p>
             <div class="contact-grid">
@@ -602,7 +597,7 @@
                     <h3>Contact Information</h3>
                     <div class="contact-item">
                         <i class="fas fa-envelope fa-fw" aria-hidden="true"></i>
-                        <div> <!-- Wrap text for better alignment -->
+                        <div>
                              <strong>Email:</strong><br>
                              <a href="mailto:nick@sysfx.net" class="email-link" id="contact-email-link" aria-label="Email sysfx at nick@sysfx.net">nick@sysfx.net</a>
                         </div>
@@ -611,7 +606,7 @@
                         <i class="fas fa-phone fa-fw" aria-hidden="true"></i>
                          <div>
                              <strong>Phone:</strong><br>
-                             <a href="tel:+18603754425" aria-label="Call sysfx at 8 6 0, 3 7 5, 4 4 2 5">(860) 375-4425</a> <!-- Improved aria label -->
+                             <a href="tel:+18603754425" aria-label="Call sysfx at 8 6 0, 3 7 5, 4 4 2 5">(860) 375-4425</a>
                         </div>
                     </div>
                     <div class="contact-item">
@@ -628,47 +623,48 @@
                 </div>
                 <div class="contact-form-container">
                     <h3>Send Us a Message</h3>
-                    <!-- ADDED form groups, error spans, novalidate -->
-                    <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate> <!-- Add your Formspree ID, add novalidate -->
+                    <!-- Form enhancements: novalidate, input types, autocomplete, ARIA for errors -->
+                    <!-- NOTE: Replace YOUR_FORM_ID with your actual Formspree endpoint ID -->
+                    <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate>
                         <div class="form-group">
                              <label for="name" class="form-label">Name:<span class="required-star" aria-hidden="true">*</span></label>
-                            <input type="text" id="name" name="name" class="form-input" required aria-required="true" placeholder="Your Full Name" autocomplete="name">
-                            <span class="form-error" aria-live="polite"></span>
+                            <input type="text" id="name" name="name" class="form-input" required aria-required="true" placeholder="Your Full Name" autocomplete="name" aria-describedby="name-error">
+                            <span id="name-error" class="form-error" aria-live="polite"></span>
                         </div>
 
                         <div class="form-group">
                             <label for="email-input" class="form-label">Email:<span class="required-star" aria-hidden="true">*</span></label>
-                            <input type="email" id="email-input" name="email" class="form-input" required aria-required="true" placeholder="your.email@example.com" autocomplete="email">
-                             <span class="form-error" aria-live="polite"></span>
+                            <input type="email" id="email-input" name="email" class="form-input" required aria-required="true" placeholder="your.email@example.com" autocomplete="email" aria-describedby="email-error">
+                             <span id="email-error" class="form-error" aria-live="polite"></span>
                         </div>
 
                         <div class="form-group">
                             <label for="phone" class="form-label">Phone <span class="optional">(Optional)</span>:</label>
-                            <input type="tel" id="phone" name="phone" class="form-input" placeholder="(555) 123-4567" autocomplete="tel">
-                             <span class="form-error" aria-live="polite"></span>
+                            <input type="tel" id="phone" name="phone" class="form-input" placeholder="(555) 123-4567" autocomplete="tel" aria-describedby="phone-error">
+                             <span id="phone-error" class="form-error" aria-live="polite"></span>
                         </div>
 
                         <div class="form-group">
                             <label for="subject" class="form-label">Subject:<span class="required-star" aria-hidden="true">*</span></label>
-                            <input type="text" id="subject" name="subject" class="form-input" required aria-required="true" placeholder="Reason for contacting">
-                             <span class="form-error" aria-live="polite"></span>
+                            <input type="text" id="subject" name="subject" class="form-input" required aria-required="true" placeholder="Reason for contacting" aria-describedby="subject-error">
+                             <span id="subject-error" class="form-error" aria-live="polite"></span>
                         </div>
 
                          <div class="form-group">
                             <label for="message" class="form-label">Message:<span class="required-star" aria-hidden="true">*</span></label>
-                            <textarea id="message" name="message" class="form-textarea" rows="5" required aria-required="true" placeholder="How can we help you today?"></textarea>
-                             <span class="form-error" aria-live="polite"></span>
+                            <textarea id="message" name="message" class="form-textarea" rows="5" required aria-required="true" placeholder="How can we help you today?" aria-describedby="message-error"></textarea>
+                             <span id="message-error" class="form-error" aria-live="polite"></span>
                         </div>
 
                         <input type="text" name="_gotcha" style="display:none !important" tabindex="-1" autocomplete="off"> <!-- Honeypot -->
 
-                        <!-- ADDED form-footer wrapper -->
                          <div class="form-footer">
                             <button type="submit" class="modern-button action-button form-submit-button" aria-label="Send your message to sysfx">
                                  <span class="button-text">Send Message</span>
                                  <i class="fas fa-paper-plane" aria-hidden="true"></i>
                             </button>
-                             <p id="form-status" role="status" aria-live="polite" style="display: none;"></p> <!-- Changed display -->
+                             <!-- Form status message area -->
+                             <p id="form-status" class="form-status idle" role="status" aria-live="polite"></p>
                         </div>
                     </form>
                 </div>
@@ -678,7 +674,6 @@
 
     <!-- Footer -->
     <footer class="main-footer glass-morphism" role="contentinfo">
-        <!-- ADDED footer-content wrapper -->
         <div class="footer-content">
             <p class="copyright">© <span id="current-year">2025</span> sysfx. All rights reserved.</p>
             <div class="social-links">
@@ -696,8 +691,9 @@
     </footer>
 
     <!-- Modals Container -->
+    <!-- Modals: Refined ARIA, structure, and button types -->
     <div class="modal-container" aria-hidden="true">
-        <!-- Example Modal Structure -->
+        <!-- Computer Repair Modal -->
         <div id="computer-repair-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="computer-repair-title" aria-hidden="true" style="display: none;">
             <div class="modal-content glass-morphism">
                 <button class="modal-close" aria-label="Close Computer Repair Details" type="button">×</button>
@@ -713,13 +709,12 @@
                     <p>Bring your device in or ask about our remote support options!</p>
                 </div>
                  <div class="modal-footer button-container">
-                    <!-- Changed to button trigger JS for closing modal if needed -->
                     <button type="button" class="modern-button small action-button modal-action" data-link="#contact">Request Repair</button>
-                    <button type="button" class="modern-button small secondary modal-close-alt">Close</button> <!-- Alternative close button -->
+                    <button type="button" class="modern-button small secondary modal-close-alt">Close</button>
                 </div>
             </div>
         </div>
-        <!-- Other modals -->
+        <!-- Cybersecurity Modal -->
         <div id="cybersecurity-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="cybersecurity-title" aria-hidden="true" style="display: none;">
             <div class="modal-content glass-morphism">
                 <button class="modal-close" aria-label="Close Cybersecurity Details" type="button">×</button>
@@ -741,6 +736,7 @@
                 </div>
             </div>
         </div>
+        <!-- Web Development Modal -->
         <div id="web-development-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="web-dev-title" aria-hidden="true" style="display: none;">
             <div class="modal-content glass-morphism">
                 <button class="modal-close" aria-label="Close Web Development Details" type="button">×</button>
@@ -762,33 +758,66 @@
                 </div>
             </div>
         </div>
+         <!-- Networking Modal -->
          <div id="networking-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="networking-title" aria-hidden="true" style="display: none;">
              <div class="modal-content glass-morphism">
                  <button class="modal-close" aria-label="Close Networking Details" type="button">×</button>
                  <h3 id="networking-title" class="modal-title"><i class="fas fa-network-wired fa-fw" aria-hidden="true"></i> Networking</h3>
-                 <div class="modal-body"> <p>Details about networking services...</p> </div>
+                 <div class="modal-body">
+                     <p>Establish reliable and secure network infrastructure for seamless connectivity. Our services cover:</p>
+                     <ul>
+                         <li>Wired and wireless network setup (Wi-Fi 6/6E/7)</li>
+                         <li>Router and switch configuration</li>
+                         <li>Network security implementation (Firewalls, VPNs)</li>
+                         <li>Performance optimization and troubleshooting</li>
+                         <li>Structured cabling</li>
+                     </ul>
+                     <p>From home offices to enterprise environments, we ensure your network is fast and dependable.</p>
+                 </div>
                  <div class="modal-footer button-container">
                      <button type="button" class="modern-button small action-button modal-action" data-link="#contact">Improve Connectivity</button>
                      <button type="button" class="modern-button small secondary modal-close-alt">Close</button>
                  </div>
              </div>
          </div>
+         <!-- Cloud Solutions Modal -->
           <div id="cloud-solutions-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="cloud-title" aria-hidden="true" style="display: none;">
              <div class="modal-content glass-morphism">
                  <button class="modal-close" aria-label="Close Cloud Solutions Details" type="button">×</button>
                  <h3 id="cloud-title" class="modal-title"><i class="fas fa-cloud fa-fw" aria-hidden="true"></i> Cloud Solutions</h3>
-                 <div class="modal-body"> <p>Details about cloud services...</p> </div>
+                 <div class="modal-body">
+                     <p>Leverage the power of the cloud for flexibility, scalability, and efficiency. We provide:</p>
+                     <ul>
+                         <li>Cloud migration planning and execution (AWS, Azure, Google Cloud)</li>
+                         <li>Cloud server setup and management</li>
+                         <li>Microsoft 365 / Google Workspace deployment and support</li>
+                         <li>Cloud backup and disaster recovery solutions</li>
+                         <li>Hybrid cloud infrastructure design</li>
+                     </ul>
+                     <p>Optimize your workflow and reduce infrastructure costs with our tailored cloud strategies.</p>
+                 </div>
                  <div class="modal-footer button-container">
                      <button type="button" class="modern-button small action-button modal-action" data-link="#contact">Go Cloud</button>
                       <button type="button" class="modern-button small secondary modal-close-alt">Close</button>
                  </div>
              </div>
          </div>
+         <!-- IT Support Modal -->
           <div id="it-support-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="it-support-title" aria-hidden="true" style="display: none;">
              <div class="modal-content glass-morphism">
                  <button class="modal-close" aria-label="Close IT Support Details" type="button">×</button>
                  <h3 id="it-support-title" class="modal-title"><i class="fas fa-headset fa-fw" aria-hidden="true"></i> IT Support</h3>
-                 <div class="modal-body"> <p>Details about IT Support services...</p> </div>
+                 <div class="modal-body">
+                     <p>Reliable, responsive IT support to keep your systems running smoothly. We offer:</p>
+                     <ul>
+                         <li>24/7 Remote and On-site support</li>
+                         <li>Helpdesk services for quick issue resolution</li>
+                         <li>Proactive system monitoring and maintenance</li>
+                         <li>Managed IT services plans</li>
+                         <li>Hardware and software procurement assistance</li>
+                     </ul>
+                     <p>Focus on your business while we handle the technology.</p>
+                 </div>
                  <div class="modal-footer button-container">
                      <button type="button" class="modern-button small action-button modal-action" data-link="#contact">Get Support</button>
                       <button type="button" class="modern-button small secondary modal-close-alt">Close</button>
@@ -798,7 +827,7 @@
     </div> <!-- End Modal Container -->
 
     <!-- Background Music Player -->
-    <audio id="background-music" loop preload="auto" aria-label="Background music player">
+    <audio id="background-music" loop preload="metadata" aria-label="Background music player"> <!-- Changed preload to metadata -->
         <source src="https://ia802208.us.archive.org/30/items/title_20240514_0432/title.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
@@ -806,16 +835,18 @@
     <!-- Floating Elements Container -->
     <aside class="floating-elements" aria-label="Quick access tools">
         <!-- REMOVED Tech Tip from here -->
-        <!-- Chat Bubble (Example) -->
+        <!-- Chat Bubble (Placeholder, controlled by JS feature flag) -->
         <div class="chat-bubble" id="chat-bubble" role="button" tabindex="0" style="display: none;">
             <i class="fas fa-comments" aria-hidden="true"></i> <span>Chat (Soon!)</span>
         </div>
         <div class="floating-buttons">
-            <button id="music-toggle" class="floating-action-button music-button" aria-label="Toggle background music" aria-pressed="false" type="button">
+             <!-- Music Toggle: Initial state set by JS/CSS to muted/gray -->
+            <button id="music-toggle" class="floating-action-button music-button muted" aria-label="Play background music" aria-pressed="false" type="button">
                 <i class="fas fa-music" aria-hidden="true"></i>
                 <span class="sr-only">Toggle Music</span>
             </button>
-            <button class="floating-action-button scroll-top-btn" id="scroll-top-button" aria-label="Scroll back to top" style="display: none;" type="button">
+            <!-- Scroll Top Button: Visibility controlled by JS -->
+            <button class="floating-action-button scroll-top-btn" id="scroll-top-button" aria-label="Scroll back to top" style="display: none; opacity: 0; transform: scale(0.8);" type="button">
                 <i class="fas fa-arrow-up" aria-hidden="true"></i>
                 <span class="sr-only">Scroll to Top</span>
             </button>
