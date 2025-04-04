@@ -412,39 +412,59 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const closeModal = (modal) => {
+    const closeModal = (modal, skipFocusReturn = false) => {
+        // Check if the modal exists, is the active one, and is currently shown
         if (!modal || modal !== activeModal || !modal.classList.contains('active')) return;
+
         const triggerElement = activeModal.triggerElement; // Get trigger before resetting activeModal
         activeModal.triggerElement = null; // Clear stored trigger
         activeModal = null; // Reset active modal state
-        modal.classList.remove('active');
+
+        modal.classList.remove('active'); // Start the closing transition (CSS)
         modal.setAttribute('aria-hidden', 'true');
+
         // Make background content interactive again
         ELEMENTS.mainContent?.removeAttribute('inert');
         ELEMENTS.footer?.removeAttribute('inert');
+
         // Use transitionend to hide element and restore focus, with a fallback timeout
         let transitionEnded = false;
         const onTransitionEnd = (event) => {
             // Ensure transition is on the modal itself and for opacity or transform
             if (event.target !== modal || !['opacity', 'transform'].includes(event.propertyName)) return;
+
             transitionEnded = true;
-            modal.style.display = 'none';
-            ELEMENTS.body?.classList.remove('no-scroll');
-            triggerElement?.focus(); // Return focus to the original trigger
-            modal.removeEventListener('transitionend', onTransitionEnd);
-            logInfo(`Modal closed: ${modal.id}`);
+            modal.style.display = 'none'; // Hide the modal completely after transition
+            ELEMENTS.body?.classList.remove('no-scroll'); // Allow body scrolling
+
+            // *** MODIFIED: Conditionally return focus ***
+            if (!skipFocusReturn) {
+                triggerElement?.focus(); // Return focus ONLY if not scrolling to a new target
+            }
+            // *** END MODIFICATION ***
+
+            modal.removeEventListener('transitionend', onTransitionEnd); // Clean up listener
+            // Add optional log message indicating if scroll is pending
+            logInfo(`Modal closed: ${modal.id}${skipFocusReturn ? ' (scroll pending)' : ''}`);
         };
+
         modal.addEventListener('transitionend', onTransitionEnd);
+
         // Fallback in case transitionend doesn't fire (e.g., display: none interrupts it)
         setTimeout(() => {
             if (!transitionEnded) {
                 logWarn(`Modal transitionEnd fallback triggered: ${modal.id}`);
                 modal.removeEventListener('transitionend', onTransitionEnd); // Clean up listener
-                modal.style.display = 'none';
-                ELEMENTS.body?.classList.remove('no-scroll');
-                triggerElement?.focus();
+                modal.style.display = 'none'; // Ensure it's hidden
+                ELEMENTS.body?.classList.remove('no-scroll'); // Ensure scroll is enabled
+
+                // *** MODIFIED: Conditional focus in fallback too ***
+                if (!skipFocusReturn) {
+                    triggerElement?.focus(); // Return focus in fallback ONLY if not scrolling
+                }
+                // *** END MODIFICATION ***
             }
-        }, 500); // Slightly longer than CSS transition
+        }, 500); // Timeout slightly longer than CSS transition duration
     };
 
     const handleLightbox = () => {
