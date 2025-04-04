@@ -1,6 +1,6 @@
 /* ==========================================================================
    SysFX Stylesheet
-   Version: 1.9 (Revised based on list items 1-6)
+   Version: 2.0 (Revised based on list items 1-8)
    Author: sysfx (Revised by AI Assistant)
    ========================================================================== */
 
@@ -12,9 +12,9 @@
     --primary-color: #00a000;       /* Sysfx Green */
     --secondary-color: #4CAF50;     /* Lighter Green */
     --accent-color: #ffdd00;        /* Yellow Accent */
-    --blue-color: #007bff;          /* Added Blue */
+    --blue-color: #007bff;
     --blue-hover-color: #0056b3;
-    --yellow-color: #ffc107;        /* Added Yellow */
+    --yellow-color: #ffc107;
     --yellow-hover-color: #e0a800;
     --text-light: #f8f9fa;
     --text-dark: #212529;
@@ -31,19 +31,16 @@
     --error-color: #dc3545;
     --success-color: #28a745;
 
-    /* Issue 1: Outline & Fill Colors for Header Title */
-    --header-title-stroke-light: #000000; /* Black stroke for light mode */
-    --header-title-fill-light: #ffffff; /* White fill for light mode */
-    --header-title-fill-dark: #ffffff; /* White fill for dark mode (no stroke) */
+    /* Issue 8: Default heading color (solid white/black) */
+    --heading-color-light: var(--text-dark);
+    --heading-color-dark: var(--text-light); /* Default to white */
 
-    /* General Outline/Glow */
-    --outline-color-light: #1a1a1a;
-    --outline-color-dark: #ffffff;
-    --outline-fill-light: #ffffff;
-    --outline-fill-dark: #1a1a1a;
+    /* Glow & Outline */
     --glow-color: #00ff00;
-    --glow-intensity: 6px; /* Slightly reduced */
-    --glow-spread: 10px;  /* Slightly reduced */
+    --glow-intensity: 5px; /* Slightly adjusted */
+    --glow-spread: 8px;  /* Slightly adjusted */
+    --text-glow-shadow: 0 0 var(--glow-intensity) var(--glow-color), 0 0 var(--glow-spread) var(--glow-color);
+    --text-glow-shadow-dark-mode: 0 0 calc(var(--glow-intensity) * 1.1) var(--glow-color), 0 0 calc(var(--glow-spread) * 1.1) var(--glow-color);
 
     /* Gradients */
     --text-gradient: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
@@ -83,9 +80,6 @@
     --shadow-blue-hover: 0 7px 25px rgba(0, 123, 255, 0.3);
     --shadow-yellow: 0 4px 15px rgba(255, 193, 7, 0.2);
     --shadow-yellow-hover: 0 7px 25px rgba(255, 193, 7, 0.3);
-    /* Base Text Glow Shadow (used in animations) */
-    --text-glow-shadow: 0 0 var(--glow-intensity) var(--glow-color), 0 0 var(--glow-spread) var(--glow-color);
-    --text-glow-shadow-dark-mode: 0 0 calc(var(--glow-intensity) * 1.1) var(--glow-color), 0 0 calc(var(--glow-spread) * 1.1) var(--glow-color);
 
     /* Typography */
     --font-family-base: 'Roboto', sans-serif;
@@ -119,10 +113,11 @@
     --transition-ease-in: ease-in;
     --transition-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
 
-    /* Z-Indexes (Checked for Issue 3) */
+    /* Z-Indexes (Issue 3: Verified values for layering) */
     --z-back: -1;
     --z-base: 1;
     --z-content: 10;
+    --z-hero-content: 20; /* Issue 4: Ensure hero content is above overlays */
     --z-sticky: 50; /* Scrolling text uses this */
     --z-header: 1000; /* Header is highest in normal flow */
     --z-mobile-nav-overlay: 1040;
@@ -134,7 +129,7 @@
     --z-lightbox-backdrop: 1300;
     --z-lightbox-content: 1310;
     --z-scroll-progress: 1400;
-    --z-cursor: 9999;
+    --z-cursor: 9999; /* Issue 2: Ensure cursor is on top */
 }
 
 *,
@@ -159,7 +154,7 @@ body {
     background: var(--bg-gradient-light);
     color: var(--text-dark);
     /* padding-top set by JS to handle Issue 3 */
-    position: relative;
+    position: relative; /* Needed for absolute positioned children like particles */
     overflow-x: hidden;
     background-color: var(--bg-light); /* Fallback */
     opacity: 0; /* Start hidden for preloader */
@@ -172,15 +167,15 @@ body:not(.preload) {
     opacity: 1; /* Fade in body when not preloading */
 }
 
+/* --- Theme Transitions --- */
 body.theme-transitions-active * {
-    /* Limited transitions to avoid performance issues */
+    /* Apply common transitions selectively below */
 }
-
-/* Specific Theme Transitions */
 body.theme-transitions-active #main-header,
 body.theme-transitions-active .glass-morphism,
 body.theme-transitions-active .modal-content,
-body.theme-transitions-active .main-nav.mobile-nav {
+body.theme-transitions-active .main-nav.mobile-nav,
+body.theme-transitions-active .main-footer {
     transition: background var(--transition-speed) var(--transition-ease),
                 border-color var(--transition-speed) var(--transition-ease),
                 box-shadow var(--transition-speed) var(--transition-ease),
@@ -193,7 +188,8 @@ body.theme-transitions-active .os-logo,
 body.theme-transitions-active .form-input,
 body.theme-transitions-active .form-textarea,
 body.theme-transitions-active .contact-item i,
-body.theme-transitions-active .service-icon i {
+body.theme-transitions-active .service-icon i,
+body.theme-transitions-active .glow-text { /* Added glow-text */
      transition: background-color var(--transition-speed) var(--transition-ease),
                  color var(--transition-speed) var(--transition-ease),
                  border-color var(--transition-speed) var(--transition-ease),
@@ -202,9 +198,10 @@ body.theme-transitions-active .service-icon i {
                  box-shadow var(--transition-speed) var(--transition-ease),
                  filter var(--transition-speed) var(--transition-ease),
                  opacity var(--transition-speed) var(--transition-ease),
-                 text-shadow var(--transition-speed) var(--transition-ease); /* Added for glow */
+                 text-shadow var(--transition-speed) var(--transition-ease); /* Transition for glow */
 }
 
+/* --- Dark Mode --- */
 body.dark-mode {
     background: var(--bg-gradient-dark);
     background-color: var(--bg-dark); /* Fallback */
@@ -229,16 +226,15 @@ body.dark-mode {
     --shadow-yellow-hover: 0 7px 30px rgba(255, 193, 7, 0.4);
     --glass-bg-light: var(--glass-bg-dark);
     --glass-border-light: var(--glass-border-dark);
-    /* General outline fill/stroke vars swap */
-    --outline-color-light: var(--outline-color-dark);
-    --outline-fill-light: var(--outline-fill-dark);
+    --heading-color-light: var(--heading-color-dark);
 }
 
 body.no-scroll {
     overflow: hidden; /* Prevent scrolling when modal/nav is open */
 }
 
-/* Issue 5 Fix: Ensure text colors contrast correctly in different containers/modes */
+/* --- Issue 5 & 8: Text/Heading Color Contrast Fix --- */
+/* Base text color for different backgrounds */
 body:not(.dark-mode) .glass-morphism,
 body:not(.dark-mode) .modal-content {
     color: var(--text-dark); /* Dark text on light glass */
@@ -246,87 +242,64 @@ body:not(.dark-mode) .modal-content {
 body.dark-mode .glass-morphism,
 body.dark-mode .modal-content,
 body.dark-mode .parallax > *, /* Direct children of parallax */
-body.dark-mode .cta {
-    color: var(--text-light); /* Light text on dark glass/parallax */
+body.dark-mode .cta > *,
+body.dark-mode .stats > * {
+    color: var(--text-light); /* Light text on dark glass/parallax/cta */
 }
 
-/* Explicit text colors for paragraphs/lists within themed containers */
-body:not(.dark-mode) .glass-morphism p,
-body:not(.dark-mode) .glass-morphism li,
-body:not(.dark-mode) .service p,             /* Explicitly target service text */
-body:not(.dark-mode) .services-description,  /* Explicitly target service description */
-body:not(.dark-mode) .case-study p,
-body:not(.dark-mode) .blog-post-preview p,
-body:not(.dark-mode) .event-content p,
-body:not(.dark-mode) .timeline-description,
-body:not(.dark-mode) .contact p,
-body:not(.dark-mode) .contact address,
-body:not(.dark-mode) .stats p,
-body:not(.dark-mode) .about p,
-body:not(.dark-mode) .welcome p,
-body:not(.dark-mode) .location-content p,
-body:not(.dark-mode) .community p {
-    color: var(--text-dark);
+/* Explicit paragraph/list colors */
+body:not(.dark-mode) section p, body:not(.dark-mode) section li, body:not(.dark-mode) section address { color: var(--text-dark); }
+body.dark-mode section p, body.dark-mode section li, body.dark-mode section address { color: var(--text-light); }
+/* Override for specific light-on-dark contexts in light mode */
+body:not(.dark-mode) .parallax p, body:not(.dark-mode) .cta p, body:not(.dark-mode) .stats p { color: var(--text-light); }
+/* Override for specific dark-on-light contexts in dark mode (unlikely but for consistency) */
+/* body.dark-mode .light-background-in-dark-mode p { color: var(--text-dark); } */
+
+/* Heading Colors (Issue 8: Set default solid color) */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: var(--heading-font-weight);
+    line-height: var(--heading-line-height);
+    margin-bottom: var(--spacing-md);
+    color: var(--heading-color-light); /* Default solid color */
+    text-shadow: none; /* Ensure no default shadow unless .glow-text is added */
 }
-body.dark-mode .glass-morphism p,
-body.dark-mode .glass-morphism li,
-body.dark-mode .parallax p,
-body.dark-mode .service p,             /* Explicitly target service text */
-body.dark-mode .services-description,  /* Explicitly target service description */
-body.dark-mode .case-study p,
-body.dark-mode .blog-post-preview p,
-body.dark-mode .event-content p,
-body.dark-mode .timeline-description,
-body.dark-mode .contact p,
-body.dark-mode .contact address,
-body.dark-mode .stats p,
-body.dark-mode .cta p,
-body.dark-mode .about p,
-body.dark-mode .welcome p,
-body.dark-mode .location-content p,
-body.dark-mode .community p {
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
+    color: var(--heading-color-dark); /* Default solid color in dark mode (white) */
+}
+/* Heading override for light-on-dark contexts in light mode */
+body:not(.dark-mode) .parallax h2, body:not(.dark-mode) .parallax h3,
+body:not(.dark-mode) .cta h2, body:not(.dark-mode) .stats h2 {
     color: var(--text-light);
 }
-
-/* Explicit heading colors for containers */
-body:not(.dark-mode) .glass-morphism h1,
-body:not(.dark-mode) .glass-morphism h2,
-body:not(.dark-mode) .glass-morphism h3,
-body:not(.dark-mode) .glass-morphism h4,
-body:not(.dark-mode) .service h3 { /* Issue 5: Explicitly target service card heading */
-   color: var(--text-dark);
-}
-body.dark-mode .glass-morphism h1, body.dark-mode .glass-morphism h2, body.dark-mode .glass-morphism h3, body.dark-mode .glass-morphism h4,
-body.dark-mode .parallax h1, body.dark-mode .parallax h2, body.dark-mode .parallax h3, body.dark-mode .parallax h4,
-body.dark-mode .service h3 { /* Issue 5: Explicitly target service card heading */
-   color: var(--text-light);
-}
-
+/* Issue 5: Ensure service card heading has correct color */
+body:not(.dark-mode) .service h3 { color: var(--text-dark); }
+body.dark-mode .service h3 { color: var(--text-light); }
 
 /* Muted text colors */
 body:not(.dark-mode) .text-muted-light,
 body:not(.dark-mode) .optional,
-body:not(.dark-mode) .extra-info {
+body:not(.dark-mode) .extra-info,
+body:not(.dark-mode) .timeline-description {
     color: var(--text-muted-light);
 }
 body.dark-mode .text-muted-light, /* Class remains for semantic meaning */
 body.dark-mode .optional,
-body.dark-mode .extra-info {
+body.dark-mode .extra-info,
+body.dark-mode .timeline-description {
     color: var(--text-muted-dark);
 }
 
-/* Text shadow for readability on parallax backgrounds (only) */
+/* Text shadow for readability only on parallax backgrounds */
 .parallax h2, .parallax h3, .parallax p, .parallax .services-description {
     text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
 }
 body.dark-mode .parallax h2, body.dark-mode .parallax h3, body.dark-mode .parallax p, body.dark-mode .parallax .services-description {
     text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
 }
-/* Remove text shadow from elements inside glass containers */
-.glass-morphism h1, .glass-morphism h2, .glass-morphism h3, .glass-morphism p,
-.modal-content h1, .modal-content h2, .modal-content h3, .modal-content p {
-    text-shadow: none !important;
-}
+/* Ensure headings with only .glow-text don't get the parallax shadow */
+.parallax .glow-text { text-shadow: var(--text-glow-shadow) !important; } /* Base glow */
+body.dark-mode .parallax .glow-text { text-shadow: var(--text-glow-shadow-dark-mode) !important; } /* Dark mode glow */
+
 
 /* ==========================================================================
    2. Accessibility & Utility Classes
@@ -369,185 +342,80 @@ body.dark-mode .parallax h2, body.dark-mode .parallax h3, body.dark-mode .parall
     box-shadow: var(--shadow-md);
 }
 
-.sysfx-green {
-    color: var(--primary-color) !important;
-}
+.sysfx-green { color: var(--primary-color) !important; }
 
 .gradient-text {
     background: var(--text-gradient);
     -webkit-background-clip: text;
     background-clip: text;
-    color: transparent;
+    color: transparent !important; /* Important to override base heading color */
+    -webkit-text-fill-color: transparent !important;
     display: inline-block;
     font-weight: var(--heading-font-weight);
+    /* Reset text shadow if only gradient is applied */
+    text-shadow: none !important;
 }
 
-/* --- General Glow & Outline --- */
+/* --- Glow & Pulse Animation --- */
 @keyframes pulseGlow {
     0%, 100% { text-shadow: var(--text-glow-shadow); }
-    50% { text-shadow: 0 0 calc(var(--glow-intensity) * 1.3) var(--glow-color), 0 0 calc(var(--glow-spread) * 1.4) var(--glow-color); }
+    50% { text-shadow: 0 0 calc(var(--glow-intensity) * 1.4) var(--glow-color), 0 0 calc(var(--glow-spread) * 1.5) var(--glow-color); }
 }
 @keyframes pulseGlowDark {
     0%, 100% { text-shadow: var(--text-glow-shadow-dark-mode); }
-    50% { text-shadow: 0 0 calc(var(--glow-intensity) * 1.4) var(--glow-color), 0 0 calc(var(--glow-spread) * 1.5) var(--glow-color); }
+    50% { text-shadow: 0 0 calc(var(--glow-intensity) * 1.5) var(--glow-color), 0 0 calc(var(--glow-spread) * 1.6) var(--glow-color); }
 }
 
 .glow-text {
+    /* Color is inherited or set by specific rules above (Issue 8 fix) */
     text-shadow: var(--text-glow-shadow);
-    animation: pulseGlow 2.5s infinite ease-in-out; /* Issue 6: Add pulse */
+    animation: pulseGlow 2.5s infinite ease-in-out;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    paint-order: stroke fill; /* Helps if combined with stroke */
 }
 body.dark-mode .glow-text {
     text-shadow: var(--text-glow-shadow-dark-mode);
-    animation-name: pulseGlowDark; /* Issue 6: Use dark mode pulse */
+    animation-name: pulseGlowDark;
 }
 
-.outlined-text {
-    -webkit-text-stroke: 1px var(--outline-color-light);
-    stroke: 1px var(--outline-color-light);
-    paint-order: stroke fill;
-    color: var(--outline-fill-light);
-    animation: none; /* Disable base pulse if ONLY outlined */
-    text-shadow: none !important; /* Remove base glow if ONLY outlined */
+/* Apply glow correctly to gradient text */
+.gradient-text.glow-text {
+    text-shadow: var(--text-glow-shadow) !important; /* Apply glow over transparent text */
+    animation: pulseGlow 2.5s infinite ease-in-out !important;
 }
-body.dark-mode .outlined-text {
-    -webkit-text-stroke-color: var(--outline-color-dark);
-    stroke: var(--outline-color-dark);
-    color: var(--outline-fill-dark);
-}
-
-/* Combined Outline and Glow */
-.outlined-text.glow-text {
-    text-shadow: var(--text-glow-shadow) !important; /* Re-apply glow OVER the stroke/fill */
-    animation: pulseGlow 2.5s infinite ease-in-out !important; /* Re-apply animation */
-}
-body.dark-mode .outlined-text.glow-text {
+body.dark-mode .gradient-text.glow-text {
     text-shadow: var(--text-glow-shadow-dark-mode) !important;
     animation-name: pulseGlowDark !important;
 }
 
-/* Ensure gradient text with outline/glow maintains transparency for gradient */
-.gradient-text.outlined-text,
-.gradient-text.glow-text,
-.gradient-text.outlined-text.glow-text {
-    color: transparent !important;
-    -webkit-text-fill-color: transparent !important;
-}
-/* Apply combined effect only if both classes are present */
-.gradient-text.outlined-text.glow-text {
-     text-shadow: var(--text-glow-shadow) !important;
-     -webkit-text-stroke: 1px var(--outline-color-light);
-     stroke: 1px var(--outline-color-light);
-     animation: pulseGlow 2.5s infinite ease-in-out !important;
-}
-body.dark-mode .gradient-text.outlined-text.glow-text {
-     text-shadow: var(--text-glow-shadow-dark-mode) !important;
-     -webkit-text-stroke-color: var(--outline-color-dark);
-     stroke: var(--outline-color-dark);
-     animation-name: pulseGlowDark !important;
-}
-
-/* Headings on Parallax: Glow Only (No Outline/Fill override) */
-#services.parallax .glow-text,
-#events.parallax .glow-text,
-#testimonials.parallax .glow-text {
-    text-shadow: var(--text-glow-shadow); /* Apply glow */
-    -webkit-text-stroke: none; /* Ensure no accidental stroke */
-    stroke: none;
-    color: var(--text-light); /* Ensure base color is light on parallax */
-    animation: pulseGlow 2.5s infinite ease-in-out; /* Apply animation */
-}
-body.dark-mode #services.parallax .glow-text,
-body.dark-mode #events.parallax .glow-text,
-body.dark-mode #testimonials.parallax .glow-text {
-     text-shadow: var(--text-glow-shadow-dark-mode);
-     color: var(--text-light); /* Still light text in dark mode */
-     animation-name: pulseGlowDark;
-}
-
-/* --- Issue 1: Header Title Specific Styles --- */
+/* Issue 1: Header Title Specific Style (Ensuring glow applies correctly) */
 #header-brand-title {
-    /* Common: Apply base glow text style */
     font-size: clamp(1.8em, 4vw, 2.4em);
     margin: 0;
     line-height: 1.1;
-    /* Default (Light Mode) */
-    color: var(--header-title-fill-light);
-    -webkit-text-stroke: 1px var(--header-title-stroke-light);
-    stroke: 1px var(--header-title-stroke-light);
-    paint-order: stroke fill;
-    text-shadow: var(--text-glow-shadow); /* Apply base glow */
-    animation: pulseGlow 2.5s infinite ease-in-out; /* Apply pulse animation */
+    /* .glow-text class handles color, shadow, animation */
 }
-body.dark-mode #header-brand-title {
-    color: var(--header-title-fill-dark);
-    -webkit-text-stroke: none; /* No stroke in dark mode */
-    stroke: none;
-    text-shadow: var(--text-glow-shadow-dark-mode); /* Apply dark mode glow */
-    animation-name: pulseGlowDark; /* Apply dark mode pulse animation */
-}
-/* Ensure header shrink respects these */
 #main-header.header-shrunk #header-brand-title {
     font-size: clamp(1.5em, 3vw, 2em);
 }
-/* --- End Issue 1 --- */
 
-.centered-text {
-    text-align: center;
-}
+.centered-text { text-align: center; }
 
-.optional, .required-star {
-    font-size: 0.85em;
-    font-weight: normal;
-    color: var(--text-muted-light);
-}
-.required-star {
-    color: var(--error-color);
-    margin-left: 2px;
-}
+.optional, .required-star { font-size: 0.85em; font-weight: normal; color: var(--text-muted-light); } /* Uses theme rule */
+.required-star { color: var(--error-color); margin-left: 2px; }
 
-.card-hover {
-   transition: transform var(--transition-speed) var(--transition-cubic),
-               box-shadow var(--transition-speed) var(--transition-cubic);
-}
-.card-hover:hover,
-.card-hover:focus-within {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: var(--shadow-interactive-hover);
-}
+.card-hover { transition: transform var(--transition-speed) var(--transition-cubic), box-shadow var(--transition-speed) var(--transition-cubic); }
+.card-hover:hover, .card-hover:focus-within { transform: translateY(-6px) scale(1.02); box-shadow: var(--shadow-interactive-hover); }
 
 /* Links */
-a {
-    color: var(--link-color);
-    text-decoration: none;
-    transition: color var(--transition-speed-fast) var(--transition-ease);
-}
-a:hover, a:focus {
-    color: var(--link-hover-color);
-    text-decoration: underline;
-    outline: none;
-}
-a:focus-visible {
-    outline: 2px solid var(--link-color);
-    outline-offset: 2px;
-    border-radius: var(--border-radius-sm);
-}
-body.dark-mode a:focus-visible {
-     outline-color: var(--link-hover-color);
-}
-/* Email links need specific styling if different */
-.email-link {
-    word-break: break-all; /* Prevent long emails breaking layout */
-}
+a { color: var(--link-color); text-decoration: none; transition: color var(--transition-speed-fast) var(--transition-ease); }
+a:hover, a:focus { color: var(--link-hover-color); text-decoration: underline; outline: none; }
+a:focus-visible { outline: 2px solid var(--link-color); outline-offset: 2px; border-radius: var(--border-radius-sm); }
+body.dark-mode a:focus-visible { outline-color: var(--link-hover-color); }
+.email-link { word-break: break-all; }
 
-/* Headings */
-h1, h2, h3, h4, h5, h6 {
-    font-weight: var(--heading-font-weight);
-    line-height: var(--heading-line-height);
-    margin-bottom: var(--spacing-md);
-    color: inherit; /* Inherit color by default - overridden where needed */
-}
+/* Headings base size */
 h1 { font-size: clamp(2em, 5vw, 2.8em); }
 h2 { font-size: clamp(1.8em, 4vw, 2.4em); }
 h3 { font-size: clamp(1.4em, 3vw, 1.8em); }
@@ -557,109 +425,48 @@ h3 { font-size: clamp(1.4em, 3vw, 1.8em); }
    3. Preloader, Scroll Progress & Custom Cursor
    ========================================================================== */
 .preloader {
-    position: fixed;
-    inset: 0;
-    background-color: var(--bg-light);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 99999;
+    position: fixed; inset: 0; background-color: var(--bg-light); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; z-index: 99999;
     transition: opacity var(--transition-speed-slow) ease-in-out;
 }
-body.dark-mode .preloader {
-    background-color: var(--bg-dark);
-}
-.preloader-logo img {
-    max-width: 100px;
-    margin-bottom: var(--spacing-md);
-    animation: pulseLogo 1.5s infinite ease-in-out;
-}
-@keyframes pulseLogo {
-    0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px var(--primary-color)); }
-    50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 10px var(--primary-color)); }
-}
-body.dark-mode .preloader-logo img {
-    animation: pulseLogoDark 1.5s infinite ease-in-out;
-}
-@keyframes pulseLogoDark {
-    0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px var(--secondary-color)); }
-    50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 10px var(--secondary-color)); }
-}
-
-.preloader-dots {
-    display: flex;
-    gap: var(--spacing-sm);
-}
-.dot {
-    width: 12px;
-    height: 12px;
-    background-color: var(--primary-color);
-    border-radius: 50%;
-    animation: bounceDot 1.4s infinite ease-in-out both;
-}
-.dot:nth-child(1) { animation-delay: -0.32s; }
-.dot:nth-child(2) { animation-delay: -0.16s; }
+body.dark-mode .preloader { background-color: var(--bg-dark); }
+.preloader-logo img { max-width: 100px; margin-bottom: var(--spacing-md); animation: pulseLogo 1.5s infinite ease-in-out; }
+@keyframes pulseLogo { 0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px var(--primary-color)); } 50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 10px var(--primary-color)); } }
+body.dark-mode .preloader-logo img { animation: pulseLogoDark 1.5s infinite ease-in-out; }
+@keyframes pulseLogoDark { 0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px var(--secondary-color)); } 50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 10px var(--secondary-color)); } }
+.preloader-dots { display: flex; gap: var(--spacing-sm); }
+.dot { width: 12px; height: 12px; background-color: var(--primary-color); border-radius: 50%; animation: bounceDot 1.4s infinite ease-in-out both; }
+.dot:nth-child(1) { animation-delay: -0.32s; } .dot:nth-child(2) { animation-delay: -0.16s; }
 body.dark-mode .dot { background-color: var(--secondary-color); }
-@keyframes bounceDot {
-  0%, 80%, 100% { transform: scale(0); opacity: 0.5;}
-  40% { transform: scale(1.0); opacity: 1;}
-}
+@keyframes bounceDot { 0%, 80%, 100% { transform: scale(0); opacity: 0.5;} 40% { transform: scale(1.0); opacity: 1;} }
 
 .scroll-progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 0%;
-    height: 5px;
-    background: var(--primary-color);
-    z-index: var(--z-scroll-progress);
-    transition: width 0.1s linear;
-    box-shadow: 0 0 10px var(--primary-color);
+    position: fixed; top: 0; left: 0; width: 0%; height: 5px; background: var(--primary-color);
+    z-index: var(--z-scroll-progress); transition: width 0.1s linear; box-shadow: 0 0 10px var(--primary-color);
     border-radius: 0 2px 2px 0;
 }
-body.dark-mode .scroll-progress {
-     background: var(--secondary-color);
-     box-shadow: 0 0 10px var(--secondary-color);
-}
+body.dark-mode .scroll-progress { background: var(--secondary-color); box-shadow: 0 0 10px var(--secondary-color); }
 
-/* --- Issue 2: Custom Cursor Fix --- */
+/* --- Issue 2: Custom Cursor Revised --- */
 .cursor {
-    position: fixed;
-    width: 16px; height: 16px;
-    /* top: 0; left: 0; */ /* REMOVED: Position controlled by JS via transform */
-    background-color: var(--primary-color);
-    border-radius: var(--border-radius-circle);
-    pointer-events: none; /* Crucial */
-    z-index: var(--z-cursor);
-    opacity: 0; /* Start hidden */
-    /* transform: translate(-50%, -50%); */ /* REMOVED: JS handles centering via quickTo */
-    transform: scale(1); /* Use transform only for scaling effects */
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    mix-blend-mode: difference;
+    position: fixed; top: 0; left: 0; /* Let JS control position via transform */
+    width: 16px; height: 16px; background-color: var(--primary-color);
+    border-radius: var(--border-radius-circle); pointer-events: none; /* VERY IMPORTANT */
+    z-index: var(--z-cursor); opacity: 0; /* Start hidden */
+    border: 2px solid rgba(255, 255, 255, 0.5); mix-blend-mode: difference;
+    transform: translate(-50%, -50%) scale(1); /* Center using transform, JS will update translate */
     transition: width var(--transition-speed-fast) var(--transition-cubic),
                 height var(--transition-speed-fast) var(--transition-cubic),
                 transform var(--transition-speed-fast) var(--transition-cubic),
                 opacity var(--transition-speed) var(--transition-ease),
                 background-color var(--transition-speed) var(--transition-ease),
                 border-color var(--transition-speed) var(--transition-ease);
-    will-change: transform; /* Performance hint for JS-driven transforms */
+    will-change: transform; /* Performance hint */
 }
-body.cursor-ready .cursor {
-    opacity: 1;
-}
-.cursor.hover {
-    transform: scale(2.5); /* Scale effect */
-    background-color: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.7);
-}
-.cursor.click {
-    transform: scale(0.8); /* Scale effect */
-    transition-duration: 0.1s;
-}
-@media (pointer: coarse) or (hover: none) {
-    .cursor { display: none !important; }
-}
+body.cursor-ready .cursor { opacity: 1; }
+.cursor.hover { transform: translate(-50%, -50%) scale(2.5); background-color: rgba(255, 255, 255, 0.3); border-color: rgba(255, 255, 255, 0.7); }
+.cursor.click { transform: translate(-50%, -50%) scale(0.8); transition-duration: 0.1s; }
+@media (pointer: coarse) or (hover: none) { .cursor { display: none !important; } }
 /* --- End Issue 2 Fix --- */
 
 
@@ -667,95 +474,54 @@ body.cursor-ready .cursor {
    4. Particles Background
    ========================================================================== */
 .particles-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: var(--z-back);
-    opacity: 0.3;
-    transition: opacity var(--transition-speed) var(--transition-ease);
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: var(--z-back);
+    opacity: 0.3; transition: opacity var(--transition-speed) var(--transition-ease);
 }
-body.dark-mode .particles-container {
-    opacity: 0.35;
-}
+body.dark-mode .particles-container { opacity: 0.35; }
 
 /* ==========================================================================
-   5. Header & Navigation (Checked for Issue 3)
+   5. Header & Navigation (Issue 3: Z-index check)
    ========================================================================== */
 #main-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: var(--z-header); /* Ensure header is above scrolling text */
-    padding: 0;
-    border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
+    position: fixed; top: 0; left: 0; width: 100%; z-index: var(--z-header); /* Ensure header is above scrolling text */
+    padding: 0; border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
     transition: transform var(--transition-speed) var(--transition-cubic),
                 background var(--transition-speed) var(--transition-ease),
                 box-shadow var(--transition-speed) var(--transition-ease),
                 border-color var(--transition-speed) var(--transition-ease),
                 backdrop-filter var(--transition-speed) var(--transition-ease);
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    background: var(--glass-bg-light);
-    backdrop-filter: blur(var(--glass-blur));
+    border-top: none; border-left: none; border-right: none;
+    background: var(--glass-bg-light); backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
-    border-bottom: var(--border-width) solid var(--glass-border-light);
-    box-shadow: var(--shadow-sm);
+    border-bottom: var(--border-width) solid var(--glass-border-light); box-shadow: var(--shadow-sm);
 }
 
 .header-top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--spacing-xs) var(--spacing-md);
-    background: rgba(0, 0, 0, 0.03);
-    font-size: 0.85em;
-    color: var(--text-muted-light);
+    display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-xs) var(--spacing-md);
+    background: rgba(0, 0, 0, 0.03); font-size: 0.85em; color: var(--text-muted-light);
     border-bottom: var(--border-width) solid rgba(0, 0, 0, 0.02);
     transition: height var(--transition-speed) var(--transition-cubic),
                 padding var(--transition-speed) var(--transition-cubic),
                 opacity var(--transition-speed) var(--transition-ease) 0.1s,
                 visibility var(--transition-speed) var(--transition-ease) 0.1s,
                 border-bottom var(--transition-speed) var(--transition-ease);
-    height: 35px;
-    overflow: hidden;
+    height: 35px; overflow: hidden;
 }
-body.dark-mode .header-top-bar {
-    background: rgba(255, 255, 255, 0.02);
-    border-bottom-color: rgba(255, 255, 255, 0.04);
-}
-#current-time {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    flex-shrink: 0;
-}
-#current-time i { color: var(--primary-color); }
-body.dark-mode #current-time i { color: var(--secondary-color); }
-.tech-trivia-container {
-    flex-grow: 1;
-    text-align: center;
-    margin: 0 var(--spacing-sm);
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
+body.dark-mode .header-top-bar { background: rgba(255, 255, 255, 0.02); border-bottom-color: rgba(255, 255, 255, 0.04); }
+#current-time { display: flex; align-items: center; gap: var(--spacing-xs); flex-shrink: 0; }
+#current-time i { color: var(--primary-color); } body.dark-mode #current-time i { color: var(--secondary-color); }
+.tech-trivia-container { flex-grow: 1; text-align: center; margin: 0 var(--spacing-sm); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .tech-trivia { display: inline-block; max-width: 100%; font-size: 0.95em; }
 #trivia-icon { margin-right: var(--spacing-xs); opacity: 0.8; }
 
 #darkModeToggle {
     padding: 6px 14px; font-size: 0.9em; border-radius: var(--border-radius-pill);
-    background-image: var(--dark-mode-btn-bg-light); color: var(--text-dark); gap: 8px;
-    min-width: 120px; justify-content: center; border: none;
+    background-image: var(--dark-mode-btn-bg-light); color: var(--text-dark); gap: 8px; min-width: 120px;
+    justify-content: center; border: none;
     transition: background-image var(--transition-speed) var(--transition-ease),
-                color var(--transition-speed) var(--transition-ease),
-                transform var(--transition-speed-fast) var(--transition-ease),
+                color var(--transition-speed) var(--transition-ease), transform var(--transition-speed-fast) var(--transition-ease),
                 box-shadow var(--transition-speed) var(--transition-cubic);
-    box-shadow: var(--shadow-sm); flex-shrink: 0; cursor: pointer; display: inline-flex;
-    align-items: center; overflow: hidden;
+    box-shadow: var(--shadow-sm); flex-shrink: 0; cursor: pointer; display: inline-flex; align-items: center; overflow: hidden;
 }
 #darkModeToggle .icon-container { display: inline-flex; transition: transform var(--transition-speed) var(--transition-ease); }
 #darkModeToggle i { transition: color var(--transition-speed) var(--transition-ease); color: #ff8f00; }
@@ -767,21 +533,13 @@ body.dark-mode #darkModeToggle:hover, body.dark-mode #darkModeToggle:focus-visib
 #darkModeToggle:hover .icon-container, #darkModeToggle:focus-visible .icon-container { transform: rotate(15deg); }
 #darkModeToggle:active { transform: scale(1); box-shadow: var(--shadow-sm); }
 
-.header-main {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--spacing-sm) var(--spacing-md);
-    gap: var(--spacing-sm);
-    transition: padding var(--transition-speed) var(--transition-cubic);
-}
+.header-main { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-sm) var(--spacing-md); gap: var(--spacing-sm); transition: padding var(--transition-speed) var(--transition-cubic); }
 .logo-container { display: flex; flex-shrink: 0; perspective: 1200px; }
 .logo-container a { display: block; line-height: 0; }
 
 .flipping-logo {
-    width: 60px; height: 60px; max-width: 100%; object-fit: contain;
-    border-radius: var(--border-radius-circle); box-shadow: 0 0 15px rgba(0, 160, 0, 0.4);
-    transform-style: preserve-3d; animation: coinFlip 6s infinite ease-in-out;
+    width: 60px; height: 60px; max-width: 100%; object-fit: contain; border-radius: var(--border-radius-circle);
+    box-shadow: 0 0 15px rgba(0, 160, 0, 0.4); transform-style: preserve-3d; animation: coinFlip 6s infinite ease-in-out;
     background-color: rgba(255,255,255,0.3); border: 1px solid var(--glass-border-light);
     transition: width var(--transition-speed) var(--transition-cubic), height var(--transition-speed) var(--transition-cubic);
 }
@@ -794,55 +552,35 @@ body.dark-mode .flipping-logo { background-color: rgba(50,50,50,0.3); border-col
 body.dark-mode #typing-effect { color: var(--text-light); }
 
 /* Hamburger Menu and Mobile Nav */
-/* Hamburger Toggle Button */
 .hamburger {
     display: none; padding: 10px; cursor: pointer; transition: opacity 0.15s linear; border: none;
-    background-color: transparent; z-index: var(--z-hamburger); order: 3;
-    color: var(--text-dark); position: relative;
+    background-color: transparent; z-index: var(--z-hamburger); order: 3; color: var(--text-dark); position: relative;
 }
 body.dark-mode .hamburger { color: var(--text-light); }
 .hamburger-box { width: 30px; height: 24px; display: inline-block; position: relative; }
-.hamburger-inner, .hamburger-inner::before, .hamburger-inner::after {
-    width: 30px; height: 3px; background-color: currentColor; border-radius: 3px; position: absolute;
-    transition: transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19), top 0.1s 0.2s ease-in, bottom 0.1s 0.2s ease-in, opacity 0.1s ease-in;
-}
+.hamburger-inner, .hamburger-inner::before, .hamburger-inner::after { width: 30px; height: 3px; background-color: currentColor; border-radius: 3px; position: absolute; transition: transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19), top 0.1s 0.2s ease-in, bottom 0.1s 0.2s ease-in, opacity 0.1s ease-in; }
 .hamburger-inner { display: block; top: 50%; margin-top: -1.5px; }
 .hamburger-inner::before { content: ""; display: block; top: -10px; }
 .hamburger-inner::after { content: ""; display: block; bottom: -10px; }
-/* Active Hamburger State (X shape) */
 .hamburger.is-active .hamburger-inner { transform: rotate(225deg); transition-delay: 0.12s; transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); }
 .hamburger.is-active .hamburger-inner::before { top: 0; opacity: 0; transition: top 0.1s ease-out, opacity 0.1s 0.12s ease-out; }
 .hamburger.is-active .hamburger-inner::after { bottom: 0; transform: rotate(-90deg); transition: bottom 0.1s ease-out, transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1); }
 
 /* Desktop Navigation */
-.main-nav.desktop-nav {
-    display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md); border-top: var(--border-width) solid var(--border-light);
-    transition: height var(--transition-speed) var(--transition-cubic),
-                padding var(--transition-speed) var(--transition-cubic),
-                opacity var(--transition-speed) var(--transition-ease),
-                visibility var(--transition-speed) var(--transition-ease),
-                transform var(--transition-speed) var(--transition-cubic),
-                border-top var(--transition-speed) var(--transition-ease);
-    height: auto; overflow: hidden;
-}
-/* Hide desktop nav on mobile */
+.main-nav.desktop-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-md); border-top: var(--border-width) solid var(--border-light); transition: height var(--transition-speed) var(--transition-cubic), padding var(--transition-speed) var(--transition-cubic), opacity var(--transition-speed) var(--transition-ease), visibility var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-cubic), border-top var(--transition-speed) var(--transition-ease); height: auto; overflow: hidden; }
 @media (max-width: 768px) { .main-nav.desktop-nav { display: none; } }
 
-/* Mobile Off-Canvas Navigation Container */
+/* Mobile Off-Canvas Navigation */
 .main-nav.mobile-nav {
-    display: flex; flex-direction: column; align-items: stretch;
-    position: fixed; top: 0; left: 0; width: 85%; max-width: 300px;
-    height: 100vh; height: 100dvh; background: var(--bg-surface-light);
+    display: flex; flex-direction: column; align-items: stretch; position: fixed; top: 0; left: 0; width: 85%;
+    max-width: 300px; height: 100vh; height: 100dvh; background: var(--bg-surface-light);
     padding: var(--spacing-xl) var(--spacing-md) var(--spacing-md); padding-top: 60px;
     border-right: var(--border-width) solid var(--border-light); box-shadow: var(--shadow-lg);
-    transform: translateX(-105%); transition: transform 0.4s var(--transition-cubic);
-    overflow-y: auto; z-index: var(--z-mobile-nav); visibility: hidden; opacity: 0;
+    transform: translateX(-105%); transition: transform 0.4s var(--transition-cubic); overflow-y: auto;
+    z-index: var(--z-mobile-nav); visibility: hidden; opacity: 0;
     transition: transform 0.4s var(--transition-cubic), visibility 0.4s, opacity 0.4s ease;
 }
 body.dark-mode .main-nav.mobile-nav { background: var(--bg-surface-dark); border-right-color: var(--border-dark); box-shadow: var(--shadow-dark-lg); }
-
-/* Mobile Navigation Active State */
 body.nav-active .main-nav.mobile-nav { transform: translateX(0); visibility: visible; opacity: 1; }
 
 /* Mobile Nav Overlay */
@@ -875,18 +613,11 @@ body.dark-mode .nav-link { color: var(--text-light); }
 body.dark-mode .nav-link i { color: var(--secondary-color); }
 
 /* Desktop Nav Link Hover/Focus */
-.desktop-nav .nav-link:hover,
-.desktop-nav .nav-link:focus { color: var(--primary-color); background-color: rgba(0, 160, 0, 0.05); text-decoration: none; outline: none; }
-body.dark-mode .desktop-nav .nav-link:hover,
-body.dark-mode .desktop-nav .nav-link:focus { color: var(--secondary-color); background-color: rgba(76, 175, 80, 0.1); }
-/* Desktop Nav Underline Effect */
-.desktop-nav .nav-link::after {
-    content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 0; height: 2px;
-    background: var(--primary-color); transition: width var(--transition-speed) var(--transition-ease-out);
-}
+.desktop-nav .nav-link:hover, .desktop-nav .nav-link:focus { color: var(--primary-color); background-color: rgba(0, 160, 0, 0.05); text-decoration: none; outline: none; }
+body.dark-mode .desktop-nav .nav-link:hover, body.dark-mode .desktop-nav .nav-link:focus { color: var(--secondary-color); background-color: rgba(76, 175, 80, 0.1); }
+.desktop-nav .nav-link::after { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 0; height: 2px; background: var(--primary-color); transition: width var(--transition-speed) var(--transition-ease-out); }
 body.dark-mode .desktop-nav .nav-link::after { background: var(--secondary-color); }
-.desktop-nav .nav-link:hover::after,
-.desktop-nav .nav-link:focus::after { width: 60%; }
+.desktop-nav .nav-link:hover::after, .desktop-nav .nav-link:focus::after { width: 60%; }
 
 /* Active Nav Link Style (Scrollspy) */
 .nav-link.active { color: var(--text-light); background-color: var(--primary-color); box-shadow: var(--shadow-inset); }
@@ -896,19 +627,12 @@ body.dark-mode .nav-link.active { background-color: var(--secondary-color); colo
 body.dark-mode .nav-link.active i { color: var(--text-dark); }
 
 /* Mobile Nav Link Specific Styles */
-.mobile-nav .nav-link {
-    width: 100%; padding: 14px 20px; font-size: 1.1em; justify-content: flex-start;
-    border-radius: var(--border-radius-sm); background: transparent; border-bottom: 1px solid var(--border-light); color: var(--text-dark);
-}
+.mobile-nav .nav-link { width: 100%; padding: 14px 20px; font-size: 1.1em; justify-content: flex-start; border-radius: var(--border-radius-sm); background: transparent; border-bottom: 1px solid var(--border-light); color: var(--text-dark); }
 .mobile-nav .nav-link:last-of-type { border-bottom: none; }
 body.dark-mode .mobile-nav .nav-link { background: transparent; border-bottom-color: var(--border-dark); color: var(--text-light); }
-.mobile-nav .nav-link:hover,
-.mobile-nav .nav-link:focus,
-.mobile-nav .nav-link.active { background-color: rgba(0, 160, 0, 0.08); color: var(--primary-color); box-shadow: none; }
+.mobile-nav .nav-link:hover, .mobile-nav .nav-link:focus, .mobile-nav .nav-link.active { background-color: rgba(0, 160, 0, 0.08); color: var(--primary-color); box-shadow: none; }
 .mobile-nav .nav-link.active i { color: var(--primary-color); }
-body.dark-mode .mobile-nav .nav-link:hover,
-body.dark-mode .mobile-nav .nav-link:focus,
-body.dark-mode .mobile-nav .nav-link.active { background-color: rgba(76, 175, 80, 0.15); color: var(--secondary-color); }
+body.dark-mode .mobile-nav .nav-link:hover, body.dark-mode .mobile-nav .nav-link:focus, body.dark-mode .mobile-nav .nav-link.active { background-color: rgba(76, 175, 80, 0.15); color: var(--secondary-color); }
 body.dark-mode .mobile-nav .nav-link.active i { color: var(--secondary-color); }
 
 /* Header Shrink Styles */
@@ -917,21 +641,18 @@ body.dark-mode #main-header.header-shrunk { box-shadow: var(--shadow-dark-md); }
 #main-header.header-shrunk .header-top-bar { height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; visibility: hidden; border-bottom: none; }
 #main-header.header-shrunk .header-main { padding-top: var(--spacing-xs); padding-bottom: var(--spacing-xs); }
 #main-header.header-shrunk .flipping-logo { width: 45px; height: 45px; }
-/* Header shrink already adjusts title size via #header-brand-title rule */
 #main-header.header-shrunk #typing-effect { font-size: clamp(0.8em, 2vw, 1em); min-height: 1.2em; height: 1.2em; line-height: 1.2em; }
-@media (min-width: 769px) {
-    #main-header.header-shrunk .main-nav.desktop-nav { height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; visibility: hidden; border-top: none; }
-}
+@media (min-width: 769px) { #main-header.header-shrunk .main-nav.desktop-nav { height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; visibility: hidden; border-top: none; } }
 
 
 /* ==========================================================================
-   6. Scrolling Text Bar (Checked for Issue 3)
+   6. Scrolling Text Bar (Issue 3: Z-index check)
    ========================================================================== */
 .scrolling-text-container {
     background: var(--primary-color); color: var(--text-light); padding: var(--spacing-sm) 0;
-    white-space: nowrap; overflow: hidden; width: 100%;
-    z-index: var(--z-sticky); /* Below header */
-    box-shadow: var(--shadow-sm); position: relative; /* Relative to allow body padding to push it down */
+    white-space: nowrap; overflow: hidden; width: 100%; position: relative; /* Allows body padding to push down */
+    z-index: var(--z-sticky); /* Below header, above main content */
+    box-shadow: var(--shadow-sm);
 }
 body.dark-mode .scrolling-text-container { background: var(--secondary-color); color: var(--text-dark); }
 .scrolling-text-content { display: inline-block; padding-left: 100%; animation: scroll-text 30s linear infinite; font-size: 0.95em; font-weight: 500; margin: 0; will-change: transform; }
@@ -943,19 +664,19 @@ body.dark-mode .scrolling-text-container { background: var(--secondary-color); c
 /* ==========================================================================
    7. Main Content & Sections
    ========================================================================== */
-main { /* Padding top handled by JS based on header height */ }
+main { /* padding-top handled by JS based on header height */ }
 
 section {
     margin: var(--spacing-lg) auto; padding: var(--spacing-lg) var(--spacing-md);
-    width: 90%; max-width: 1100px; position: relative; overflow: visible;
+    width: 90%; max-width: 1100px; position: relative; overflow: hidden; /* Changed overflow to hidden */
     border-radius: var(--border-radius-lg);
 }
 .section-animation { opacity: 0; /* GSAP handles reveal */ }
 
-.welcome {
-    padding-top: var(--spacing-md); padding-bottom: var(--spacing-lg);
-    position: relative; overflow: hidden;
-}
+/* Issue 3: Ensure first section doesn't have extra top margin/padding */
+#home { margin-top: 0; padding-top: var(--spacing-xl); /* Keep hero padding */ }
+
+.welcome { padding-top: var(--spacing-md); padding-bottom: var(--spacing-lg); position: relative; overflow: hidden; }
 .welcome::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(160deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%); opacity: 0.5; pointer-events: none; z-index: 0; }
 body.dark-mode .welcome::before { background: linear-gradient(160deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 60%); opacity: 0.7; }
 .welcome > * { position: relative; z-index: 1; }
@@ -967,59 +688,62 @@ body.dark-mode .welcome::before { background: linear-gradient(160deg, rgba(255,2
     background-attachment: scroll; background-position: center center; background-repeat: no-repeat;
     background-size: cover; position: relative; color: var(--text-light); /* Base color */
 }
-@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
-    .parallax { background-attachment: fixed; }
-}
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) { .parallax { background-attachment: fixed; } }
 .parallax::before { content: ''; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 0; pointer-events: none; border-radius: inherit; transition: background var(--transition-speed) var(--transition-ease); }
 .parallax > * { position: relative; z-index: 1; }
 
-/* Issue 5: Ensure .services which uses .glass-morphism AND .parallax has correct background/overlay */
-.services.parallax {
-    background-image: url('https://img.freepik.com/free-photo/motherboard-circuit-technology-background-gradient-green_53876-124656.jpg');
-    background-color: transparent; /* Override glassmorphism background */
-}
-.services.parallax::before {
-    background: rgba(0, 0, 0, 0.65); /* Darker overlay for better text contrast */
-    border-radius: inherit;
-    z-index: -1; /* Ensure overlay is behind content but above background image */
-}
-body.dark-mode .services.parallax::before {
-     background: rgba(0, 0, 0, 0.75);
-}
+/* Issue 5: Services styling refinement */
+.services.parallax { background-image: url('https://img.freepik.com/free-photo/motherboard-circuit-technology-background-gradient-green_53876-124656.jpg'); background-color: transparent; /* Override glassmorphism background */ }
+.services.parallax::before { background: rgba(0, 0, 0, 0.65); border-radius: inherit; z-index: -1; }
+body.dark-mode .services.parallax::before { background: rgba(0, 0, 0, 0.75); }
 
 .events.parallax { background-image: url('https://m.media-amazon.com/images/I/81QWPvOKCFL.jpg'); }
+
+/* Issue 7: Testimonials background */
 .testimonials.parallax {
     background-color: var(--bg-light);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23a0a0a0' fill-opacity='0.06'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: repeat; /* Ensure pattern repeats */
+    background-size: auto; /* Default size */
+    /* Remove the 'x' if it was from here */
 }
 body.dark-mode .testimonials.parallax {
     background-color: var(--bg-dark);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23cccccc' fill-opacity='0.04'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
-.testimonials.parallax::before { background: rgba(255, 255, 255, 0.4); }
-body.dark-mode .testimonials.parallax::before { background: rgba(0, 0, 0, 0.7); }
+/* Overlay for text readability */
+.testimonials.parallax::before { background: rgba(255, 255, 255, 0.6); }
+body.dark-mode .testimonials.parallax::before { background: rgba(0, 0, 0, 0.75); }
+
 
 /* ==========================================================================
    8. Components
    ========================================================================== */
 
 /* Hero Section */
-.hero { padding: var(--spacing-xl) var(--spacing-md); text-align: center; min-height: 65vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border-radius: 0; background: var(--hero-gradient); color: var(--text-light); }
+.hero {
+    padding: var(--spacing-xl) var(--spacing-md); text-align: center; min-height: 65vh; display: flex;
+    align-items: center; justify-content: center; position: relative; overflow: hidden; border-radius: 0;
+    background: var(--hero-gradient); color: var(--text-light); margin: 0 auto; /* Remove default section margin */
+    width: 100%; max-width: none; /* Allow full width */
+}
 .hero-video { position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; object-fit: cover; transform: translate(-50%, -50%); z-index: -2; opacity: 0.1; filter: grayscale(60%) brightness(0.8); }
-.hero-overlay-animated { position: absolute; inset: 0; background: linear-gradient(110deg, rgba(0, 160, 0, 0.1) 0%, rgba(76, 175, 80, 0.05) 50%, rgba(0, 160, 0, 0.1) 100%); background-size: 200% 200%; animation: gradientShift 15s ease infinite; z-index: -1; opacity: 0.7; }
+.hero-overlay-animated { position: absolute; inset: 0; background: linear-gradient(110deg, rgba(0, 160, 0, 0.1) 0%, rgba(76, 175, 80, 0.05) 50%, rgba(0, 160, 0, 0.1) 100%); background-size: 200% 200%; animation: gradientShift 15s ease infinite; z-index: -1; opacity: 0.7; pointer-events: none; }
 body.dark-mode .hero-overlay-animated { opacity: 0.5; }
 @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-.hero-content { max-width: 850px; padding: var(--spacing-lg); position: relative; z-index: 1; }
-
-/* Issue 4: Make "Welcome to sysfx!" bigger */
+.hero-content {
+    max-width: 850px; padding: var(--spacing-lg); position: relative;
+    z-index: var(--z-hero-content); /* Issue 4: Ensure content is above overlays */
+}
+/* Issue 4: Ensure title is not blurred by transform or filter */
 .hero-title {
-    margin-bottom: var(--spacing-md);
-    font-size: clamp(2.5em, 7vw, 4em); /* Increased font size */
-    line-height: 1.2;
+    margin-bottom: var(--spacing-md); font-size: clamp(2.5em, 7vw, 4em); line-height: 1.2;
+    transform: none; filter: none; /* Explicitly reset potentially problematic properties */
+    /* Gradient and glow handled by utility classes */
 }
 .hero-text { font-size: 1.2em; margin-bottom: var(--spacing-lg); text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6); max-width: 700px; margin-left: auto; margin-right: auto; }
 
-/* --- Buttons (Issue 6: Green Pulse Effect) --- */
+/* --- Buttons --- */
 .button-container { display: flex; gap: var(--spacing-md); justify-content: center; margin-top: var(--spacing-lg); flex-wrap: wrap; }
 .modern-button {
     background: var(--button-gradient-green); border: none; color: var(--text-light); padding: 14px 32px;
@@ -1035,77 +759,42 @@ body.dark-mode .hero-overlay-animated { opacity: 0.5; }
 .modern-button:hover::before { left: 120%; }
 /* Hover/Focus State */
 .modern-button:hover, .modern-button:focus-visible { transform: translateY(-4px); background: var(--button-gradient-green-hover); box-shadow: var(--shadow-green-hover); color: var(--text-light); outline: none; }
-.modern-button:focus-visible { /* Optional: Add distinct outline for focus */ }
 .modern-button:active { transform: translateY(-1px); box-shadow: var(--shadow-green); transition-duration: var(--transition-speed-fast); }
 .modern-button.primary { font-weight: 700; }
 .modern-button.secondary { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3); }
 .modern-button.secondary:hover, .modern-button.secondary:focus-visible { background: var(--primary-color); box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5); }
 .modern-button.small { padding: 10px 24px; font-size: 0.9em; gap: var(--spacing-xs); }
-/* Button icon/text */
 .button-text, .modern-button i { position: relative; z-index: 2; }
 .modern-button i { transition: transform var(--transition-speed) var(--transition-cubic); }
 .modern-button:hover i { transform: scale(1.15) rotate(5deg); }
-
 /* Button Color Variations */
 .modern-button.button-blue { background: var(--button-gradient-blue); box-shadow: var(--shadow-blue); color: var(--text-light); }
 .modern-button.button-blue:hover, .modern-button.button-blue:focus-visible { background: var(--button-gradient-blue-hover); box-shadow: var(--shadow-blue-hover); }
 .modern-button.button-blue.secondary { background: var(--blue-color); box-shadow: var(--shadow-blue); }
 .modern-button.button-blue.secondary:hover, .modern-button.button-blue.secondary:focus-visible { background: var(--blue-hover-color); box-shadow: var(--shadow-blue-hover); }
-
-.modern-button.button-yellow { background: var(--button-gradient-yellow); box-shadow: var(--shadow-yellow); color: var(--text-dark); /* Yellow needs dark text */ }
+.modern-button.button-yellow { background: var(--button-gradient-yellow); box-shadow: var(--shadow-yellow); color: var(--text-dark); }
 .modern-button.button-yellow:hover, .modern-button.button-yellow:focus-visible { background: var(--button-gradient-yellow-hover); box-shadow: var(--shadow-yellow-hover); color: var(--text-dark); }
 .modern-button.button-yellow.secondary { background: var(--yellow-color); box-shadow: var(--shadow-yellow); color: var(--text-dark); }
 .modern-button.button-yellow.secondary:hover, .modern-button.button-yellow.secondary:focus-visible { background: var(--yellow-hover-color); box-shadow: var(--shadow-yellow-hover); color: var(--text-dark); }
-
-/* Issue 6: Green Button Pulse Effect */
-@keyframes pulseGreen {
-  0% { box-shadow: 0 0 0 0 rgba(0, 160, 0, 0.7), var(--shadow-green); } /* Start with inner shadow */
-  70% { box-shadow: 0 0 0 18px rgba(0, 160, 0, 0), var(--shadow-green); } /* Expand outer pulse */
-  100% { box-shadow: 0 0 0 0 rgba(0, 160, 0, 0), var(--shadow-green); } /* Fade outer pulse */
-}
-.modern-button.pulse-effect-green {
-    animation: pulseGreen 2.5s infinite cubic-bezier(0.66, 0, 0, 1);
-}
-/* Keep hover effect intensity and stop animation */
-.modern-button.pulse-effect-green:hover,
-.modern-button.pulse-effect-green:focus-visible {
-    animation: none; /* Stop pulse on hover/focus */
-    box-shadow: var(--shadow-green-hover);
-}
+/* Green Button Pulse Effect */
+@keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(0, 160, 0, 0.7), var(--shadow-green); } 70% { box-shadow: 0 0 0 18px rgba(0, 160, 0, 0), var(--shadow-green); } 100% { box-shadow: 0 0 0 0 rgba(0, 160, 0, 0), var(--shadow-green); } }
+.modern-button.pulse-effect-green { animation: pulseGreen 2.5s infinite cubic-bezier(0.66, 0, 0, 1); }
+.modern-button.pulse-effect-green:hover, .modern-button.pulse-effect-green:focus-visible { animation: none; box-shadow: var(--shadow-green-hover); }
 /* --- End Buttons --- */
 
 
 /* Services Section */
 .service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-lg); padding: var(--spacing-lg) 0; }
-.service { padding: var(--spacing-lg); text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; }
-
-/* Issue 6: Pulsing Service Icons */
-@keyframes pulseServiceIcon {
-  0%, 100% { filter: drop-shadow(0 0 4px var(--primary-color)); transform: scale(1); }
-  50% { filter: drop-shadow(0 0 8px var(--primary-color)); transform: scale(1.05); }
-}
-@keyframes pulseServiceIconDark {
-  0%, 100% { filter: drop-shadow(0 0 4px var(--secondary-color)); transform: scale(1); }
-  50% { filter: drop-shadow(0 0 8px var(--secondary-color)); transform: scale(1.05); }
-}
+.service { padding: var(--spacing-lg); text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; background: var(--glass-bg-light); border: 1px solid var(--glass-border-light); border-radius: var(--border-radius-md); box-shadow: var(--shadow-sm); /* Added basic card style */ }
+body.dark-mode .service { background: var(--glass-bg-dark); border-color: var(--glass-border-dark); }
+/* Pulsing Service Icons */
+@keyframes pulseServiceIcon { 0%, 100% { filter: drop-shadow(0 0 4px var(--primary-color)); transform: scale(1); } 50% { filter: drop-shadow(0 0 8px var(--primary-color)); transform: scale(1.05); } }
+@keyframes pulseServiceIconDark { 0%, 100% { filter: drop-shadow(0 0 4px var(--secondary-color)); transform: scale(1); } 50% { filter: drop-shadow(0 0 8px var(--secondary-color)); transform: scale(1.05); } }
 .service-icon { display: inline-block; margin-bottom: var(--spacing-md); transition: transform var(--transition-speed) var(--transition-cubic); }
-.service-icon i {
-    font-size: 3.2em; color: var(--primary-color);
-    animation: pulseServiceIcon 3s infinite ease-in-out;
-}
-body.dark-mode .service-icon i {
-    color: var(--secondary-color);
-    animation-name: pulseServiceIconDark;
-}
-.service:hover .service-icon i {
-    animation-play-state: paused; /* Optional: Pause pulse on hover */
-    transform: scale(1.1) rotate(-5deg);
-    filter: drop-shadow(0 0 10px var(--primary-color));
-}
-body.dark-mode .service:hover .service-icon i {
-    filter: drop-shadow(0 0 10px var(--secondary-color));
-}
-
+.service-icon i { font-size: 3.2em; color: var(--primary-color); animation: pulseServiceIcon 3s infinite ease-in-out; }
+body.dark-mode .service-icon i { color: var(--secondary-color); animation-name: pulseServiceIconDark; }
+.service:hover .service-icon i { animation-play-state: paused; transform: scale(1.1) rotate(-5deg); filter: drop-shadow(0 0 10px var(--primary-color)); }
+body.dark-mode .service:hover .service-icon i { filter: drop-shadow(0 0 10px var(--secondary-color)); }
 .service h3 { margin-bottom: var(--spacing-sm); font-size: 1.4em; /* Color set by theme rules */ }
 .service > p:first-of-type { flex-grow: 1; }
 .extra-info { font-size: 0.9em; color: var(--text-muted-light); /* Uses theme rules */ margin-top: var(--spacing-sm); margin-bottom: var(--spacing-md); min-height: 3.4em; }
@@ -1126,19 +815,18 @@ body.dark-mode .os-logo.apple-dark-invert { filter: invert(1) drop-shadow(2px 2p
 body.dark-mode .os-logo:hover { filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.5)); }
 body.dark-mode .os-logo.apple-dark-invert:hover { filter: invert(1) drop-shadow(3px 3px 5px rgba(0,0,0,0.5)); }
 
-/* Modals */
+/* Modals (Issue 6: Primarily JS fix, CSS ensures smooth transitions) */
 .modal {
-    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
-    z-index: var(--z-modal-backdrop); display: flex; align-items: center;
-    justify-content: center; padding: var(--spacing-md); opacity: 0;
+    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px); z-index: var(--z-modal-backdrop); display: flex;
+    align-items: center; justify-content: center; padding: var(--spacing-md); opacity: 0;
     transition: opacity var(--transition-speed) var(--transition-ease), backdrop-filter var(--transition-speed) var(--transition-ease);
-    overflow-y: auto; display: none;
+    overflow-y: auto; display: none; /* Start hidden */
 }
 .modal.active { display: flex; opacity: 1; }
 .modal-content {
-    padding: var(--spacing-lg); max-width: 650px; width: 100%; text-align: left;
-    position: relative; transform: scale(0.95) translateY(10px); opacity: 0;
+    padding: var(--spacing-lg); max-width: 650px; width: 100%; text-align: left; position: relative;
+    transform: scale(0.95) translateY(10px); opacity: 0;
     transition: transform var(--transition-speed) var(--transition-cubic), opacity var(--transition-speed) var(--transition-ease-out);
     z-index: var(--z-modal-content); margin: auto; border-radius: var(--border-radius-md);
     max-height: 90vh; overflow-y: auto;
@@ -1163,20 +851,8 @@ body.dark-mode .modal-close-alt:hover, body.dark-mode .modal-close-alt:focus-vis
 /* Stats Section */
 .stats { background: var(--cta-gradient); color: var(--text-light); }
 .stats p { color: rgba(255, 255, 255, 0.9); }
-.stats-container {
-    display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-lg);
-    padding: var(--spacing-lg) 0; max-width: 1000px; margin: var(--spacing-lg) auto 0;
-}
-.stat-item {
-    padding: var(--spacing-md) var(--spacing-sm);
-    transition: transform var(--transition-speed) var(--transition-cubic),
-                box-shadow var(--transition-speed) var(--transition-cubic),
-                background-color var(--transition-speed) var(--transition-ease);
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: var(--border-radius-md);
-    border: var(--border-width) solid rgba(255, 255, 255, 0.15);
-    text-align: center; flex: 0 1 180px; min-width: 150px;
-}
+.stats-container { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-lg); padding: var(--spacing-lg) 0; max-width: 1000px; margin: var(--spacing-lg) auto 0; }
+.stat-item { padding: var(--spacing-md) var(--spacing-sm); transition: transform var(--transition-speed) var(--transition-cubic), box-shadow var(--transition-speed) var(--transition-cubic), background-color var(--transition-speed) var(--transition-ease); background: rgba(255, 255, 255, 0.1); border-radius: var(--border-radius-md); border: var(--border-width) solid rgba(255, 255, 255, 0.15); text-align: center; flex: 0 1 180px; min-width: 150px; }
 .stat-item:hover { background-color: rgba(255, 255, 255, 0.2); /* Inherits card-hover transform/shadow */ }
 .stat-number { font-size: clamp(2em, 5vw, 2.8em); font-weight: 700; display: block; margin-bottom: var(--spacing-xs); color: var(--accent-color); line-height: 1.1; }
 .stat-label { font-size: 0.95em; font-weight: 400; display: block; color: rgba(255, 255, 255, 0.85); }
@@ -1201,8 +877,17 @@ body.dark-mode .gallery-container::-webkit-scrollbar-thumb { background-color: v
 .lightbox-close { position: absolute; top: var(--spacing-md); right: var(--spacing-md); color: rgba(255, 255, 255, 0.8); font-size: 2.5em; line-height: 1; background: none; border: none; cursor: pointer; transition: color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); padding: var(--spacing-sm); z-index: calc(var(--z-lightbox-content) + 1); text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
 .lightbox-close:hover, .lightbox-close:focus { color: var(--text-light); transform: scale(1.2) rotate(90deg); outline: none; }
 
-/* Testimonials */
-.carousel-container { position: relative; max-width: 750px; margin: var(--spacing-lg) auto 0; overflow: hidden; min-height: 300px; }
+/* --- Issue 7: Testimonials Styling --- */
+#testimonials {
+    padding-top: var(--spacing-md); /* Slightly reduced top padding */
+    padding-bottom: var(--spacing-md); /* Slightly reduced bottom padding */
+}
+.carousel-container {
+    position: relative; max-width: 700px; /* Slightly reduced max-width */
+    margin: var(--spacing-md) auto 0; /* Reduced top margin */
+    overflow: hidden; min-height: 280px; /* Reduced min-height */
+    /* Removed any ::before/::after rules that might create an 'x' */
+}
 .testimonial-slider { display: flex; position: relative; min-height: inherit; }
 .testimonial { flex-shrink: 0; width: 100%; padding: var(--spacing-lg); box-sizing: border-box; opacity: 0; position: absolute; top: 0; left: 0; transition: opacity var(--transition-speed-slow) var(--transition-cubic), visibility 0s var(--transition-speed-slow); visibility: hidden; }
 .testimonial[aria-hidden="false"] { opacity: 1; position: relative; visibility: visible; transition: opacity var(--transition-speed-slow) var(--transition-cubic), visibility 0s 0s; }
@@ -1213,18 +898,33 @@ body.dark-mode .quote-icon { color: var(--secondary-color); }
 .testimonial-author { margin-top: var(--spacing-md); font-style: normal; font-weight: 500; color: var(--primary-color); text-align: right; font-size: 0.95em; }
 body.dark-mode .testimonial-author { color: var(--secondary-color); }
 .testimonial-author cite { font-style: normal; }
-.carousel-control { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0, 160, 0, 0.5); border: none; color: var(--text-light); padding: 0; width: 44px; height: 44px; border-radius: var(--border-radius-circle); cursor: pointer; transition: all var(--transition-speed) var(--transition-cubic); z-index: var(--z-content); box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center; }
+/* Control Buttons */
+.carousel-control {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(0, 160, 0, 0.5); border: none; color: var(--text-light); padding: 0;
+    width: 44px; height: 44px; border-radius: var(--border-radius-circle); cursor: pointer;
+    transition: all var(--transition-speed) var(--transition-cubic); z-index: var(--z-content);
+    box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center;
+}
 .carousel-control i { font-size: 1.2em; line-height: 1; }
-.carousel-prev { left: var(--spacing-sm); }
-.carousel-next { right: var(--spacing-sm); }
+.carousel-prev { left: 0; transform: translate(-15px, -50%); } /* Pushed further left */
+.carousel-next { right: 0; transform: translate(15px, -50%); } /* Pushed further right */
 .carousel-control:hover, .carousel-control:focus { background: var(--primary-color); transform: translateY(-50%) scale(1.1); box-shadow: var(--shadow-md); outline: none; }
 .carousel-control:focus-visible { outline: 3px solid var(--accent-color); outline-offset: 2px; }
 body.dark-mode .carousel-control { background: rgba(76, 175, 80, 0.5); }
 body.dark-mode .carousel-control:hover, body.dark-mode .carousel-control:focus { background: var(--secondary-color); }
+/* Add margin to container if buttons overlap content on small screens */
+@media (max-width: 500px) {
+    .carousel-container { padding-left: 40px; padding-right: 40px; }
+    .carousel-prev { left: 5px; transform: translateY(-50%); }
+    .carousel-next { right: 5px; transform: translateY(-50%); }
+}
+/* --- End Issue 7 --- */
 
 /* Case Studies & Blog Preview */
 .case-study-grid, .blog-preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg); padding: var(--spacing-lg) 0; }
-.case-study, .blog-post-preview { padding: var(--spacing-lg); display: flex; flex-direction: column; }
+.case-study, .blog-post-preview { padding: var(--spacing-lg); display: flex; flex-direction: column; background: var(--glass-bg-light); border: 1px solid var(--glass-border-light); border-radius: var(--border-radius-md); } /* Added basic card style */
+body.dark-mode .case-study, body.dark-mode .blog-post-preview { background: var(--glass-bg-dark); border-color: var(--glass-border-dark); }
 .case-study h3, .blog-post-preview h3 { margin-bottom: var(--spacing-sm); color: var(--primary-color); font-size: 1.3em; }
 body.dark-mode .case-study h3, body.dark-mode .blog-post-preview h3 { color: var(--secondary-color); }
 .case-study p, .blog-post-preview p { flex-grow: 1; margin-bottom: var(--spacing-md); }
@@ -1234,7 +934,8 @@ body.dark-mode .case-study h3, body.dark-mode .blog-post-preview h3 { color: var
 .event-timeline { display: flex; flex-direction: column; gap: var(--spacing-lg); margin-top: var(--spacing-lg); position: relative; padding-left: 60px; max-width: 850px; margin-left: auto; margin-right: auto; }
 .event-timeline::before { content: ''; position: absolute; top: 10px; left: 20px; width: 4px; height: calc(100% - 20px); background: var(--primary-color); border-radius: 2px; opacity: 0.3; }
 body.dark-mode .event-timeline::before { background: var(--secondary-color); opacity: 0.4; }
-.event-card { position: relative; padding: var(--spacing-md); display: grid; grid-template-columns: 80px 1fr; gap: var(--spacing-md); align-items: start; /* Color set by theme rules */ }
+.event-card { position: relative; padding: var(--spacing-md); display: grid; grid-template-columns: 80px 1fr; gap: var(--spacing-md); align-items: start; background: rgba(255, 255, 255, 0.05); border-radius: var(--border-radius-md); } /* Added subtle background */
+body.dark-mode .event-card { background: rgba(255, 255, 255, 0.03); }
 .event-card::after { content: ''; position: absolute; top: 18px; left: -42px; width: 18px; height: 18px; background: var(--secondary-color); border: 4px solid var(--primary-color); border-radius: var(--border-radius-circle); z-index: var(--z-base); transition: transform var(--transition-speed) var(--transition-cubic); }
 body.dark-mode .event-card::after { background: var(--primary-color); border-color: var(--secondary-color); }
 .event-card:hover::after { transform: scale(1.2); }
@@ -1254,7 +955,7 @@ body.dark-mode .timeline-item::after { background: var(--primary-color); border-
 .timeline-item:hover::after { transform: scale(1.2); }
 .timeline-year { font-weight: bold; color: var(--primary-color); display: inline-block; margin-bottom: var(--spacing-xs); font-size: 1.2em; }
 body.dark-mode .timeline-year { color: var(--secondary-color); }
-.timeline-description { color: var(--text-muted-light); /* Uses theme rule */ font-size: 1em; line-height: 1.6; }
+.timeline-description { /* Color set by theme */ font-size: 1em; line-height: 1.6; }
 
 /* Contact Section */
 .contact-grid { display: grid; grid-template-columns: 1fr; gap: var(--spacing-xl); max-width: 1000px; margin: var(--spacing-lg) auto 0; }
@@ -1334,12 +1035,10 @@ body.dark-mode .footer-links a:hover, body.dark-mode .footer-links a:focus { col
 .floating-action-button:focus-visible { outline: 3px solid var(--accent-color); outline-offset: 2px; }
 body.dark-mode .floating-action-button { background-color: var(--secondary-color); box-shadow: var(--shadow-dark-md); }
 body.dark-mode .floating-action-button:hover, body.dark-mode .floating-action-button:focus { background-color: var(--primary-color); box-shadow: var(--shadow-dark-lg); }
-/* Music Button */
 .floating-action-button.music-button { background: var(--primary-color); transition: background-color var(--transition-speed) ease-out; }
 .floating-action-button.music-button.muted { background: var(--text-muted-light); color: var(--text-dark); }
 body.dark-mode .floating-action-button.music-button { background: var(--secondary-color); }
 body.dark-mode .floating-action-button.music-button.muted { background: #555; color: var(--text-muted-dark); }
-/* Scroll Top Button */
 .scroll-top-btn { background: var(--primary-color); /* Starts hidden via inline style from JS */ }
 .scroll-top-btn:hover, .scroll-top-btn:focus { background: var(--secondary-color); }
 
@@ -1355,23 +1054,23 @@ body.dark-mode .floating-action-button.music-button.muted { background: #555; co
     .stats-container { gap: var(--spacing-md); flex-basis: 160px; }
     .service-grid, .case-study-grid, .blog-preview-grid { gap: var(--spacing-md); }
     .contact-grid { gap: var(--spacing-lg); }
-    #header-brand-title { font-size: 2em; } /* Adjusted */
+    #header-brand-title { font-size: 2em; }
     #typing-effect { font-size: 1.1em; height: 1.3em; min-height: 1.3em; line-height: 1.3em;}
     .flipping-logo { width: 55px; height: 55px; }
     .tech-trivia-container { display: none; }
-    .hero-title { font-size: clamp(2.2em, 6vw, 3.5em); } /* Adjusted Hero Title */
+    .hero-title { font-size: clamp(2.2em, 6vw, 3.5em); }
 }
 
 /* Small Devices (Tablets/Phones) */
 @media (max-width: 768px) {
     :root { --font-size-base: 14px; }
     h1 { font-size: 2em; } h2 { font-size: 1.8em; } h3 { font-size: 1.4em; }
-    #header-brand-title { font-size: 1.8em; } /* Adjusted */
+    #header-brand-title { font-size: 1.8em; }
     .hamburger { display: inline-block; } /* Show hamburger */
     .scrolling-text-container { padding: var(--spacing-sm) 0; }
     .scrolling-text-content { font-size: 0.9em; animation-duration: 25s; }
     .hero { min-height: 60vh; }
-    .hero-title { font-size: clamp(2em, 5.5vw, 3em); } /* Adjusted Hero Title */
+    .hero-title { font-size: clamp(2em, 5.5vw, 3em); }
     .service-grid, .case-study-grid, .blog-preview-grid { grid-template-columns: 1fr; }
     .stats-container { gap: var(--spacing-md); flex-basis: 140px; }
     .gallery-item { flex-basis: clamp(180px, 50vw, 240px); }
@@ -1384,13 +1083,17 @@ body.dark-mode .floating-action-button.music-button.muted { background: #555; co
     .chat-bubble { display: none !important; }
     .timeline { padding-left: 40px; }
     .timeline-item::after { left: -7px; }
+    /* Issue 7: Testimonials button spacing on smaller screens */
+    .carousel-container { padding-left: 40px; padding-right: 40px; }
+    .carousel-prev { left: 5px; transform: translateY(-50%); }
+    .carousel-next { right: 5px; transform: translateY(-50%); }
 }
 
 /* Extra Small Devices */
 @media (max-width: 480px) {
     :root { --font-size-base: 13px; --spacing-md: 1rem; --spacing-lg: 1.5rem; --spacing-xl: 2.5rem;}
     h1 { font-size: 1.8em; } h2 { font-size: 1.6em; } h3 { font-size: 1.3em; }
-    #header-brand-title { font-size: 1.6em; } /* Adjusted */
+    #header-brand-title { font-size: 1.6em; }
     #typing-effect { font-size: 0.95em; height: 1.2em; min-height: 1.2em; line-height: 1.2em; }
     .header-main { padding: var(--spacing-sm) var(--spacing-sm); }
     .header-top-bar { padding-left: var(--spacing-sm); padding-right: var(--spacing-sm); }
@@ -1398,7 +1101,7 @@ body.dark-mode .floating-action-button.music-button.muted { background: #555; co
     #darkModeToggle { font-size: 0.8em; padding: 5px 10px; min-width: auto; gap: 4px; }
     .main-nav.mobile-nav { width: 90%; max-width: 280px; }
     .hero { min-height: 55vh; }
-    .hero-title { font-size: clamp(1.8em, 5vw, 2.5em); } /* Adjusted Hero Title */
+    .hero-title { font-size: clamp(1.8em, 5vw, 2.5em); }
     .hero-text { font-size: 1em; }
     .button-container { gap: var(--spacing-sm); }
     .modern-button { padding: 12px 24px; font-size: 0.95em; }
@@ -1408,8 +1111,7 @@ body.dark-mode .floating-action-button.music-button.muted { background: #555; co
     .os-logo-track { animation-duration: 30s; }
     .os-logo { height: 40px; width: 40px; margin: 0 var(--spacing-sm); }
     .carousel-control { width: 35px; height: 35px; }
-    .carousel-prev { left: var(--spacing-xs); }
-    .carousel-next { right: var(--spacing-xs); }
+    /* Issue 7: Buttons already adjusted above for small screens */
     .floating-elements { bottom: var(--spacing-sm); right: var(--spacing-sm); gap: var(--spacing-xs); }
     .floating-action-button { width: 40px; height: 40px; font-size: 1.2em; }
     .contact-grid { gap: var(--spacing-lg); }
