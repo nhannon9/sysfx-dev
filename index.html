@@ -4,25 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Cache Control Headers (Useful during development, consider adjusting for production) -->
+    <!-- Cache Control Headers -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
     <!-- SEO Meta Tags -->
     <title>sysfx - Sys Fix Tech Solutions | Clinton, CT Computer Repair & IT Services</title>
-    <meta name="description" content="sysfx provides expert computer repair, cybersecurity, web development, networking, cloud solutions, and IT support for homes and businesses in Clinton, CT and surrounding areas."> 
+    <meta name="description" content="sysfx provides expert computer repair, cybersecurity, web development, networking, cloud solutions, and IT support for homes and businesses in Clinton, CT and surrounding areas.">
     <meta name="keywords" content="sysfx, Sys Fix, computer repair Clinton CT, IT support Clinton CT, tech support, cybersecurity, web development, networking, cloud solutions, managed IT services, Clinton Connecticut">
     <meta name="author" content="sysfx">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://www.sysfx.net">
+    <link rel="canonical" href="https://www.sysfx.net"> <!-- UPDATE with your actual domain -->
 
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="sysfx - Expert Tech Solutions in Clinton, CT">
     <meta property="og:description" content="sysfx: Your local partner for reliable computer repair, security, web design, networking, and comprehensive IT support in Clinton, CT.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.sysfx.net">
-    <meta property="og:image" content="https://www.sysfx.net/assets/logo.jpg">
+    <meta property="og:url" content="https://www.sysfx.net"> <!-- UPDATE with your actual domain -->
+    <meta property="og:image" content="https://www.sysfx.net/assets/logo.jpg"> <!-- UPDATE with your actual domain/path -->
     <meta property="og:image:alt" content="sysfx Logo and Tech Background">
     <meta property="og:locale" content="en_US">
 
@@ -35,12 +35,12 @@
     <link rel="manifest" href="assets/site.webmanifest" />
 
     <!-- Stylesheets -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"> <!-- Preload FontAwesome -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"></noscript>
-    <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" onload="this.onload=null;this.rel='stylesheet'"> <!-- Preload Leaflet CSS -->
+    <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>
     <!-- UPDATE CSS VERSION - Increment version number -->
-    <link rel="stylesheet" href="styles.css?v=1.7"> <!-- Version bump -->
+    <link rel="stylesheet" href="styles.css?v=1.8"> <!-- Version Bump -->
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,7 +48,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <!-- Defer non-critical JS -->
-    <!-- GSAP Core, ScrollTrigger (Ensure these are loaded before script.js if script depends on them immediately) -->
+    <!-- GSAP Core, ScrollTrigger (Deferring, ensure script.js waits if needed or move load) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
     <!-- Other deferred libraries -->
@@ -58,14 +58,13 @@
 
     <!-- Main Script (defer loading) -->
     <!-- UPDATE JS VERSION - Increment version number -->
-    <script src="script.js?v=1.7" defer></script> <!-- Version bump -->
+    <script src="script.js?v=1.8" defer></script> <!-- Version Bump -->
 </head>
 
 <body class="preload"> <!-- Add preload class to prevent flashes -->
     <!-- Preloader -->
     <div id="preloader" class="preloader" aria-live="polite" aria-busy="true">
         <div class="preloader-logo">
-             <!-- Assuming logo.png is correct based on your HTML -->
              <img src="assets/logo.png" alt="sysfx loading..." width="100" height="100">
         </div>
         <div class="preloader-dots" aria-hidden="true">
@@ -86,7 +85,7 @@
     <div id="particles-js" class="particles-container" aria-hidden="true"></div>
 
     <!-- Custom Cursor -->
-    <div class="cursor" aria-hidden="true"></div>
+    <div class="cursor pulse-effect" aria-hidden="true"></div> <!-- Added pulse-effect -->
 
     <!-- Header -->
     <header id="main-header" class="glass-morphism" role="banner">
@@ -97,9 +96,7 @@
                     <span id="trivia-icon" aria-hidden="true">💡</span> <span id="trivia-text">Loading tech fact...</span>
                 </div>
             </div>
-            <!-- Dark Mode Toggle: JS will manage text and icon -->
             <button id="darkModeToggle" class="mode-button modern-button" aria-label="Switch to dark mode" aria-pressed="false">
-                <!-- Icon and text span structure for easier JS targeting -->
                 <span class="icon-container"><i class="fas fa-moon" aria-hidden="true"></i></span>
                 <span class="mode-button-text">Dark Mode</span>
             </button>
@@ -107,34 +104,47 @@
         <div class="header-main">
             <div class="logo-container">
                 <a href="#home" aria-label="sysfx Home">
-                     <!-- Logo: Corrected alt text based on user description, ensured png path -->
-                     <!-- The flip animation is controlled by CSS class 'flipping-logo' -->
-                    <img src="assets/logo.jpg" alt="sysfx Logo, a symbol of tech expertise" class="flipping-logo" width="60" height="60" loading="eager"> <!-- Eager load logo -->
+                    <img src="assets/logo.jpg" alt="sysfx Logo, a symbol of tech expertise" class="flipping-logo" width="60" height="60" loading="eager">
                 </a>
             </div>
             <div class="header-titles">
-                <!-- Applied glow and outline classes (styling handled in CSS) -->
                 <h1 class="glow-text outlined-text centered-text">sysfx</h1>
-                <!-- Typing Effect: Added non-breaking space for stability when empty -->
                 <p id="typing-effect" class="gradient-text centered-text" aria-label="Company Tagline - changes dynamically"> </p>
             </div>
-            <button class="hamburger" id="hamburger-button" aria-label="Toggle Navigation Menu" aria-expanded="false" aria-controls="main-navigation">
+             <!-- Hamburger Toggle Button - Placed within header-main for consistent positioning -->
+            <button class="hamburger" id="hamburger-button" aria-label="Toggle Navigation Menu" aria-expanded="false" aria-controls="mobile-navigation">
                 <span class="hamburger-box" aria-hidden="true">
                     <span class="hamburger-inner"></span>
                 </span>
             </button>
         </div>
-        <!-- Navigation: Trimmed to 6 main links  -->
-        <nav id="main-navigation" class="main-nav" role="navigation" aria-label="Main website navigation" aria-hidden="true">
+         <!-- Desktop Navigation (Visible on larger screens, hidden by default on smaller) -->
+         <nav id="desktop-navigation" class="main-nav desktop-nav" role="navigation" aria-label="Main website navigation">
             <a href="#home" class="nav-link" data-section-id="home"><i class="fas fa-home fa-fw" aria-hidden="true"></i> Home</a>
             <a href="#services" class="nav-link" data-section-id="services"><i class="fas fa-cogs fa-fw" aria-hidden="true"></i> Services</a>
             <a href="#about" class="nav-link" data-section-id="about"><i class="fas fa-info-circle fa-fw" aria-hidden="true"></i> About</a>
             <a href="#gallery" class="nav-link" data-section-id="gallery"><i class="fas fa-image fa-fw" aria-hidden="true"></i> Our Work</a>
             <a href="#blog" class="nav-link" data-section-id="blog"><i class="fas fa-blog fa-fw" aria-hidden="true"></i> Tech Insights</a>
             <a href="#contact" class="nav-link" data-section-id="contact"><i class="fas fa-envelope fa-fw" aria-hidden="true"></i> Contact</a>
-            <!-- Removed Links: Location (Covered in Contact), Events, Case Studies, Testimonials (Can be sub-pages later), Community -->
         </nav>
     </header>
+
+     <!-- Mobile Off-Canvas Navigation -->
+     <div class="mobile-nav-overlay" id="mobile-nav-overlay" aria-hidden="true"></div>
+     <nav id="mobile-navigation" class="main-nav mobile-nav" role="navigation" aria-label="Mobile website navigation" aria-hidden="true">
+         <!-- Optional: Add Logo/Close button inside mobile nav -->
+         <button class="mobile-nav-close" aria-label="Close Navigation Menu">
+             <i class="fas fa-times" aria-hidden="true"></i>
+         </button>
+         <a href="#home" class="nav-link" data-section-id="home"><i class="fas fa-home fa-fw" aria-hidden="true"></i> Home</a>
+         <a href="#services" class="nav-link" data-section-id="services"><i class="fas fa-cogs fa-fw" aria-hidden="true"></i> Services</a>
+         <a href="#about" class="nav-link" data-section-id="about"><i class="fas fa-info-circle fa-fw" aria-hidden="true"></i> About</a>
+         <a href="#gallery" class="nav-link" data-section-id="gallery"><i class="fas fa-image fa-fw" aria-hidden="true"></i> Our Work</a>
+         <a href="#blog" class="nav-link" data-section-id="blog"><i class="fas fa-blog fa-fw" aria-hidden="true"></i> Tech Insights</a>
+         <a href="#contact" class="nav-link" data-section-id="contact"><i class="fas fa-envelope fa-fw" aria-hidden="true"></i> Contact</a>
+         <!-- Optionally add dark mode toggle here too -->
+         <!-- <button id="darkModeToggleMobile" class="mode-button modern-button" ... > ... </button> -->
+     </nav>
 
     <!-- Scrolling Text Bar -->
     <div class="scrolling-text-container" role="region" aria-label="Announcements">
@@ -155,13 +165,16 @@
                 Your browser does not support the video tag.
             </video>
             <div class="hero-content">
+                <!-- Added missing outlined-text class based on style guide intent -->
                 <h2 id="hero-title" class="hero-title gradient-text glow-text centered-text outlined-text">Welcome to sysfx!</h2>
                 <p class="hero-text">Unlock cutting-edge technology with Sys Fix—your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support in Clinton, CT.</p>
                 <div class="button-container">
-                    <a href="#contact" class="modern-button primary action-button" aria-label="Get started with sysfx services">
+                     <!-- Added pulse-effect-green class -->
+                    <a href="#contact" class="modern-button primary action-button pulse-effect-green" aria-label="Get started with sysfx services">
                         <i class="fas fa-paper-plane" aria-hidden="true"></i> <span class="button-text">Get Started</span>
                     </a>
-                    <a href="#services" class="modern-button secondary action-button explore-services" aria-label="Explore sysfx services list">
+                     <!-- Added button-blue class -->
+                    <a href="#services" class="modern-button secondary action-button button-blue explore-services" aria-label="Explore sysfx services list">
                         <i class="fas fa-cogs"></i> <span class="button-text">Explore Services</span>
                     </a>
                 </div>
@@ -175,8 +188,10 @@
             <p>With over a decade of experience, Sys Fix is committed to precision, innovation, and customer satisfaction. Based in Clinton, CT, we serve clients regionally and remotely, offering personalized service that transforms your tech infrastructure.</p>
             <p>Contact us for support at: <a href="mailto:nick@sysfx.net" class="email-link" id="email-display" aria-label="Contact email address: nick@sysfx.net">nick@sysfx.net</a></p>
             <div class="button-container">
-                <a href="#contact" class="modern-button action-button" aria-label="Request a free quote from sysfx"><span class="button-text">Request a Quote</span></a>
-                <a href="#services" class="modern-button secondary action-button" aria-label="Discover our range of services"><span class="button-text">Discover Services</span></a>
+                <!-- Added button-yellow for variety -->
+                <a href="#contact" class="modern-button action-button button-yellow" aria-label="Request a free quote from sysfx"><span class="button-text">Request a Quote</span></a>
+                <!-- Added button-blue class -->
+                <a href="#services" class="modern-button secondary action-button button-blue" aria-label="Discover our range of services"><span class="button-text">Discover Services</span></a>
             </div>
         </section>
 
@@ -187,14 +202,17 @@
                 <p>Visit our headquarters in Clinton, CT, or reach out for remote support. We serve clients across the region with top-tier tech solutions.</p>
                 <div id="map" aria-label="Interactive map showing sysfx location in Clinton, CT"></div>
                 <div class="button-container">
-                    <a href="https://maps.google.com/?q=123+Main+Street,+Clinton,+CT" target="_blank" rel="noopener noreferrer" class="modern-button action-button" aria-label="Get directions to sysfx via Google Maps"><span class="button-text">Get Directions</span></a>
-                    <a href="#contact" class="modern-button secondary action-button" aria-label="Schedule an appointment or visit"><span class="button-text">Schedule a Visit</span></a>
+                     <!-- Added pulse-effect-green class -->
+                    <a href="https://maps.google.com/?q=123+Main+Street,+Clinton,+CT" target="_blank" rel="noopener noreferrer" class="modern-button action-button pulse-effect-green" aria-label="Get directions to sysfx via Google Maps"><span class="button-text">Get Directions</span></a>
+                    <!-- Added button-blue class -->
+                    <a href="#contact" class="modern-button secondary action-button button-blue" aria-label="Schedule an appointment or visit"><span class="button-text">Schedule a Visit</span></a>
                 </div>
             </div>
         </section>
 
         <!-- Services Section -->
         <section id="services" class="services glass-morphism parallax section-animation" aria-labelledby="services-title">
+            <!-- Removed outlined-text class based on style guide intent for parallax sections -->
             <h2 id="services-title" class="gradient-text glow-text centered-text">Our Services</h2>
             <p class="services-description">sysfx offers a comprehensive suite of tech services to empower your business. From hardware fixes to cloud migrations, we’re here to solve your challenges with expertise and efficiency.</p>
             <div class="service-grid">
@@ -258,7 +276,7 @@
                         <img src="assets/ios.svg" alt="iOS" class="os-logo apple-dark-invert" loading="lazy" width="50" height="50">
                         <img src="assets/wearos.svg" alt="Wear OS" class="os-logo" loading="lazy" width="50" height="50">
                         <img src="assets/watchos.png" alt="watchOS" class="os-logo apple-dark-invert" loading="lazy" width="50" height="50">
-                        <img src="assetstvos.png" alt="tvOS" class="os-logo apple-dark-invert" loading="lazy" width="50" height="50">
+                        <img src="assets/tvos.png" alt="tvOS" class="os-logo apple-dark-invert" loading="lazy" width="50" height="50"> <!-- Corrected path -->
                         <img src="assets/androidtv.svg" alt="Android TV" class="os-logo" loading="lazy" width="50" height="50">
                         <img src="assets/windowsserver.svg" alt="Windows Server" class="os-logo" loading="lazy" width="50" height="50">
                         <img src="assets/redhat.svg" alt="Red Hat Enterprise Linux" class="os-logo" loading="lazy" width="50" height="50">
@@ -272,11 +290,19 @@
                         <img src="assets/fedora.svg" alt="" class="os-logo" loading="lazy" aria-hidden="true" width="50" height="50">
                         <img src="assets/android.svg" alt="" class="os-logo" loading="lazy" aria-hidden="true" width="50" height="50">
                         <img src="assets/ios.svg" alt="" class="os-logo apple-dark-invert" loading="lazy" aria-hidden="true" width="50" height="50">
+                        <img src="assets/wearos.svg" alt="" class="os-logo" loading="lazy" aria-hidden="true" width="50" height="50">
+                        <img src="assets/watchos.png" alt="" class="os-logo apple-dark-invert" loading="lazy" aria-hidden="true" width="50" height="50">
+                        <img src="assets/tvos.png" alt="" class="os-logo apple-dark-invert" loading="lazy" aria-hidden="true" width="50" height="50">
+                        <img src="assets/androidtv.svg" alt="" class="os-logo" loading="lazy" aria-hidden="true" width="50" height="50">
+                        <img src="assets/windowsserver.svg" alt="" class="os-logo" loading="lazy" aria-hidden="true" width="50" height="50">
+                        <img src="assets/redhat.svg" alt="" class="os-logo" loading="lazy" aria-hidden="true" width="50" height="50">
+                        <img src="assets/debian.svg" alt="" class="os-logo" loading="lazy" aria-hidden="true" width="50" height="50">
                     </div>
                  </div>
             </div>
             <div class="button-container">
-                <a href="#contact" class="modern-button action-button" aria-label="Contact us for service inquiries"><span class="button-text">Contact Us</span></a>
+                <!-- Added button-yellow class -->
+                <a href="#contact" class="modern-button action-button button-yellow" aria-label="Contact us for service inquiries"><span class="button-text">Contact Us</span></a>
             </div>
         </section>
 
@@ -309,16 +335,18 @@
                 </div>
             </div>
             <div class="button-container">
-                <button type="button" class="modern-button action-button" onclick="alert('Full portfolio coming soon!')" aria-label="View full project portfolio"><span class="button-text">View Full Portfolio</span></button>
+                 <!-- Added button-blue class -->
+                <button type="button" class="modern-button action-button button-blue" onclick="alert('Full portfolio coming soon!')" aria-label="View full project portfolio"><span class="button-text">View Full Portfolio</span></button>
             </div>
-            <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-image" aria-describedby="lightbox-alt-text" aria-hidden="true" style="display: none;">
+            <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-alt-text" aria-hidden="true" style="display: none;">
                 <button class="lightbox-close" aria-label="Close lightbox" type="button">×</button>
                 <img src="" alt="" id="lightbox-image" class="lightbox-image">
-                <span id="lightbox-alt-text" class="sr-only"></span> <!-- Alt text for screen readers -->
+                <!-- Changed label to point to sr-only text -->
+                <span id="lightbox-alt-text" class="sr-only"></span>
             </div>
         </section>
 
-        <!-- Stats Section (No modals here, styling refinement in CSS) -->
+        <!-- Stats Section (Improved CSS will handle layout) -->
         <section id="stats" class="stats section-animation" aria-labelledby="stats-title">
             <h2 id="stats-title" class="gradient-text glow-text centered-text outlined-text">Our Impact</h2>
             <p>Here’s how sysfx has made a difference for our clients through innovative tech solutions.</p>
@@ -349,13 +377,14 @@
                 </div>
             </div>
             <div class="button-container">
-                <a href="#about" class="modern-button action-button" aria-label="Learn more about our company impact"><span class="button-text">Learn More About Us</span></a>
+                <!-- Added button-yellow class -->
+                <a href="#about" class="modern-button action-button button-yellow" aria-label="Learn more about our company impact"><span class="button-text">Learn More About Us</span></a>
             </div>
         </section>
 
         <!-- Events Section (Removed from Nav, kept section for future) -->
         <section id="events" class="events glass-morphism parallax section-animation" aria-labelledby="events-title">
-            <!-- Applied glow class (no outline on parallax) -->
+            <!-- Removed outlined-text class based on style guide intent for parallax sections -->
             <h2 id="events-title" class="gradient-text glow-text centered-text">Events & Workshops</h2>
             <p>Stay ahead in the tech world by joining our upcoming events and workshops on cybersecurity, web development, networking, and more.</p>
             <div class="event-timeline">
@@ -398,13 +427,13 @@
                 </article>
             </div>
             <div class="button-container">
-                 <button type="button" class="modern-button action-button" onclick="alert('Full event calendar coming soon!')" aria-label="View all upcoming events"><span class="button-text">View All Events</span></button>
+                 <!-- Added button-blue class -->
+                 <button type="button" class="modern-button action-button button-blue" onclick="alert('Full event calendar coming soon!')" aria-label="View all upcoming events"><span class="button-text">View All Events</span></button>
             </div>
         </section>
 
         <!-- Case Studies Section (Removed from Nav, kept section for future) -->
         <section id="case-studies" class="case-studies glass-morphism section-animation" aria-labelledby="casestudies-title">
-             <!-- Applied glow and outline classes -->
             <h2 id="casestudies-title" class="gradient-text glow-text centered-text outlined-text">Case Studies</h2>
             <p>Discover how sysfx has transformed businesses with our tailored tech solutions.</p>
             <div class="case-study-grid">
@@ -429,12 +458,14 @@
                 </article>
             </div>
             <div class="button-container">
-                 <button type="button" class="modern-button action-button" onclick="alert('Full case studies page coming soon!')" aria-label="See all case studies"><span class="button-text">See All Case Studies</span></button>
+                <!-- Added button-blue class -->
+                 <button type="button" class="modern-button action-button button-blue" onclick="alert('Full case studies page coming soon!')" aria-label="See all case studies"><span class="button-text">See All Case Studies</span></button>
             </div>
         </section>
 
         <!-- Testimonials Section (Removed from Nav, kept section for future) -->
         <section id="testimonials" class="testimonials glass-morphism parallax section-animation" aria-labelledby="testimonials-title">
+            <!-- Removed outlined-text class based on style guide intent for parallax sections -->
             <h2 id="testimonials-title" class="gradient-text glow-text centered-text">What Our Clients Say</h2>
             <p>Hear from businesses like yours who’ve transformed their tech with sysfx’s expertise.</p>
             <div class="carousel-container" aria-roledescription="carousel" aria-label="Client Testimonials">
@@ -474,7 +505,8 @@
                 <div id="testimonial-live-region" class="sr-only" aria-live="polite" aria-atomic="true"></div>
             </div>
             <div class="button-container">
-                <a href="#contact" class="modern-button action-button" aria-label="Share your feedback or testimonial"><span class="button-text">Share Your Story</span></a>
+                <!-- Added button-yellow class -->
+                <a href="#contact" class="modern-button action-button button-yellow" aria-label="Share your feedback or testimonial"><span class="button-text">Share Your Story</span></a>
             </div>
         </section>
 
@@ -485,8 +517,10 @@
             <p>Our mission is to empower businesses with innovative technology, ensuring precision, reliability, and exceptional customer service. Located in Clinton, CT, we serve clients across the region, helping them thrive in a digital-first world.</p>
             <p>Our core values include innovation, integrity, and client satisfaction, driving us to exceed expectations with every project. Whether you’re a small business or a growing enterprise, sysfx is your partner in tech success.</p>
             <div class="button-container">
-                 <a href="#contact" class="modern-button action-button" aria-label="Contact sysfx today"><span class="button-text">Contact Us Today</span></a>
-                <a href="#services" class="modern-button secondary action-button" aria-label="Explore our technical expertise"><span class="button-text">Explore Our Expertise</span></a>
+                <!-- Added pulse-effect-green class -->
+                 <a href="#contact" class="modern-button action-button pulse-effect-green" aria-label="Contact sysfx today"><span class="button-text">Contact Us Today</span></a>
+                 <!-- Added button-blue class -->
+                <a href="#services" class="modern-button secondary action-button button-blue" aria-label="Explore our technical expertise"><span class="button-text">Explore Our Expertise</span></a>
             </div>
         </section>
 
@@ -495,8 +529,10 @@
             <h2 id="community-title" class="gradient-text glow-text centered-text outlined-text">Join Our Community</h2>
             <p>Connect with tech enthusiasts, business owners, and IT professionals in the sysfx community. Share knowledge, attend events, and grow with us!</p>
             <div class="button-container">
-                 <a href="#events" class="modern-button action-button" aria-label="Join our upcoming events"><span class="button-text">Join Events</span></a>
-                 <button type="button" class="modern-button secondary action-button" onclick="alert('Newsletter sign-up coming soon!')" aria-label="Subscribe to our newsletter for updates"><span class="button-text">Subscribe to Updates</span></button>
+                <!-- Added button-yellow class -->
+                 <a href="#events" class="modern-button action-button button-yellow" aria-label="Join our upcoming events"><span class="button-text">Join Events</span></a>
+                 <!-- Added button-blue class -->
+                 <button type="button" class="modern-button secondary action-button button-blue" onclick="alert('Newsletter sign-up coming soon!')" aria-label="Subscribe to our newsletter for updates"><span class="button-text">Subscribe to Updates</span></button>
             </div>
         </section>
 
@@ -505,10 +541,12 @@
             <h2 id="cta-title" class="cta-title glow-text centered-text outlined-text">Ready to Transform Your Tech?</h2>
             <p>Partner with sysfx for innovative solutions that drive your business forward.</p>
             <div class="button-container">
-                <a href="#contact" class="modern-button primary action-button" aria-label="Start your project with sysfx now">
+                <!-- Added pulse-effect-green class -->
+                <a href="#contact" class="modern-button primary action-button pulse-effect-green" aria-label="Start your project with sysfx now">
                     <i class="fas fa-rocket" aria-hidden="true"></i> <span class="button-text">Start Now</span>
                 </a>
-                <a href="#services" class="modern-button secondary action-button" aria-label="Learn more details about sysfx services">
+                <!-- Added button-blue class -->
+                <a href="#services" class="modern-button secondary action-button button-blue" aria-label="Learn more details about sysfx services">
                     <i class="fas fa-info-circle"></i> <span class="button-text">Learn More</span>
                 </a>
             </div>
@@ -537,13 +575,13 @@
                 </article>
             </div>
             <div class="button-container">
-                 <button type="button" class="modern-button action-button" onclick="alert('Blog coming soon!')" aria-label="Visit the full sysfx blog"><span class="button-text">Visit Our Blog</span></button>
+                <!-- Added button-yellow class -->
+                 <button type="button" class="modern-button action-button button-yellow" onclick="alert('Blog coming soon!')" aria-label="Visit the full sysfx blog"><span class="button-text">Visit Our Blog</span></button>
             </div>
         </section>
 
         <!-- Tech Timeline Section -->
         <section class="tech-timeline-section glass-morphism section-animation" aria-labelledby="timeline-title">
-             <!-- Applied glow and outline classes -->
             <h2 id="timeline-title" class="gradient-text glow-text centered-text outlined-text">Our Tech Journey</h2>
             <p>A brief history of sysfx’s evolution in the tech world.</p>
             <div class="timeline">
@@ -606,8 +644,7 @@
                 </div>
                 <div class="contact-form-container">
                     <h3>Send Us a Message</h3>
-                    <!-- Form enhancements: novalidate, input types, autocomplete, ARIA for errors -->
-                    <!-- NOTE: Replace YOUR_FORM_ID with your actual Formspree endpoint ID -->
+                    <!-- Replace YOUR_FORM_ID with your actual Formspree endpoint ID -->
                     <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate>
                         <div class="form-group">
                              <label for="name" class="form-label">Name:<span class="required-star" aria-hidden="true">*</span></label>
@@ -642,7 +679,8 @@
                         <input type="text" name="_gotcha" style="display:none !important" tabindex="-1" autocomplete="off"> <!-- Honeypot -->
 
                          <div class="form-footer">
-                            <button type="submit" class="modern-button action-button form-submit-button" aria-label="Send your message to sysfx">
+                             <!-- Added pulse-effect-green class -->
+                            <button type="submit" class="modern-button action-button form-submit-button pulse-effect-green" aria-label="Send your message to sysfx">
                                  <span class="button-text">Send Message</span>
                                  <i class="fas fa-paper-plane" aria-hidden="true"></i>
                             </button>
@@ -666,16 +704,17 @@
                 <a href="https://www.instagram.com/sys.fx/" target="_blank" rel="noopener noreferrer" aria-label="Follow sysfx on Instagram (opens in new tab)"><i class="fab fa-instagram"></i></a>
             </div>
              <nav class="footer-links" aria-label="Footer navigation">
+                 <!-- Placeholder links - update hrefs as needed -->
                 <a href="#privacy-policy">Privacy Policy</a>
                 <a href="#terms-of-service">Terms of Service</a>
              </nav>
         </div>
     </footer>
 
-    <!-- Modals Container -->
+    <!-- Modals Container (Structure remains similar, styling/JS handle behavior) -->
     <div class="modal-container" aria-hidden="true">
         <!-- Computer Repair Modal -->
-        <div id="computer-repair-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="computer-repair-title" aria-hidden="true" style="display: none;">
+        <div id="computer-repair-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="computer-repair-title" aria-hidden="true">
             <div class="modal-content glass-morphism">
                 <button class="modal-close" aria-label="Close Computer Repair Details" type="button">×</button>
                 <h3 id="computer-repair-title" class="modal-title"><i class="fas fa-laptop fa-fw" aria-hidden="true"></i> Computer Repair</h3>
@@ -690,13 +729,14 @@
                     <p>Bring your device in or ask about our remote support options!</p>
                 </div>
                  <div class="modal-footer button-container">
-                    <button type="button" class="modern-button small action-button modal-action" data-link="#contact">Request Repair</button>
+                     <!-- Added pulse-effect-green -->
+                    <button type="button" class="modern-button small action-button modal-action pulse-effect-green" data-link="#contact">Request Repair</button>
                     <button type="button" class="modern-button small secondary modal-close-alt">Close</button>
                 </div>
             </div>
         </div>
         <!-- Cybersecurity Modal -->
-        <div id="cybersecurity-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="cybersecurity-title" aria-hidden="true" style="display: none;">
+        <div id="cybersecurity-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="cybersecurity-title" aria-hidden="true">
             <div class="modal-content glass-morphism">
                 <button class="modal-close" aria-label="Close Cybersecurity Details" type="button">×</button>
                 <h3 id="cybersecurity-title" class="modal-title"><i class="fas fa-shield-alt fa-fw" aria-hidden="true"></i> Cybersecurity Solutions</h3>
@@ -712,13 +752,14 @@
                     <p>Secure your home or business network against evolving threats.</p>
                 </div>
                  <div class="modal-footer button-container">
-                    <button type="button" class="modern-button small action-button modal-action" data-link="#contact">Get Protected</button>
+                     <!-- Added pulse-effect-green -->
+                    <button type="button" class="modern-button small action-button modal-action pulse-effect-green" data-link="#contact">Get Protected</button>
                      <button type="button" class="modern-button small secondary modal-close-alt">Close</button>
                 </div>
             </div>
         </div>
         <!-- Web Development Modal -->
-        <div id="web-development-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="web-dev-title" aria-hidden="true" style="display: none;">
+        <div id="web-development-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="web-dev-title" aria-hidden="true">
             <div class="modal-content glass-morphism">
                 <button class="modal-close" aria-label="Close Web Development Details" type="button">×</button>
                 <h3 id="web-dev-title" class="modal-title"><i class="fas fa-code fa-fw" aria-hidden="true"></i> Web Development</h3>
@@ -734,13 +775,14 @@
                     <p>Let us build a fast, secure, and user-friendly website for your brand.</p>
                 </div>
                  <div class="modal-footer button-container">
-                    <button type="button" class="modern-button small action-button modal-action" data-link="#contact">Request a Site</button>
+                    <!-- Added button-yellow -->
+                    <button type="button" class="modern-button small action-button modal-action button-yellow" data-link="#contact">Request a Site</button>
                      <button type="button" class="modern-button small secondary modal-close-alt">Close</button>
                 </div>
             </div>
         </div>
          <!-- Networking Modal -->
-         <div id="networking-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="networking-title" aria-hidden="true" style="display: none;">
+         <div id="networking-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="networking-title" aria-hidden="true">
              <div class="modal-content glass-morphism">
                  <button class="modal-close" aria-label="Close Networking Details" type="button">×</button>
                  <h3 id="networking-title" class="modal-title"><i class="fas fa-network-wired fa-fw" aria-hidden="true"></i> Networking</h3>
@@ -756,13 +798,14 @@
                      <p>From home offices to enterprise environments, we ensure your network is fast and dependable.</p>
                  </div>
                  <div class="modal-footer button-container">
-                     <button type="button" class="modern-button small action-button modal-action" data-link="#contact">Improve Connectivity</button>
+                     <!-- Added button-blue -->
+                     <button type="button" class="modern-button small action-button modal-action button-blue" data-link="#contact">Improve Connectivity</button>
                      <button type="button" class="modern-button small secondary modal-close-alt">Close</button>
                  </div>
              </div>
          </div>
          <!-- Cloud Solutions Modal -->
-          <div id="cloud-solutions-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="cloud-title" aria-hidden="true" style="display: none;">
+          <div id="cloud-solutions-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="cloud-title" aria-hidden="true">
              <div class="modal-content glass-morphism">
                  <button class="modal-close" aria-label="Close Cloud Solutions Details" type="button">×</button>
                  <h3 id="cloud-title" class="modal-title"><i class="fas fa-cloud fa-fw" aria-hidden="true"></i> Cloud Solutions</h3>
@@ -778,13 +821,14 @@
                      <p>Optimize your workflow and reduce infrastructure costs with our tailored cloud strategies.</p>
                  </div>
                  <div class="modal-footer button-container">
-                     <button type="button" class="modern-button small action-button modal-action" data-link="#contact">Go Cloud</button>
+                     <!-- Added button-yellow -->
+                     <button type="button" class="modern-button small action-button modal-action button-yellow" data-link="#contact">Go Cloud</button>
                       <button type="button" class="modern-button small secondary modal-close-alt">Close</button>
                  </div>
              </div>
          </div>
          <!-- IT Support Modal -->
-          <div id="it-support-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="it-support-title" aria-hidden="true" style="display: none;">
+          <div id="it-support-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="it-support-title" aria-hidden="true">
              <div class="modal-content glass-morphism">
                  <button class="modal-close" aria-label="Close IT Support Details" type="button">×</button>
                  <h3 id="it-support-title" class="modal-title"><i class="fas fa-headset fa-fw" aria-hidden="true"></i> IT Support</h3>
@@ -800,7 +844,8 @@
                      <p>Focus on your business while we handle the technology.</p>
                  </div>
                  <div class="modal-footer button-container">
-                     <button type="button" class="modern-button small action-button modal-action" data-link="#contact">Get Support</button>
+                    <!-- Added pulse-effect-green -->
+                     <button type="button" class="modern-button small action-button modal-action pulse-effect-green" data-link="#contact">Get Support</button>
                       <button type="button" class="modern-button small secondary modal-close-alt">Close</button>
                  </div>
              </div>
@@ -815,6 +860,7 @@
 
     <!-- Floating Elements Container -->
     <aside class="floating-elements" aria-label="Quick access tools">
+        <!-- Chat bubble remains hidden by JS -->
         <div class="chat-bubble" id="chat-bubble" role="button" tabindex="0" style="display: none;">
             <i class="fas fa-comments" aria-hidden="true"></i> <span>Chat (Soon!)</span>
         </div>
