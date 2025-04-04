@@ -1,6 +1,6 @@
 /* ==========================================================================
    SysFX Stylesheet
-   Version: 1.8 (Revised based on list items 1-7)
+   Version: 1.9 (Revised based on list items 1-6)
    Author: sysfx (Revised by AI Assistant)
    ========================================================================== */
 
@@ -20,7 +20,7 @@
     --text-dark: #212529;
     --text-muted-light: #6c757d;
     --text-muted-dark: #adb5bd;
-    --link-color: var(--blue-color);        /* Changed default link to blue */
+    --link-color: var(--blue-color);
     --link-hover-color: var(--blue-hover-color);
     --border-light: rgba(0, 0, 0, 0.1);
     --border-dark: rgba(255, 255, 255, 0.15);
@@ -31,14 +31,19 @@
     --error-color: #dc3545;
     --success-color: #28a745;
 
-    /* Issue 5: Outline & Fill Colors */
-    --outline-color-light: #1a1a1a; /* Slightly softer black outline */
-    --outline-color-dark: #ffffff;  /* White outline for dark mode */
-    --outline-fill-light: #ffffff;  /* White fill for light mode outlined text */
-    --outline-fill-dark: #1a1a1a;   /* Dark fill for dark mode outlined text */
-    --glow-color: #00ff00;          /* Consistent bright green glow */
-    --glow-intensity: 8px;
-    --glow-spread: 12px;
+    /* Issue 1: Outline & Fill Colors for Header Title */
+    --header-title-stroke-light: #000000; /* Black stroke for light mode */
+    --header-title-fill-light: #ffffff; /* White fill for light mode */
+    --header-title-fill-dark: #ffffff; /* White fill for dark mode (no stroke) */
+
+    /* General Outline/Glow */
+    --outline-color-light: #1a1a1a;
+    --outline-color-dark: #ffffff;
+    --outline-fill-light: #ffffff;
+    --outline-fill-dark: #1a1a1a;
+    --glow-color: #00ff00;
+    --glow-intensity: 6px; /* Slightly reduced */
+    --glow-spread: 10px;  /* Slightly reduced */
 
     /* Gradients */
     --text-gradient: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
@@ -72,16 +77,15 @@
     --shadow-dark-lg: 0 10px 45px rgba(0, 0, 0, 0.5);
     --shadow-interactive: var(--shadow-md);
     --shadow-interactive-hover: var(--shadow-lg);
-    /* Button Specific Shadows (can vary per color) */
     --shadow-green: 0 4px 15px rgba(0, 160, 0, 0.2);
     --shadow-green-hover: 0 7px 25px rgba(0, 160, 0, 0.3);
     --shadow-blue: 0 4px 15px rgba(0, 123, 255, 0.2);
     --shadow-blue-hover: 0 7px 25px rgba(0, 123, 255, 0.3);
     --shadow-yellow: 0 4px 15px rgba(255, 193, 7, 0.2);
     --shadow-yellow-hover: 0 7px 25px rgba(255, 193, 7, 0.3);
-    /* Text Glow */
-    --text-glow: 0 0 var(--glow-intensity) var(--glow-color), 0 0 var(--glow-spread) var(--glow-color);
-    --text-glow-dark-mode: 0 0 calc(var(--glow-intensity) * 1.2) var(--glow-color), 0 0 calc(var(--glow-spread) * 1.2) var(--glow-color);
+    /* Base Text Glow Shadow (used in animations) */
+    --text-glow-shadow: 0 0 var(--glow-intensity) var(--glow-color), 0 0 var(--glow-spread) var(--glow-color);
+    --text-glow-shadow-dark-mode: 0 0 calc(var(--glow-intensity) * 1.1) var(--glow-color), 0 0 calc(var(--glow-spread) * 1.1) var(--glow-color);
 
     /* Typography */
     --font-family-base: 'Roboto', sans-serif;
@@ -115,15 +119,15 @@
     --transition-ease-in: ease-in;
     --transition-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
 
-    /* Z-Indexes (Adjusted for new mobile nav) */
+    /* Z-Indexes (Checked for Issue 3) */
     --z-back: -1;
     --z-base: 1;
     --z-content: 10;
-    --z-sticky: 50;
-    --z-header: 1000;
-    --z-mobile-nav-overlay: 1040; /* Overlay below nav */
-    --z-mobile-nav: 1050;        /* Mobile nav */
-    --z-hamburger: 1060;         /* Hamburger toggle above nav */
+    --z-sticky: 50; /* Scrolling text uses this */
+    --z-header: 1000; /* Header is highest in normal flow */
+    --z-mobile-nav-overlay: 1040;
+    --z-mobile-nav: 1050;
+    --z-hamburger: 1060;
     --z-floating: 900;
     --z-modal-backdrop: 1200;
     --z-modal-content: 1210;
@@ -154,7 +158,7 @@ body {
     line-height: var(--line-height-base);
     background: var(--bg-gradient-light);
     color: var(--text-dark);
-    /* padding-top set by JS */
+    /* padding-top set by JS to handle Issue 3 */
     position: relative;
     overflow-x: hidden;
     background-color: var(--bg-light); /* Fallback */
@@ -169,8 +173,7 @@ body:not(.preload) {
 }
 
 body.theme-transitions-active * {
-    /* Limit transitions to avoid performance issues */
-    /* transition: none !important; */ /* DEBUG: Disable all transitions */
+    /* Limited transitions to avoid performance issues */
 }
 
 /* Specific Theme Transitions */
@@ -198,7 +201,8 @@ body.theme-transitions-active .service-icon i {
                  stroke var(--transition-speed) var(--transition-ease),
                  box-shadow var(--transition-speed) var(--transition-ease),
                  filter var(--transition-speed) var(--transition-ease),
-                 opacity var(--transition-speed) var(--transition-ease);
+                 opacity var(--transition-speed) var(--transition-ease),
+                 text-shadow var(--transition-speed) var(--transition-ease); /* Added for glow */
 }
 
 body.dark-mode {
@@ -225,7 +229,7 @@ body.dark-mode {
     --shadow-yellow-hover: 0 7px 30px rgba(255, 193, 7, 0.4);
     --glass-bg-light: var(--glass-bg-dark);
     --glass-border-light: var(--glass-border-dark);
-    /* Issue 5: Swap outline fill/stroke vars */
+    /* General outline fill/stroke vars swap */
     --outline-color-light: var(--outline-color-dark);
     --outline-fill-light: var(--outline-fill-dark);
 }
@@ -234,7 +238,7 @@ body.no-scroll {
     overflow: hidden; /* Prevent scrolling when modal/nav is open */
 }
 
-/* Issue 6 Fix: Ensure text colors contrast correctly in different containers/modes */
+/* Issue 5 Fix: Ensure text colors contrast correctly in different containers/modes */
 body:not(.dark-mode) .glass-morphism,
 body:not(.dark-mode) .modal-content {
     color: var(--text-dark); /* Dark text on light glass */
@@ -249,7 +253,8 @@ body.dark-mode .cta {
 /* Explicit text colors for paragraphs/lists within themed containers */
 body:not(.dark-mode) .glass-morphism p,
 body:not(.dark-mode) .glass-morphism li,
-body:not(.dark-mode) .service p, /* Issue 6: Service card text */
+body:not(.dark-mode) .service p,             /* Explicitly target service text */
+body:not(.dark-mode) .services-description,  /* Explicitly target service description */
 body:not(.dark-mode) .case-study p,
 body:not(.dark-mode) .blog-post-preview p,
 body:not(.dark-mode) .event-content p,
@@ -266,7 +271,8 @@ body:not(.dark-mode) .community p {
 body.dark-mode .glass-morphism p,
 body.dark-mode .glass-morphism li,
 body.dark-mode .parallax p,
-body.dark-mode .service p, /* Issue 6: Service card text */
+body.dark-mode .service p,             /* Explicitly target service text */
+body.dark-mode .services-description,  /* Explicitly target service description */
 body.dark-mode .case-study p,
 body.dark-mode .blog-post-preview p,
 body.dark-mode .event-content p,
@@ -283,16 +289,19 @@ body.dark-mode .community p {
 }
 
 /* Explicit heading colors for containers */
-body:not(.dark-mode) .glass-morphism h1, body:not(.dark-mode) .glass-morphism h2, body:not(.dark-mode) .glass-morphism h3, body:not(.dark-mode) .glass-morphism h4 {
+body:not(.dark-mode) .glass-morphism h1,
+body:not(.dark-mode) .glass-morphism h2,
+body:not(.dark-mode) .glass-morphism h3,
+body:not(.dark-mode) .glass-morphism h4,
+body:not(.dark-mode) .service h3 { /* Issue 5: Explicitly target service card heading */
    color: var(--text-dark);
 }
 body.dark-mode .glass-morphism h1, body.dark-mode .glass-morphism h2, body.dark-mode .glass-morphism h3, body.dark-mode .glass-morphism h4,
-body.dark-mode .parallax h1, body.dark-mode .parallax h2, body.dark-mode .parallax h3, body.dark-mode .parallax h4 {
+body.dark-mode .parallax h1, body.dark-mode .parallax h2, body.dark-mode .parallax h3, body.dark-mode .parallax h4,
+body.dark-mode .service h3 { /* Issue 5: Explicitly target service card heading */
    color: var(--text-light);
 }
-/* Issue 6 Fix: Explicitly set service card heading color */
-body:not(.dark-mode) .service h3 { color: var(--text-dark); }
-body.dark-mode .service h3 { color: var(--text-light); }
+
 
 /* Muted text colors */
 body:not(.dark-mode) .text-muted-light,
@@ -373,72 +382,116 @@ body.dark-mode .parallax h2, body.dark-mode .parallax h3, body.dark-mode .parall
     font-weight: var(--heading-font-weight);
 }
 
-/* --- Issue 5: Heading Glow & Outline Fix --- */
+/* --- General Glow & Outline --- */
+@keyframes pulseGlow {
+    0%, 100% { text-shadow: var(--text-glow-shadow); }
+    50% { text-shadow: 0 0 calc(var(--glow-intensity) * 1.3) var(--glow-color), 0 0 calc(var(--glow-spread) * 1.4) var(--glow-color); }
+}
+@keyframes pulseGlowDark {
+    0%, 100% { text-shadow: var(--text-glow-shadow-dark-mode); }
+    50% { text-shadow: 0 0 calc(var(--glow-intensity) * 1.4) var(--glow-color), 0 0 calc(var(--glow-spread) * 1.5) var(--glow-color); }
+}
+
 .glow-text {
-    text-shadow: var(--text-glow);
+    text-shadow: var(--text-glow-shadow);
+    animation: pulseGlow 2.5s infinite ease-in-out; /* Issue 6: Add pulse */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 body.dark-mode .glow-text {
-    text-shadow: var(--text-glow-dark-mode);
+    text-shadow: var(--text-glow-shadow-dark-mode);
+    animation-name: pulseGlowDark; /* Issue 6: Use dark mode pulse */
 }
 
 .outlined-text {
-    -webkit-text-stroke: 1px var(--outline-color-light); /* Light mode stroke color */
-    stroke: 1px var(--outline-color-light); /* Standard property */
-    paint-order: stroke fill; /* Draw stroke UNDER fill */
-    color: var(--outline-fill-light); /* Light mode FILL color */
+    -webkit-text-stroke: 1px var(--outline-color-light);
+    stroke: 1px var(--outline-color-light);
+    paint-order: stroke fill;
+    color: var(--outline-fill-light);
+    animation: none; /* Disable base pulse if ONLY outlined */
     text-shadow: none !important; /* Remove base glow if ONLY outlined */
 }
 body.dark-mode .outlined-text {
-    -webkit-text-stroke-color: var(--outline-color-dark); /* Dark mode stroke color */
+    -webkit-text-stroke-color: var(--outline-color-dark);
     stroke: var(--outline-color-dark);
-    color: var(--outline-fill-dark); /* Dark mode FILL color */
+    color: var(--outline-fill-dark);
 }
 
 /* Combined Outline and Glow */
 .outlined-text.glow-text {
-    text-shadow: var(--text-glow) !important; /* Re-apply glow OVER the stroke/fill */
+    text-shadow: var(--text-glow-shadow) !important; /* Re-apply glow OVER the stroke/fill */
+    animation: pulseGlow 2.5s infinite ease-in-out !important; /* Re-apply animation */
 }
 body.dark-mode .outlined-text.glow-text {
-    text-shadow: var(--text-glow-dark-mode) !important;
+    text-shadow: var(--text-glow-shadow-dark-mode) !important;
+    animation-name: pulseGlowDark !important;
 }
 
 /* Ensure gradient text with outline/glow maintains transparency for gradient */
 .gradient-text.outlined-text,
 .gradient-text.glow-text,
 .gradient-text.outlined-text.glow-text {
-    color: transparent !important; /* Keep gradient visible */
-    -webkit-text-fill-color: transparent !important; /* Ensure fill is transparent */
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
 }
 /* Apply combined effect only if both classes are present */
 .gradient-text.outlined-text.glow-text {
-     text-shadow: var(--text-glow) !important;
+     text-shadow: var(--text-glow-shadow) !important;
      -webkit-text-stroke: 1px var(--outline-color-light);
      stroke: 1px var(--outline-color-light);
+     animation: pulseGlow 2.5s infinite ease-in-out !important;
 }
 body.dark-mode .gradient-text.outlined-text.glow-text {
-     text-shadow: var(--text-glow-dark-mode) !important;
+     text-shadow: var(--text-glow-shadow-dark-mode) !important;
      -webkit-text-stroke-color: var(--outline-color-dark);
      stroke: var(--outline-color-dark);
+     animation-name: pulseGlowDark !important;
 }
 
 /* Headings on Parallax: Glow Only (No Outline/Fill override) */
 #services.parallax .glow-text,
 #events.parallax .glow-text,
 #testimonials.parallax .glow-text {
-    text-shadow: var(--text-glow); /* Apply glow */
+    text-shadow: var(--text-glow-shadow); /* Apply glow */
     -webkit-text-stroke: none; /* Ensure no accidental stroke */
     stroke: none;
     color: var(--text-light); /* Ensure base color is light on parallax */
+    animation: pulseGlow 2.5s infinite ease-in-out; /* Apply animation */
 }
 body.dark-mode #services.parallax .glow-text,
 body.dark-mode #events.parallax .glow-text,
 body.dark-mode #testimonials.parallax .glow-text {
-     text-shadow: var(--text-glow-dark-mode);
+     text-shadow: var(--text-glow-shadow-dark-mode);
      color: var(--text-light); /* Still light text in dark mode */
+     animation-name: pulseGlowDark;
 }
-/* --- End Issue 5 Fix --- */
+
+/* --- Issue 1: Header Title Specific Styles --- */
+#header-brand-title {
+    /* Common: Apply base glow text style */
+    font-size: clamp(1.8em, 4vw, 2.4em);
+    margin: 0;
+    line-height: 1.1;
+    /* Default (Light Mode) */
+    color: var(--header-title-fill-light);
+    -webkit-text-stroke: 1px var(--header-title-stroke-light);
+    stroke: 1px var(--header-title-stroke-light);
+    paint-order: stroke fill;
+    text-shadow: var(--text-glow-shadow); /* Apply base glow */
+    animation: pulseGlow 2.5s infinite ease-in-out; /* Apply pulse animation */
+}
+body.dark-mode #header-brand-title {
+    color: var(--header-title-fill-dark);
+    -webkit-text-stroke: none; /* No stroke in dark mode */
+    stroke: none;
+    text-shadow: var(--text-glow-shadow-dark-mode); /* Apply dark mode glow */
+    animation-name: pulseGlowDark; /* Apply dark mode pulse animation */
+}
+/* Ensure header shrink respects these */
+#main-header.header-shrunk #header-brand-title {
+    font-size: clamp(1.5em, 3vw, 2em);
+}
+/* --- End Issue 1 --- */
 
 .centered-text {
     text-align: center;
@@ -523,9 +576,17 @@ body.dark-mode .preloader {
     animation: pulseLogo 1.5s infinite ease-in-out;
 }
 @keyframes pulseLogo {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.05); opacity: 0.85; }
+    0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px var(--primary-color)); }
+    50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 10px var(--primary-color)); }
 }
+body.dark-mode .preloader-logo img {
+    animation: pulseLogoDark 1.5s infinite ease-in-out;
+}
+@keyframes pulseLogoDark {
+    0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px var(--secondary-color)); }
+    50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 10px var(--secondary-color)); }
+}
+
 .preloader-dots {
     display: flex;
     gap: var(--spacing-sm);
@@ -541,8 +602,8 @@ body.dark-mode .preloader {
 .dot:nth-child(2) { animation-delay: -0.16s; }
 body.dark-mode .dot { background-color: var(--secondary-color); }
 @keyframes bounceDot {
-  0%, 80%, 100% { transform: scale(0); }
-  40% { transform: scale(1.0); }
+  0%, 80%, 100% { transform: scale(0); opacity: 0.5;}
+  40% { transform: scale(1.0); opacity: 1;}
 }
 
 .scroll-progress {
@@ -562,20 +623,19 @@ body.dark-mode .scroll-progress {
      box-shadow: 0 0 10px var(--secondary-color);
 }
 
-/* --- Issue 4 & 7: Custom Cursor Fix & Pulse Effect --- */
+/* --- Issue 2: Custom Cursor Fix --- */
 .cursor {
     position: fixed;
-    width: 16px;
-    height: 16px;
-    /* left: 0; top: 0; */ /* Removed: JS handles position via x/y */
+    width: 16px; height: 16px;
+    /* top: 0; left: 0; */ /* REMOVED: Position controlled by JS via transform */
     background-color: var(--primary-color);
     border-radius: var(--border-radius-circle);
-    pointer-events: none;
+    pointer-events: none; /* Crucial */
     z-index: var(--z-cursor);
-    opacity: 0;
-    /* transform: translate(-50%, -50%) scale(1); */ /* Removed translate: JS handles */
-    transform: scale(1); /* Keep scale for effects */
-    border: 2px solid rgba(255,255,255,0.5);
+    opacity: 0; /* Start hidden */
+    /* transform: translate(-50%, -50%); */ /* REMOVED: JS handles centering via quickTo */
+    transform: scale(1); /* Use transform only for scaling effects */
+    border: 2px solid rgba(255, 255, 255, 0.5);
     mix-blend-mode: difference;
     transition: width var(--transition-speed-fast) var(--transition-cubic),
                 height var(--transition-speed-fast) var(--transition-cubic),
@@ -583,32 +643,24 @@ body.dark-mode .scroll-progress {
                 opacity var(--transition-speed) var(--transition-ease),
                 background-color var(--transition-speed) var(--transition-ease),
                 border-color var(--transition-speed) var(--transition-ease);
-    will-change: transform; /* Hint browser for transform/position changes by JS */
+    will-change: transform; /* Performance hint for JS-driven transforms */
 }
 body.cursor-ready .cursor {
     opacity: 1;
 }
 .cursor.hover {
-    transform: scale(2.5); /* Keep scale transform */
+    transform: scale(2.5); /* Scale effect */
     background-color: rgba(255, 255, 255, 0.3);
     border-color: rgba(255, 255, 255, 0.7);
 }
 .cursor.click {
-    transform: scale(0.8); /* Keep scale transform */
+    transform: scale(0.8); /* Scale effect */
     transition-duration: 0.1s;
-}
-/* Issue 7: Cursor Pulse */
-.cursor.pulse-effect {
-     animation: pulseCursor 2s infinite ease-in-out;
-}
-@keyframes pulseCursor {
-    0%, 100% { box-shadow: 0 0 0 0px rgba(255, 255, 255, 0.3); }
-    50% { box-shadow: 0 0 0 6px rgba(255, 255, 255, 0); }
 }
 @media (pointer: coarse) or (hover: none) {
     .cursor { display: none !important; }
 }
-/* --- End Issue 4 & 7 --- */
+/* --- End Issue 2 Fix --- */
 
 
 /* ==========================================================================
@@ -629,14 +681,14 @@ body.dark-mode .particles-container {
 }
 
 /* ==========================================================================
-   5. Header & Navigation (Revised for Mobile Nav Fix)
+   5. Header & Navigation (Checked for Issue 3)
    ========================================================================== */
 #main-header {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    z-index: var(--z-header);
+    z-index: var(--z-header); /* Ensure header is above scrolling text */
     padding: 0;
     border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
     transition: transform var(--transition-speed) var(--transition-cubic),
@@ -737,19 +789,16 @@ body.dark-mode .flipping-logo { background-color: rgba(50,50,50,0.3); border-col
 @keyframes coinFlip { 0% { transform: rotateY(0deg); } 45% { transform: rotateY(0deg); } 50% { transform: rotateY(180deg); } 95% { transform: rotateY(180deg); } 100% { transform: rotateY(360deg); } }
 
 .header-titles { text-align: center; flex-grow: 1; margin: 0 var(--spacing-sm); min-width: 0; transition: opacity var(--transition-speed) var(--transition-ease), visibility var(--transition-speed) var(--transition-ease); }
-#main-header h1 { font-size: clamp(1.8em, 4vw, 2.4em); margin: 0; line-height: 1.1; }
+/* Header H1 (#header-brand-title) styled under Issue 1 above */
 #typing-effect { min-height: 1.4em; display: block; font-size: clamp(1em, 2.5vw, 1.2em); color: var(--primary-color); margin-top: var(--spacing-xs); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 300; height: 1.4em; line-height: 1.4em; }
 body.dark-mode #typing-effect { color: var(--text-light); }
 
-/* --- Issue 1: Hamburger Menu and Mobile Nav --- */
+/* Hamburger Menu and Mobile Nav */
 /* Hamburger Toggle Button */
 .hamburger {
-    display: none; /* Hidden by default, shown in media query */
-    padding: 10px; cursor: pointer; transition: opacity 0.15s linear; border: none;
-    background-color: transparent; z-index: var(--z-hamburger); /* High z-index */
-    order: 3; /* Keep on right */
-    color: var(--text-dark); /* Inherit */
-    position: relative; /* Needed for z-index */
+    display: none; padding: 10px; cursor: pointer; transition: opacity 0.15s linear; border: none;
+    background-color: transparent; z-index: var(--z-hamburger); order: 3;
+    color: var(--text-dark); position: relative;
 }
 body.dark-mode .hamburger { color: var(--text-light); }
 .hamburger-box { width: 30px; height: 24px; display: inline-block; position: relative; }
@@ -765,95 +814,60 @@ body.dark-mode .hamburger { color: var(--text-light); }
 .hamburger.is-active .hamburger-inner::before { top: 0; opacity: 0; transition: top 0.1s ease-out, opacity 0.1s 0.12s ease-out; }
 .hamburger.is-active .hamburger-inner::after { bottom: 0; transform: rotate(-90deg); transition: bottom 0.1s ease-out, transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1); }
 
-/* Desktop Navigation (Hidden on small screens) */
+/* Desktop Navigation */
 .main-nav.desktop-nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-top: var(--border-width) solid var(--border-light);
+    display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md); border-top: var(--border-width) solid var(--border-light);
     transition: height var(--transition-speed) var(--transition-cubic),
                 padding var(--transition-speed) var(--transition-cubic),
                 opacity var(--transition-speed) var(--transition-ease),
                 visibility var(--transition-speed) var(--transition-ease),
                 transform var(--transition-speed) var(--transition-cubic),
                 border-top var(--transition-speed) var(--transition-ease);
-    height: auto;
-    overflow: hidden;
+    height: auto; overflow: hidden;
 }
 /* Hide desktop nav on mobile */
 @media (max-width: 768px) { .main-nav.desktop-nav { display: none; } }
 
 /* Mobile Off-Canvas Navigation Container */
 .main-nav.mobile-nav {
-    display: flex; flex-direction: column; align-items: stretch; /* Full width links */
-    position: fixed; top: 0; left: 0; width: 85%; max-width: 300px; /* Slightly smaller max */
-    height: 100vh; height: 100dvh; /* Dynamic viewport height */
-    background: var(--bg-surface-light);
-    padding: var(--spacing-xl) var(--spacing-md) var(--spacing-md); /* Top padding for space */
-    padding-top: 60px; /* Explicit top padding */
-    border-right: var(--border-width) solid var(--border-light);
-    box-shadow: var(--shadow-lg);
-    transform: translateX(-105%); /* Start further off-screen */
-    transition: transform 0.4s var(--transition-cubic);
-    overflow-y: auto;
-    z-index: var(--z-mobile-nav); /* Above overlay, below hamburger */
-    visibility: hidden; /* Hidden initially */
-    opacity: 0; /* Fade in */
+    display: flex; flex-direction: column; align-items: stretch;
+    position: fixed; top: 0; left: 0; width: 85%; max-width: 300px;
+    height: 100vh; height: 100dvh; background: var(--bg-surface-light);
+    padding: var(--spacing-xl) var(--spacing-md) var(--spacing-md); padding-top: 60px;
+    border-right: var(--border-width) solid var(--border-light); box-shadow: var(--shadow-lg);
+    transform: translateX(-105%); transition: transform 0.4s var(--transition-cubic);
+    overflow-y: auto; z-index: var(--z-mobile-nav); visibility: hidden; opacity: 0;
     transition: transform 0.4s var(--transition-cubic), visibility 0.4s, opacity 0.4s ease;
 }
 body.dark-mode .main-nav.mobile-nav { background: var(--bg-surface-dark); border-right-color: var(--border-dark); box-shadow: var(--shadow-dark-lg); }
 
 /* Mobile Navigation Active State */
-body.nav-active .main-nav.mobile-nav {
-    transform: translateX(0);
-    visibility: visible;
-    opacity: 1;
-}
+body.nav-active .main-nav.mobile-nav { transform: translateX(0); visibility: visible; opacity: 1; }
 
 /* Mobile Nav Overlay */
 .mobile-nav-overlay {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.6); /* Darker overlay */
-    z-index: var(--z-mobile-nav-overlay); /* Below mobile nav */
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.4s ease, visibility 0s 0.4s;
-    pointer-events: none; /* Non-interactive initially */
-    -webkit-tap-highlight-color: transparent;
-    backdrop-filter: blur(2px); /* Subtle blur */
-    -webkit-backdrop-filter: blur(2px);
+    content: ''; position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.6);
+    z-index: var(--z-mobile-nav-overlay); opacity: 0; visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0s 0.4s; pointer-events: none;
+    -webkit-tap-highlight-color: transparent; backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
 }
-body.nav-active .mobile-nav-overlay {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto; /* Allow click to close */
-    transition: opacity 0.4s ease, visibility 0s 0s, backdrop-filter 0.4s ease;
-}
+body.nav-active .mobile-nav-overlay { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.4s ease, visibility 0s 0s, backdrop-filter 0.4s ease; }
 
 /* Mobile Nav Close Button */
 .mobile-nav-close {
-    position: absolute;
-    top: var(--spacing-sm);
-    right: var(--spacing-sm);
-    background: none; border: none; color: var(--text-muted-light);
-    font-size: 1.8em; line-height: 1; cursor: pointer;
-    padding: var(--spacing-xs); z-index: calc(var(--z-mobile-nav) + 1); /* Above nav content */
-    transition: color var(--transition-speed) ease, transform var(--transition-speed) ease;
+    position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); background: none; border: none;
+    color: var(--text-muted-light); font-size: 1.8em; line-height: 1; cursor: pointer; padding: var(--spacing-xs);
+    z-index: calc(var(--z-mobile-nav) + 1); transition: color var(--transition-speed) ease, transform var(--transition-speed) ease;
 }
 .mobile-nav-close:hover, .mobile-nav-close:focus { color: var(--error-color); transform: scale(1.1) rotate(90deg); outline: none;}
 body.dark-mode .mobile-nav-close { color: var(--text-muted-dark); }
 
 /* Nav Links (Shared Styles) */
 .nav-link {
-    display: inline-flex; align-items: center; gap: var(--spacing-xs);
-    padding: 8px 16px; color: var(--text-dark); text-decoration: none;
-    font-weight: 500; border-radius: var(--border-radius-pill);
-    transition: background-color var(--transition-speed) var(--transition-ease),
-                color var(--transition-speed) var(--transition-ease);
+    display: inline-flex; align-items: center; gap: var(--spacing-xs); padding: 8px 16px;
+    color: var(--text-dark); text-decoration: none; font-weight: 500; border-radius: var(--border-radius-pill);
+    transition: background-color var(--transition-speed) var(--transition-ease), color var(--transition-speed) var(--transition-ease);
     position: relative; overflow: hidden;
 }
 body.dark-mode .nav-link { color: var(--text-light); }
@@ -862,29 +876,20 @@ body.dark-mode .nav-link i { color: var(--secondary-color); }
 
 /* Desktop Nav Link Hover/Focus */
 .desktop-nav .nav-link:hover,
-.desktop-nav .nav-link:focus {
-    color: var(--primary-color); background-color: rgba(0, 160, 0, 0.05);
-    text-decoration: none; outline: none;
-}
+.desktop-nav .nav-link:focus { color: var(--primary-color); background-color: rgba(0, 160, 0, 0.05); text-decoration: none; outline: none; }
 body.dark-mode .desktop-nav .nav-link:hover,
-body.dark-mode .desktop-nav .nav-link:focus {
-    color: var(--secondary-color); background-color: rgba(76, 175, 80, 0.1);
-}
+body.dark-mode .desktop-nav .nav-link:focus { color: var(--secondary-color); background-color: rgba(76, 175, 80, 0.1); }
 /* Desktop Nav Underline Effect */
 .desktop-nav .nav-link::after {
-    content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
-    width: 0; height: 2px; background: var(--primary-color);
-    transition: width var(--transition-speed) var(--transition-ease-out);
+    content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 0; height: 2px;
+    background: var(--primary-color); transition: width var(--transition-speed) var(--transition-ease-out);
 }
 body.dark-mode .desktop-nav .nav-link::after { background: var(--secondary-color); }
 .desktop-nav .nav-link:hover::after,
 .desktop-nav .nav-link:focus::after { width: 60%; }
 
 /* Active Nav Link Style (Scrollspy) */
-.nav-link.active {
-    color: var(--text-light); background-color: var(--primary-color);
-    box-shadow: var(--shadow-inset);
-}
+.nav-link.active { color: var(--text-light); background-color: var(--primary-color); box-shadow: var(--shadow-inset); }
 .nav-link.active i { color: var(--text-light); }
 .desktop-nav .nav-link.active::after { display: none; } /* Hide underline on active desktop link */
 body.dark-mode .nav-link.active { background-color: var(--secondary-color); color: var(--text-dark); }
@@ -893,28 +898,18 @@ body.dark-mode .nav-link.active i { color: var(--text-dark); }
 /* Mobile Nav Link Specific Styles */
 .mobile-nav .nav-link {
     width: 100%; padding: 14px 20px; font-size: 1.1em; justify-content: flex-start;
-    border-radius: var(--border-radius-sm); background: transparent;
-    border-bottom: 1px solid var(--border-light);
-    color: var(--text-dark); /* Explicit mobile link color */
+    border-radius: var(--border-radius-sm); background: transparent; border-bottom: 1px solid var(--border-light); color: var(--text-dark);
 }
 .mobile-nav .nav-link:last-of-type { border-bottom: none; }
 body.dark-mode .mobile-nav .nav-link { background: transparent; border-bottom-color: var(--border-dark); color: var(--text-light); }
 .mobile-nav .nav-link:hover,
 .mobile-nav .nav-link:focus,
-.mobile-nav .nav-link.active {
-    background-color: rgba(0, 160, 0, 0.08);
-    color: var(--primary-color);
-    box-shadow: none;
-}
+.mobile-nav .nav-link.active { background-color: rgba(0, 160, 0, 0.08); color: var(--primary-color); box-shadow: none; }
 .mobile-nav .nav-link.active i { color: var(--primary-color); }
 body.dark-mode .mobile-nav .nav-link:hover,
 body.dark-mode .mobile-nav .nav-link:focus,
-body.dark-mode .mobile-nav .nav-link.active {
-    background-color: rgba(76, 175, 80, 0.15);
-    color: var(--secondary-color);
-}
+body.dark-mode .mobile-nav .nav-link.active { background-color: rgba(76, 175, 80, 0.15); color: var(--secondary-color); }
 body.dark-mode .mobile-nav .nav-link.active i { color: var(--secondary-color); }
-/* --- End Issue 1 Fix --- */
 
 /* Header Shrink Styles */
 #main-header.header-shrunk { box-shadow: var(--shadow-md); }
@@ -922,21 +917,21 @@ body.dark-mode #main-header.header-shrunk { box-shadow: var(--shadow-dark-md); }
 #main-header.header-shrunk .header-top-bar { height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; visibility: hidden; border-bottom: none; }
 #main-header.header-shrunk .header-main { padding-top: var(--spacing-xs); padding-bottom: var(--spacing-xs); }
 #main-header.header-shrunk .flipping-logo { width: 45px; height: 45px; }
-#main-header.header-shrunk h1 { font-size: clamp(1.5em, 3vw, 2em); }
+/* Header shrink already adjusts title size via #header-brand-title rule */
 #main-header.header-shrunk #typing-effect { font-size: clamp(0.8em, 2vw, 1em); min-height: 1.2em; height: 1.2em; line-height: 1.2em; }
-/* Hide desktop nav when shrunk (only if desktop nav is visible) */
 @media (min-width: 769px) {
     #main-header.header-shrunk .main-nav.desktop-nav { height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; visibility: hidden; border-top: none; }
 }
 
 
 /* ==========================================================================
-   6. Scrolling Text Bar
+   6. Scrolling Text Bar (Checked for Issue 3)
    ========================================================================== */
 .scrolling-text-container {
     background: var(--primary-color); color: var(--text-light); padding: var(--spacing-sm) 0;
-    white-space: nowrap; overflow: hidden; width: 100%; z-index: var(--z-sticky);
-    box-shadow: var(--shadow-sm); position: relative;
+    white-space: nowrap; overflow: hidden; width: 100%;
+    z-index: var(--z-sticky); /* Below header */
+    box-shadow: var(--shadow-sm); position: relative; /* Relative to allow body padding to push it down */
 }
 body.dark-mode .scrolling-text-container { background: var(--secondary-color); color: var(--text-dark); }
 .scrolling-text-content { display: inline-block; padding-left: 100%; animation: scroll-text 30s linear infinite; font-size: 0.95em; font-weight: 500; margin: 0; will-change: transform; }
@@ -948,7 +943,7 @@ body.dark-mode .scrolling-text-container { background: var(--secondary-color); c
 /* ==========================================================================
    7. Main Content & Sections
    ========================================================================== */
-main { /* Padding top handled by JS */ }
+main { /* Padding top handled by JS based on header height */ }
 
 section {
     margin: var(--spacing-lg) auto; padding: var(--spacing-lg) var(--spacing-md);
@@ -978,7 +973,20 @@ body.dark-mode .welcome::before { background: linear-gradient(160deg, rgba(255,2
 .parallax::before { content: ''; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 0; pointer-events: none; border-radius: inherit; transition: background var(--transition-speed) var(--transition-ease); }
 .parallax > * { position: relative; z-index: 1; }
 
-.services.parallax { background-image: url('https://img.freepik.com/free-photo/motherboard-circuit-technology-background-gradient-green_53876-124656.jpg'); }
+/* Issue 5: Ensure .services which uses .glass-morphism AND .parallax has correct background/overlay */
+.services.parallax {
+    background-image: url('https://img.freepik.com/free-photo/motherboard-circuit-technology-background-gradient-green_53876-124656.jpg');
+    background-color: transparent; /* Override glassmorphism background */
+}
+.services.parallax::before {
+    background: rgba(0, 0, 0, 0.65); /* Darker overlay for better text contrast */
+    border-radius: inherit;
+    z-index: -1; /* Ensure overlay is behind content but above background image */
+}
+body.dark-mode .services.parallax::before {
+     background: rgba(0, 0, 0, 0.75);
+}
+
 .events.parallax { background-image: url('https://m.media-amazon.com/images/I/81QWPvOKCFL.jpg'); }
 .testimonials.parallax {
     background-color: var(--bg-light);
@@ -1002,15 +1010,24 @@ body.dark-mode .testimonials.parallax::before { background: rgba(0, 0, 0, 0.7); 
 body.dark-mode .hero-overlay-animated { opacity: 0.5; }
 @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 .hero-content { max-width: 850px; padding: var(--spacing-lg); position: relative; z-index: 1; }
-.hero-title { margin-bottom: var(--spacing-md); }
+
+/* Issue 4: Make "Welcome to sysfx!" bigger */
+.hero-title {
+    margin-bottom: var(--spacing-md);
+    font-size: clamp(2.5em, 7vw, 4em); /* Increased font size */
+    line-height: 1.2;
+}
 .hero-text { font-size: 1.2em; margin-bottom: var(--spacing-lg); text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6); max-width: 700px; margin-left: auto; margin-right: auto; }
 
-/* --- Buttons (Issue 3 & 7) --- */
+/* --- Buttons (Issue 6: Green Pulse Effect) --- */
 .button-container { display: flex; gap: var(--spacing-md); justify-content: center; margin-top: var(--spacing-lg); flex-wrap: wrap; }
 .modern-button {
-    background: var(--button-gradient-green); /* Default to green */
-    border: none; color: var(--text-light); padding: 14px 32px; text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: var(--spacing-sm); font-size: var(--font-size-base); font-weight: 500; border-radius: var(--border-radius-pill); cursor: pointer; transition: all var(--transition-speed) var(--transition-cubic); position: relative; overflow: hidden; box-shadow: var(--shadow-green); /* Default shadow */
-    transform: perspective(1px) translateZ(0); -webkit-tap-highlight-color: transparent;
+    background: var(--button-gradient-green); border: none; color: var(--text-light); padding: 14px 32px;
+    text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
+    gap: var(--spacing-sm); font-size: var(--font-size-base); font-weight: 500; border-radius: var(--border-radius-pill);
+    cursor: pointer; transition: all var(--transition-speed) var(--transition-cubic); position: relative;
+    overflow: hidden; box-shadow: var(--shadow-green); transform: perspective(1px) translateZ(0);
+    -webkit-tap-highlight-color: transparent;
 }
 .modern-button:hover { text-decoration: none; }
 /* Shine effect */
@@ -1029,7 +1046,7 @@ body.dark-mode .hero-overlay-animated { opacity: 0.5; }
 .modern-button i { transition: transform var(--transition-speed) var(--transition-cubic); }
 .modern-button:hover i { transform: scale(1.15) rotate(5deg); }
 
-/* Issue 3: Button Color Variations */
+/* Button Color Variations */
 .modern-button.button-blue { background: var(--button-gradient-blue); box-shadow: var(--shadow-blue); color: var(--text-light); }
 .modern-button.button-blue:hover, .modern-button.button-blue:focus-visible { background: var(--button-gradient-blue-hover); box-shadow: var(--shadow-blue-hover); }
 .modern-button.button-blue.secondary { background: var(--blue-color); box-shadow: var(--shadow-blue); }
@@ -1040,15 +1057,19 @@ body.dark-mode .hero-overlay-animated { opacity: 0.5; }
 .modern-button.button-yellow.secondary { background: var(--yellow-color); box-shadow: var(--shadow-yellow); color: var(--text-dark); }
 .modern-button.button-yellow.secondary:hover, .modern-button.button-yellow.secondary:focus-visible { background: var(--yellow-hover-color); box-shadow: var(--shadow-yellow-hover); color: var(--text-dark); }
 
-/* Issue 7: Green Button Pulse Effect */
-.modern-button.pulse-effect-green { animation: pulseGreen 2.5s infinite cubic-bezier(0.66, 0, 0, 1); }
+/* Issue 6: Green Button Pulse Effect */
 @keyframes pulseGreen {
-  to { box-shadow: 0 0 0 18px rgba(0, 160, 0, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(0, 160, 0, 0.7), var(--shadow-green); } /* Start with inner shadow */
+  70% { box-shadow: 0 0 0 18px rgba(0, 160, 0, 0), var(--shadow-green); } /* Expand outer pulse */
+  100% { box-shadow: 0 0 0 0 rgba(0, 160, 0, 0), var(--shadow-green); } /* Fade outer pulse */
 }
-/* Keep hover effect intensity */
+.modern-button.pulse-effect-green {
+    animation: pulseGreen 2.5s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+/* Keep hover effect intensity and stop animation */
 .modern-button.pulse-effect-green:hover,
 .modern-button.pulse-effect-green:focus-visible {
-    animation-name: none; /* Pause pulse on hover/focus */
+    animation: none; /* Stop pulse on hover/focus */
     box-shadow: var(--shadow-green-hover);
 }
 /* --- End Buttons --- */
@@ -1057,11 +1078,34 @@ body.dark-mode .hero-overlay-animated { opacity: 0.5; }
 /* Services Section */
 .service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-lg); padding: var(--spacing-lg) 0; }
 .service { padding: var(--spacing-lg); text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; }
+
+/* Issue 6: Pulsing Service Icons */
+@keyframes pulseServiceIcon {
+  0%, 100% { filter: drop-shadow(0 0 4px var(--primary-color)); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 8px var(--primary-color)); transform: scale(1.05); }
+}
+@keyframes pulseServiceIconDark {
+  0%, 100% { filter: drop-shadow(0 0 4px var(--secondary-color)); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 8px var(--secondary-color)); transform: scale(1.05); }
+}
 .service-icon { display: inline-block; margin-bottom: var(--spacing-md); transition: transform var(--transition-speed) var(--transition-cubic); }
-.service-icon i { font-size: 3.2em; color: var(--primary-color); animation: float 3s infinite ease-in-out; }
-body.dark-mode .service-icon i { color: var(--secondary-color); }
-.service:hover .service-icon { transform: scale(1.1) rotate(-5deg); }
-@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+.service-icon i {
+    font-size: 3.2em; color: var(--primary-color);
+    animation: pulseServiceIcon 3s infinite ease-in-out;
+}
+body.dark-mode .service-icon i {
+    color: var(--secondary-color);
+    animation-name: pulseServiceIconDark;
+}
+.service:hover .service-icon i {
+    animation-play-state: paused; /* Optional: Pause pulse on hover */
+    transform: scale(1.1) rotate(-5deg);
+    filter: drop-shadow(0 0 10px var(--primary-color));
+}
+body.dark-mode .service:hover .service-icon i {
+    filter: drop-shadow(0 0 10px var(--secondary-color));
+}
+
 .service h3 { margin-bottom: var(--spacing-sm); font-size: 1.4em; /* Color set by theme rules */ }
 .service > p:first-of-type { flex-grow: 1; }
 .extra-info { font-size: 0.9em; color: var(--text-muted-light); /* Uses theme rules */ margin-top: var(--spacing-sm); margin-bottom: var(--spacing-md); min-height: 3.4em; }
@@ -1075,10 +1119,12 @@ body.dark-mode .supported-os { border-top-color: rgba(255, 255, 255, 0.15); }
 .os-logo-track { display: flex; width: max-content; animation: scroll-logos 40s linear infinite; will-change: transform; }
 .os-logo-scroller:hover .os-logo-track { animation-play-state: paused; }
 @keyframes scroll-logos { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-.os-logo { height: 50px; width: 50px; object-fit: contain; margin: 0 var(--spacing-md); filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.2)); transition: transform var(--transition-speed) var(--transition-ease); flex-shrink: 0; vertical-align: middle; }
-.os-logo:hover { transform: scale(1.2); }
+.os-logo { height: 50px; width: 50px; object-fit: contain; margin: 0 var(--spacing-md); filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.2)); transition: transform var(--transition-speed) var(--transition-ease), filter var(--transition-speed) var(--transition-ease); flex-shrink: 0; vertical-align: middle; }
+.os-logo:hover { transform: scale(1.2); filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.3)); }
 body.dark-mode .os-logo { filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.4)); }
 body.dark-mode .os-logo.apple-dark-invert { filter: invert(1) drop-shadow(2px 2px 3px rgba(0,0,0,0.4)); }
+body.dark-mode .os-logo:hover { filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.5)); }
+body.dark-mode .os-logo.apple-dark-invert:hover { filter: invert(1) drop-shadow(3px 3px 5px rgba(0,0,0,0.5)); }
 
 /* Modals */
 .modal {
@@ -1087,16 +1133,15 @@ body.dark-mode .os-logo.apple-dark-invert { filter: invert(1) drop-shadow(2px 2p
     z-index: var(--z-modal-backdrop); display: flex; align-items: center;
     justify-content: center; padding: var(--spacing-md); opacity: 0;
     transition: opacity var(--transition-speed) var(--transition-ease), backdrop-filter var(--transition-speed) var(--transition-ease);
-    overflow-y: auto; /* Fallback scroll */
-    display: none; /* Start hidden */
+    overflow-y: auto; display: none;
 }
-.modal.active { display: flex; opacity: 1; } /* Use flex to show */
+.modal.active { display: flex; opacity: 1; }
 .modal-content {
     padding: var(--spacing-lg); max-width: 650px; width: 100%; text-align: left;
     position: relative; transform: scale(0.95) translateY(10px); opacity: 0;
     transition: transform var(--transition-speed) var(--transition-cubic), opacity var(--transition-speed) var(--transition-ease-out);
     z-index: var(--z-modal-content); margin: auto; border-radius: var(--border-radius-md);
-    max-height: 90vh; overflow-y: auto; /* Allow content scroll */
+    max-height: 90vh; overflow-y: auto;
 }
 .modal.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
 .modal-close { position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); background: none; border: none; font-size: 2em; line-height: 1; color: var(--text-muted-light); cursor: pointer; transition: color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); padding: var(--spacing-xs); z-index: 1; }
@@ -1115,17 +1160,12 @@ body.dark-mode .modal-footer { border-top-color: var(--border-dark); }
 body.dark-mode .modal-close-alt { background: var(--text-muted-dark); color: var(--text-dark); }
 body.dark-mode .modal-close-alt:hover, body.dark-mode .modal-close-alt:focus-visible { filter: brightness(1.1); }
 
-/* --- Stats Section (Issue 2 Fix) --- */
+/* Stats Section */
 .stats { background: var(--cta-gradient); color: var(--text-light); }
 .stats p { color: rgba(255, 255, 255, 0.9); }
 .stats-container {
-    display: flex; /* Use Flexbox */
-    flex-wrap: wrap; /* Allow wrapping */
-    justify-content: center; /* Center items, including last row */
-    gap: var(--spacing-lg);
-    padding: var(--spacing-lg) 0;
-    max-width: 1000px;
-    margin: var(--spacing-lg) auto 0;
+    display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-lg);
+    padding: var(--spacing-lg) 0; max-width: 1000px; margin: var(--spacing-lg) auto 0;
 }
 .stat-item {
     padding: var(--spacing-md) var(--spacing-sm);
@@ -1135,14 +1175,11 @@ body.dark-mode .modal-close-alt:hover, body.dark-mode .modal-close-alt:focus-vis
     background: rgba(255, 255, 255, 0.1);
     border-radius: var(--border-radius-md);
     border: var(--border-width) solid rgba(255, 255, 255, 0.15);
-    text-align: center;
-    flex: 0 1 180px; /* Flex settings: Don't grow, shrink allowed, basis 180px */
-    min-width: 150px; /* Minimum width */
+    text-align: center; flex: 0 1 180px; min-width: 150px;
 }
 .stat-item:hover { background-color: rgba(255, 255, 255, 0.2); /* Inherits card-hover transform/shadow */ }
 .stat-number { font-size: clamp(2em, 5vw, 2.8em); font-weight: 700; display: block; margin-bottom: var(--spacing-xs); color: var(--accent-color); line-height: 1.1; }
 .stat-label { font-size: 0.95em; font-weight: 400; display: block; color: rgba(255, 255, 255, 0.85); }
-/* --- End Issue 2 Fix --- */
 
 /* Gallery */
 .gallery-container { display: flex; overflow-x: auto; gap: var(--spacing-md); padding: var(--spacing-md) 4px var(--spacing-lg); scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--primary-color) rgba(0,0,0,0.05); }
@@ -1157,7 +1194,7 @@ body.dark-mode .gallery-container::-webkit-scrollbar-thumb { background-color: v
 .gallery-item:hover img { transform: scale(1.08); }
 
 /* Lightbox */
-.lightbox { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: var(--z-lightbox-backdrop); align-items: center; justify-content: center; padding: var(--spacing-sm); opacity: 0; transition: opacity var(--transition-speed) var(--transition-ease), backdrop-filter var(--transition-speed) var(--transition-ease); display: none; } /* Start hidden */
+.lightbox { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: var(--z-lightbox-backdrop); align-items: center; justify-content: center; padding: var(--spacing-sm); opacity: 0; transition: opacity var(--transition-speed) var(--transition-ease), backdrop-filter var(--transition-speed) var(--transition-ease); display: none; }
 .lightbox.active { display: flex; opacity: 1; }
 .lightbox-image { display: block; max-width: calc(100% - var(--spacing-sm) * 2); max-height: calc(100% - var(--spacing-xl)); border-radius: var(--border-radius-sm); transition: transform var(--transition-speed) var(--transition-cubic), opacity var(--transition-speed) ease-out; transform: scale(0.9); opacity: 0; cursor: default; z-index: var(--z-lightbox-content); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
 .lightbox.active .lightbox-image { transform: scale(1); opacity: 1; transition-delay: 0.05s; }
@@ -1315,26 +1352,28 @@ body.dark-mode .floating-action-button.music-button.muted { background: #555; co
 @media (max-width: 992px) {
     :root { --font-size-base: 15px; --spacing-lg: 2rem; --spacing-xl: 3rem; }
     section { width: 92%; padding: var(--spacing-lg) var(--spacing-sm); }
-    .stats-container { gap: var(--spacing-md); flex-basis: 160px; } /* Adjust basis if needed */
+    .stats-container { gap: var(--spacing-md); flex-basis: 160px; }
     .service-grid, .case-study-grid, .blog-preview-grid { gap: var(--spacing-md); }
     .contact-grid { gap: var(--spacing-lg); }
-    #main-header h1 { font-size: 2em; }
+    #header-brand-title { font-size: 2em; } /* Adjusted */
     #typing-effect { font-size: 1.1em; height: 1.3em; min-height: 1.3em; line-height: 1.3em;}
     .flipping-logo { width: 55px; height: 55px; }
     .tech-trivia-container { display: none; }
+    .hero-title { font-size: clamp(2.2em, 6vw, 3.5em); } /* Adjusted Hero Title */
 }
 
-/* Small Devices (Tablets/Phones) - Where Mobile Nav Activates */
+/* Small Devices (Tablets/Phones) */
 @media (max-width: 768px) {
     :root { --font-size-base: 14px; }
     h1 { font-size: 2em; } h2 { font-size: 1.8em; } h3 { font-size: 1.4em; }
-    #main-header h1 { font-size: 1.8em; }
+    #header-brand-title { font-size: 1.8em; } /* Adjusted */
     .hamburger { display: inline-block; } /* Show hamburger */
     .scrolling-text-container { padding: var(--spacing-sm) 0; }
     .scrolling-text-content { font-size: 0.9em; animation-duration: 25s; }
     .hero { min-height: 60vh; }
+    .hero-title { font-size: clamp(2em, 5.5vw, 3em); } /* Adjusted Hero Title */
     .service-grid, .case-study-grid, .blog-preview-grid { grid-template-columns: 1fr; }
-    .stats-container { gap: var(--spacing-md); flex-basis: 140px; } /* Smaller basis */
+    .stats-container { gap: var(--spacing-md); flex-basis: 140px; }
     .gallery-item { flex-basis: clamp(180px, 50vw, 240px); }
     .event-timeline { padding-left: 45px; }
     .event-card { grid-template-columns: 60px 1fr; }
@@ -1351,7 +1390,7 @@ body.dark-mode .floating-action-button.music-button.muted { background: #555; co
 @media (max-width: 480px) {
     :root { --font-size-base: 13px; --spacing-md: 1rem; --spacing-lg: 1.5rem; --spacing-xl: 2.5rem;}
     h1 { font-size: 1.8em; } h2 { font-size: 1.6em; } h3 { font-size: 1.3em; }
-    #main-header h1 { font-size: 1.6em; }
+    #header-brand-title { font-size: 1.6em; } /* Adjusted */
     #typing-effect { font-size: 0.95em; height: 1.2em; min-height: 1.2em; line-height: 1.2em; }
     .header-main { padding: var(--spacing-sm) var(--spacing-sm); }
     .header-top-bar { padding-left: var(--spacing-sm); padding-right: var(--spacing-sm); }
@@ -1359,11 +1398,12 @@ body.dark-mode .floating-action-button.music-button.muted { background: #555; co
     #darkModeToggle { font-size: 0.8em; padding: 5px 10px; min-width: auto; gap: 4px; }
     .main-nav.mobile-nav { width: 90%; max-width: 280px; }
     .hero { min-height: 55vh; }
+    .hero-title { font-size: clamp(1.8em, 5vw, 2.5em); } /* Adjusted Hero Title */
     .hero-text { font-size: 1em; }
     .button-container { gap: var(--spacing-sm); }
     .modern-button { padding: 12px 24px; font-size: 0.95em; }
     .modern-button.small { padding: 8px 18px; }
-    .stats-container { gap: var(--spacing-sm); flex-basis: 120px; } /* Even smaller basis */
+    .stats-container { gap: var(--spacing-sm); flex-basis: 120px; }
     .stat-number { font-size: 2em; }
     .os-logo-track { animation-duration: 30s; }
     .os-logo { height: 40px; width: 40px; margin: 0 var(--spacing-sm); }

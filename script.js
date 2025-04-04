@@ -1,6 +1,6 @@
 /**
  * SysFX Website Script
- * Version: 1.9 (Revised based on list items 1-7)
+ * Version: 1.9 (Revised based on list items 1-6)
  * Author: sysfx (Revised by AI Assistant)
  *
  * Purpose: Manages dynamic interactions, animations, and third-party
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const FEATURE_FLAGS = {
         enableParticles: true,
-        enableCustomCursor: true,
+        enableCustomCursor: true, // Issue 2: Cursor logic is controlled here
         enableEasterEgg: true,
         enableBackgroundMusic: true,
         enableFormspree: true // Set to false if not using a service like Formspree
@@ -106,12 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
             darkModeToggleIconContainer: '#darkModeToggle .icon-container',
             darkModeToggleText: '#darkModeToggle .mode-button-text',
             hamburgerButton: '#hamburger-button',
-            mobileNav: '#mobile-navigation', // Target the mobile nav specifically
-            mobileNavClose: '.mobile-nav-close', // Mobile nav close button
-            mobileNavOverlay: '#mobile-nav-overlay', // Mobile nav overlay
-            // Desktop nav links for scrollspy
+            mobileNav: '#mobile-navigation',
+            mobileNavClose: '.mobile-nav-close',
+            mobileNavOverlay: '#mobile-nav-overlay',
             desktopNavLinks: '#desktop-navigation .nav-link[data-section-id]',
-            // Mobile nav links for scrollspy AND closing nav
             mobileNavLinks: '#mobile-navigation .nav-link[data-section-id]',
             scrollProgress: '.scroll-progress',
             currentTimeDisplay: '#current-time',
@@ -128,7 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
             animatedSections: '.section-animation', footer: '.main-footer',
             triviaTextElement: '#trivia-text', musicToggle: '#music-toggle',
             backgroundMusic: '#background-music', scrollTopButton: '#scroll-top-button',
-            easterEggTrigger: '.easter-egg-trigger', customCursor: '.cursor',
+            easterEggTrigger: '.easter-egg-trigger',
+            customCursor: '.cursor', // Selector for Issue 2
             form: '.contact-form', formStatus: '#form-status', skipLink: '.skip-link',
             mainContent: '#main-content'
         };
@@ -193,11 +192,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } else { logWarn("Could not re-initialize particles: Container #particles-js not found."); }
     };
 
+    /** Issue 3: Function to adjust body padding based on header height. Debounced for performance. */
     const adjustLayoutPadding = debounce(() => {
         if (!ELEMENTS.header || !ELEMENTS.body || !ELEMENTS.html) return;
         headerHeight = ELEMENTS.header.offsetHeight;
         ELEMENTS.body.style.paddingTop = `${headerHeight}px`;
-        ELEMENTS.html.style.scrollPaddingTop = `${headerHeight + 20}px`;
+        ELEMENTS.html.style.scrollPaddingTop = `${headerHeight + 20}px`; // Extra space for smooth scroll target
     }, CONFIG.RESIZE_DEBOUNCE_MS);
 
     let lastScrollTop = 0;
@@ -518,24 +518,28 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Issue 4: Handles the custom cursor movement using GSAP quickTo (Revised).
-     * Positions the center of the cursor at the mouse pointer.
+     * Issue 2: Handles the custom cursor movement using GSAP quickTo.
+     * Uses GSAP quickTo for smoother performance and corrects positioning.
      */
     const handleCustomCursor = () => {
         if (!FEATURE_FLAGS.enableCustomCursor || !ELEMENTS.customCursor || prefersReducedMotion || typeof gsap === 'undefined') {
             ELEMENTS.customCursor?.remove(); ELEMENTS.body?.classList.remove('cursor-ready');
+            logInfo("Custom cursor disabled or GSAP missing.");
             return;
         }
         ELEMENTS.body?.classList.add('cursor-ready');
 
-        // Center the cursor visually by offsetting half its dimensions
-        const cursorSize = ELEMENTS.customCursor.offsetWidth; // Get size AFTER initial render
-        gsap.set(ELEMENTS.customCursor, { xPercent: -50, yPercent: -50 }); // Center transform origin
+        // Set transform origin to center
+        gsap.set(ELEMENTS.customCursor, { xPercent: -50, yPercent: -50 });
 
-        const xTo = gsap.quickTo(ELEMENTS.customCursor, "x", { duration: 0.3, ease: "power2.out" });
-        const yTo = gsap.quickTo(ELEMENTS.customCursor, "y", { duration: 0.3, ease: "power2.out" });
+        // Use quickTo for performant updates
+        const xTo = gsap.quickTo(ELEMENTS.customCursor, "x", { duration: 0.4, ease: "power3.out" }); // Adjust duration/ease as needed
+        const yTo = gsap.quickTo(ELEMENTS.customCursor, "y", { duration: 0.4, ease: "power3.out" });
 
-        const moveCursor = (e) => { xTo(e.clientX); yTo(e.clientY); };
+        const moveCursor = (e) => {
+            xTo(e.clientX);
+            yTo(e.clientY);
+        };
         const addClickEffect = () => ELEMENTS.customCursor?.classList.add('click');
         const removeClickEffect = () => ELEMENTS.customCursor?.classList.remove('click');
         const addHoverEffect = () => ELEMENTS.customCursor?.classList.add('hover');
@@ -545,49 +549,38 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('mousedown', addClickEffect);
         document.addEventListener('mouseup', removeClickEffect);
 
-        const interactiveSelector = 'a[href], button, input, textarea, select, .card-hover, [role="button"], [tabindex="0"]';
+        const interactiveSelector = 'a[href], button, input, textarea, select, .card-hover, [role="button"], [tabindex="0"], .gallery-item, .modal-close, .lightbox-close';
         ELEMENTS.body?.addEventListener('mouseover', (e) => { if (e.target?.closest(interactiveSelector)) addHoverEffect(); });
         ELEMENTS.body?.addEventListener('mouseout', (e) => { if (e.target?.closest(interactiveSelector)) removeHoverEffect(); });
         ELEMENTS.body?.addEventListener('focusin', (e) => { if (e.target?.closest(interactiveSelector)) addHoverEffect(); });
         ELEMENTS.body?.addEventListener('focusout', (e) => { if (e.target?.closest(interactiveSelector)) removeHoverEffect(); });
 
-        document.addEventListener('mouseleave', () => gsap.to(ELEMENTS.customCursor, { opacity: 0, duration: 0.2 }));
-        document.addEventListener('mouseenter', () => gsap.to(ELEMENTS.customCursor, { opacity: 1, duration: 0.2 }));
+        document.addEventListener('mouseleave', () => gsap.to(ELEMENTS.customCursor, { opacity: 0, scale: 0.5, duration: 0.2 }));
+        document.addEventListener('mouseenter', () => gsap.to(ELEMENTS.customCursor, { opacity: 1, scale: 1, duration: 0.2 }));
     };
 
-
-    /**
-     * Issue 1: Handles mobile navigation toggle using off-canvas structure.
-     */
     const handleMobileNav = () => {
         if (!ELEMENTS.hamburgerButton || !ELEMENTS.mobileNav || !ELEMENTS.body || !ELEMENTS.mobileNavOverlay || !ELEMENTS.mobileNavClose) return;
-
-        const mainContent = ELEMENTS.mainContent;
-        const footerContent = ELEMENTS.footer;
-        const overlay = ELEMENTS.mobileNavOverlay;
-        const nav = ELEMENTS.mobileNav;
-
+        const mainContent = ELEMENTS.mainContent; const footerContent = ELEMENTS.footer;
+        const overlay = ELEMENTS.mobileNavOverlay; const nav = ELEMENTS.mobileNav;
         const toggleNav = (forceClose = false) => {
             const isActive = ELEMENTS.body.classList.contains('nav-active');
             const openNav = !isActive && !forceClose;
-
             ELEMENTS.body.classList.toggle('nav-active', openNav);
             ELEMENTS.hamburgerButton.classList.toggle('is-active', openNav);
             ELEMENTS.hamburgerButton.setAttribute('aria-expanded', String(openNav));
             nav.setAttribute('aria-hidden', String(!openNav));
-
             if (openNav) {
                 mainContent?.setAttribute('inert', ''); footerContent?.setAttribute('inert', '');
                 overlay.setAttribute('aria-hidden', 'false');
                 const firstFocusable = selectElement('a[href], button', nav) || nav;
-                setTimeout(() => firstFocusable.focus(), 50); // Shorter delay after CSS transition starts
+                setTimeout(() => firstFocusable.focus(), 50);
             } else {
                 mainContent?.removeAttribute('inert'); footerContent?.removeAttribute('inert');
                 overlay.setAttribute('aria-hidden', 'true');
                  if (ELEMENTS.hamburgerButton.offsetParent !== null) ELEMENTS.hamburgerButton.focus();
             }
         };
-
         ELEMENTS.hamburgerButton.addEventListener('click', () => toggleNav());
         ELEMENTS.mobileNavClose.addEventListener('click', () => toggleNav(true));
         overlay.addEventListener('click', () => { if (ELEMENTS.body.classList.contains('nav-active')) toggleNav(true); });
@@ -595,19 +588,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && ELEMENTS.body.classList.contains('nav-active')) toggleNav(true); });
     };
 
-
-    /**
-     * Handles scrollspy functionality, targeting both navs. Throttled.
-     */
     const handleScrollspy = throttle(() => {
         const allNavLinks = [...(ELEMENTS.desktopNavLinks || []), ...(ELEMENTS.mobileNavLinks || [])];
         if (allNavLinks.length === 0) return;
-
         let currentSectionId = null;
         const adjustedHeaderHeight = ELEMENTS.header?.offsetHeight || 0;
         const scrollPosition = window.scrollY + adjustedHeaderHeight + 60;
         const sections = selectElements('main section[id]');
-
         sections.forEach(section => {
              const rect = section.getBoundingClientRect();
              if (rect.top < window.innerHeight && rect.bottom >= 0) {
@@ -617,7 +604,6 @@ document.addEventListener('DOMContentLoaded', () => {
                  }
              }
         });
-
         if (!currentSectionId) {
             if (window.scrollY < window.innerHeight * 0.2) currentSectionId = 'home';
             else if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 150) {
@@ -628,7 +614,6 @@ document.addEventListener('DOMContentLoaded', () => {
                  }
             }
         }
-
         allNavLinks.forEach(link => {
             const linkSectionId = link.getAttribute('href')?.substring(1); if (!linkSectionId) return;
             const isActive = linkSectionId === currentSectionId;
@@ -718,15 +703,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Initialization Function ---
     const initialize = () => {
         logInfo("Initializing SysFX Script v1.9...");
-        hidePreloader(); initializeDarkMode(); adjustLayoutPadding();
+        hidePreloader(); initializeDarkMode(); adjustLayoutPadding(); // Call early for padding
         displayTime(); setInterval(displayTime, 60000); displayTechTrivia();
-        handleMobileNav(); // Uses new structure
+        handleMobileNav();
         handleScrollTopButton(); handleModals(); handleLightbox();
         handleTestimonialCarousel(); if (FEATURE_FLAGS.enableFormspree) handleFormSubmission();
 
+        // Delay computationally intensive or GSAP-dependent tasks slightly
         requestAnimationFrame(() => {
             initializeParticles(); initializeMap(); animateStats(); revealSections();
-            if (FEATURE_FLAGS.enableCustomCursor) handleCustomCursor(); // Revised cursor logic
+            // Initialize cursor AFTER initial layout/render to get correct size
+            if (FEATURE_FLAGS.enableCustomCursor) {
+                // Delay slightly more to ensure element is fully rendered for size calculation
+                setTimeout(handleCustomCursor, 50);
+            }
             if (FEATURE_FLAGS.enableEasterEgg) handleEasterEgg();
             if (!prefersReducedMotion) typeEffectHandler();
         });
@@ -738,8 +728,14 @@ document.addEventListener('DOMContentLoaded', () => {
     ELEMENTS.darkModeToggle?.addEventListener('click', toggleDarkMode);
     if(FEATURE_FLAGS.enableBackgroundMusic) ELEMENTS.musicToggle?.addEventListener('click', toggleMusic);
     ELEMENTS.scrollTopButton?.addEventListener('click', scrollToTop);
-    window.addEventListener('scroll', throttle(() => { updateScrollProgress(); handleScrollspy(); handleScrollTopButton(); handleHeaderShrink(); }, 100), { passive: true });
+    // Issue 3: Recalculate padding on resize
     window.addEventListener('resize', adjustLayoutPadding);
+    window.addEventListener('scroll', throttle(() => {
+        updateScrollProgress();
+        handleScrollspy();
+        handleScrollTopButton();
+        handleHeaderShrink();
+    }, 100), { passive: true });
     ELEMENTS.skipLink?.addEventListener('blur', () => { if(ELEMENTS.skipLink) ELEMENTS.skipLink.style.left = '-9999px'; });
 
     // --- Start Initialization ---
