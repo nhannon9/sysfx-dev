@@ -1,6 +1,6 @@
 /* ==========================================================================
    SysFX Stylesheet
-   Version: 2.1 (Matrix/Emerald Theme Update)
+   Version: 2.2 (User Revisions + Tech Enhancements)
    Author: sysfx (Revised by AI Assistant)
    ========================================================================== */
 
@@ -27,7 +27,7 @@
     --text-muted-light: #6c757d;
     --text-muted-dark: #adb5bd;
     --link-color: var(--primary-color); /* Changed from blue */
-    --link-hover-color: var(--secondary-color); /* Changed from blue */
+    --link-hover-color: var(--accent-bright); /* === CHANGE: Use bright green for link hover === */
     --border-light: rgba(0, 0, 0, 0.1);
     --border-dark: rgba(255, 255, 255, 0.15);
     --bg-light: #f8f9fa;
@@ -82,13 +82,14 @@
     --shadow-interactive-hover: var(--shadow-lg);
     /* Updated Green Shadows (RGB for #058743 is 5, 135, 67; for #009c4a is 0, 156, 74) */
     --shadow-green: 0 4px 15px rgba(5, 135, 67, 0.25);
-    --shadow-green-hover: 0 7px 25px rgba(0, 156, 74, 0.35);
+    --shadow-green-hover: 0 7px 25px rgba(0, 156, 74, 0.35); /* === TECHY: Use this for card hover === */
     /* Removed Blue/Yellow shadows */
 
     /* Typography */
     --font-family-base: 'Roboto', 'Segoe UI', sans-serif; /* Added Segoe UI */
     --font-awesome: "Font Awesome 6 Free";
-    --font-size-base: 16px;
+    /* === CHANGE: Increased base font size slightly === */
+    --font-size-base: 17px; /* Was 16px */
     --line-height-base: 1.7;
     --heading-font-weight: 700;
     --heading-line-height: 1.3;
@@ -186,7 +187,7 @@ body.theme-transitions-active .main-footer {
 }
 body.theme-transitions-active .modern-button,
 body.theme-transitions-active .nav-link,
-body.theme-transitions-active a,
+body.theme-transitions-active a, /* === TECHY: Ensure link transition includes text-shadow === */
 body.theme-transitions-active .os-logo,
 body.theme-transitions-active .form-input,
 body.theme-transitions-active .form-textarea,
@@ -219,7 +220,7 @@ body.dark-mode {
     color: var(--text-light);
     /* Swap relevant variables */
     --link-color: var(--secondary-color); /* Use secondary green for links */
-    --link-hover-color: var(--accent-bright); /* Use bright green for hover */
+    --link-hover-color: var(--accent-bright); /* === CHANGE: Use bright green for link hover === */
     --border-light: var(--border-dark);
     --bg-light: var(--bg-dark);
     --bg-surface-light: var(--bg-surface-dark);
@@ -231,7 +232,7 @@ body.dark-mode {
     --shadow-interactive-hover: var(--shadow-dark-lg);
     /* Update dark mode shadows (RGB for #009c4a is 0, 156, 74; for #058743 is 5, 135, 67) */
     --shadow-green: 0 4px 20px rgba(0, 156, 74, 0.35);
-    --shadow-green-hover: 0 7px 30px rgba(5, 135, 67, 0.45);
+    --shadow-green-hover: 0 7px 30px rgba(5, 135, 67, 0.45); /* === TECHY: Update dark mode green hover shadow === */
     /* Glassmorphism uses specific dark vars */
     --glass-bg-light: var(--glass-bg-dark);
     --glass-border-light: var(--glass-border-dark);
@@ -379,20 +380,72 @@ body.dark-mode .gradient-text.glow-text {
 .optional, .required-star { font-size: 0.85em; font-weight: normal; color: var(--text-muted-light); } /* Uses theme rule */
 .required-star { color: var(--error-color); margin-left: 2px; }
 
-.card-hover { transition: transform var(--transition-speed) var(--transition-cubic), box-shadow var(--transition-speed) var(--transition-cubic); }
-.card-hover:hover, .card-hover:focus-within { transform: translateY(-6px) scale(1.02); box-shadow: var(--shadow-interactive-hover); }
+/* === TECHY: Enhanced card hover effect === */
+.card-hover {
+    transition: transform var(--transition-speed) var(--transition-cubic),
+                box-shadow var(--transition-speed) var(--transition-cubic),
+                border-color var(--transition-speed) var(--transition-ease); /* Add border transition */
+    border: 1px solid transparent; /* Prepare for border change if needed, useful if not glass */
+}
+.card-hover:hover, .card-hover:focus-within {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--shadow-green-hover); /* Use defined green hover shadow */
+    /* Optional: Add subtle glow border */
+    /* border-color: rgba(0, 208, 98, 0.3); */
+}
+/* Ensure glassmorphism cards also get the green shadow on hover */
+.glass-morphism.card-hover {
+     /* Glass already has transitions, ensure shadow is included */
+     transition: transform var(--transition-speed) var(--transition-cubic),
+                 box-shadow var(--transition-speed) var(--transition-cubic),
+                 border-color var(--transition-speed) var(--transition-ease),
+                 background var(--transition-speed) var(--transition-ease),
+                 backdrop-filter var(--transition-speed) var(--transition-ease);
+}
+.glass-morphism.card-hover:hover, .glass-morphism.card-hover:focus-within {
+    box-shadow: var(--shadow-green-hover) !important; /* Override default glass shadow on hover, use !important if needed */
+    /* Optional: Slightly brighten glass border on hover */
+    /* border-color: rgba(0, 208, 98, 0.4); */
+}
+body.dark-mode .glass-morphism.card-hover:hover, body.dark-mode .glass-morphism.card-hover:focus-within {
+    box-shadow: var(--shadow-green-hover) !important; /* Use same green shadow hover for dark mode too */
+    /* Optional: Use bright green border for dark mode glass hover */
+    /* border-color: var(--glass-border-dark); */ /* Already uses bright green, maybe increase opacity? */
+    /* border-color: rgba(0, 208, 98, 0.3); */
+}
+
 
 /* Links */
-a { color: var(--link-color); text-decoration: none; transition: color var(--transition-speed-fast) var(--transition-ease); }
-a:hover, a:focus { color: var(--link-hover-color); text-decoration: underline; outline: none; }
-a:focus-visible { outline: 2px solid var(--link-hover-color); outline-offset: 2px; border-radius: var(--border-radius-sm); }
-/* No dark mode override needed as dark mode vars handle link colors */
+a { color: var(--link-color); text-decoration: none; transition: color var(--transition-speed-fast) var(--transition-ease), text-shadow var(--transition-speed-fast) var(--transition-ease); } /* === TECHY: Add text-shadow to transition === */
+
+/* === TECHY: Updated link hover style === */
+a:hover, a:focus {
+    color: var(--link-hover-color); /* Already set to --accent-bright */
+    text-decoration: none; /* Remove underline for cleaner look */
+    outline: none;
+    text-shadow: 0 0 5px rgba(0, 208, 98, 0.5); /* Subtle bright green glow */
+}
+body.dark-mode a:hover, body.dark-mode a:focus {
+    color: var(--link-hover-color); /* Keep bright green */
+    text-shadow: 0 0 6px rgba(0, 208, 98, 0.6); /* Slightly stronger glow for dark */
+}
+
+/* Keep focus-visible distinct for accessibility */
+a:focus-visible {
+    outline: 2px solid var(--accent-bright);
+    outline-offset: 2px;
+    border-radius: var(--border-radius-sm);
+    text-shadow: none; /* Remove glow on focus-visible to avoid clash with outline */
+    text-decoration: none; /* Ensure no underline */
+    color: var(--link-hover-color); /* Use hover color for focus */
+}
+
 .email-link { word-break: break-all; }
 
-/* Headings base size */
-h1 { font-size: clamp(2em, 5vw, 2.8em); }
-h2 { font-size: clamp(1.8em, 4vw, 2.4em); }
-h3 { font-size: clamp(1.4em, 3vw, 1.8em); }
+/* Headings base size (Adjusted slightly due to base font size change) */
+h1 { font-size: clamp(2.1em, 5.2vw, 2.9em); }
+h2 { font-size: clamp(1.9em, 4.2vw, 2.5em); }
+h3 { font-size: clamp(1.5em, 3.2vw, 1.9em); }
 
 
 /* ==========================================================================
@@ -598,26 +651,34 @@ body.dark-mode .nav-link { color: var(--text-light); }
 body.dark-mode .nav-link i { color: var(--secondary-color); }
 
 /* Desktop Nav Link Hover/Focus - Updated colors */
-.desktop-nav .nav-link:hover, .desktop-nav .nav-link:focus { color: var(--primary-color); background-color: rgba(5, 135, 67, 0.08); text-decoration: none; outline: none; }
-body.dark-mode .desktop-nav .nav-link:hover, body.dark-mode .desktop-nav .nav-link:focus { color: var(--secondary-color); background-color: rgba(0, 156, 74, 0.15); }
+.desktop-nav .nav-link:hover, .desktop-nav .nav-link:focus {
+    color: var(--primary-color); background-color: rgba(5, 135, 67, 0.08);
+    text-decoration: none; outline: none;
+    /* === TECHY: Remove text-shadow from nav link hover if default link hover has it === */
+    text-shadow: none; /* Override default 'a:hover' glow if needed */
+}
+body.dark-mode .desktop-nav .nav-link:hover, body.dark-mode .desktop-nav .nav-link:focus {
+    color: var(--secondary-color); background-color: rgba(0, 156, 74, 0.15);
+    text-shadow: none;
+}
 .desktop-nav .nav-link::after { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 0; height: 2px; background: var(--primary-color); transition: width var(--transition-speed) var(--transition-ease-out); }
 body.dark-mode .desktop-nav .nav-link::after { background: var(--secondary-color); }
 .desktop-nav .nav-link:hover::after, .desktop-nav .nav-link:focus::after { width: 60%; }
 
 /* Active Nav Link Style (Scrollspy) - Updated colors */
-.nav-link.active { color: var(--text-light); background-color: var(--primary-color); box-shadow: var(--shadow-inset); }
+.nav-link.active { color: var(--text-light); background-color: var(--primary-color); box-shadow: var(--shadow-inset); text-shadow: none; } /* Ensure no glow */
 .nav-link.active i { color: var(--text-light); }
 .desktop-nav .nav-link.active::after { display: none; }
-body.dark-mode .nav-link.active { background-color: var(--secondary-color); color: var(--text-dark); } /* Dark text on secondary green bg */
+body.dark-mode .nav-link.active { background-color: var(--secondary-color); color: var(--text-dark); text-shadow: none; } /* Dark text on secondary green bg */
 body.dark-mode .nav-link.active i { color: var(--text-dark); }
 
 /* Mobile Nav Link Specific Styles - Updated colors */
 .mobile-nav .nav-link { width: 100%; padding: 14px 20px; font-size: 1.1em; justify-content: flex-start; border-radius: var(--border-radius-sm); background: transparent; border-bottom: 1px solid var(--border-light); color: var(--text-dark); }
 .mobile-nav .nav-link:last-of-type { border-bottom: none; }
 body.dark-mode .mobile-nav .nav-link { background: transparent; border-bottom-color: var(--border-dark); color: var(--text-light); }
-.mobile-nav .nav-link:hover, .mobile-nav .nav-link:focus, .mobile-nav .nav-link.active { background-color: rgba(5, 135, 67, 0.1); color: var(--primary-color); box-shadow: none; }
+.mobile-nav .nav-link:hover, .mobile-nav .nav-link:focus, .mobile-nav .nav-link.active { background-color: rgba(5, 135, 67, 0.1); color: var(--primary-color); box-shadow: none; text-shadow: none; } /* Ensure no glow */
 .mobile-nav .nav-link.active i { color: var(--primary-color); }
-body.dark-mode .mobile-nav .nav-link:hover, body.dark-mode .mobile-nav .nav-link:focus, body.dark-mode .mobile-nav .nav-link.active { background-color: rgba(0, 156, 74, 0.2); color: var(--secondary-color); }
+body.dark-mode .mobile-nav .nav-link:hover, body.dark-mode .mobile-nav .nav-link:focus, body.dark-mode .mobile-nav .nav-link.active { background-color: rgba(0, 156, 74, 0.2); color: var(--secondary-color); text-shadow: none; }
 body.dark-mode .mobile-nav .nav-link.active i { color: var(--secondary-color); }
 
 /* Header Shrink Styles */
@@ -634,13 +695,28 @@ body.dark-mode #main-header.header-shrunk { box-shadow: var(--shadow-dark-md); }
    6. Scrolling Text Bar - Updated colors
    ========================================================================== */
 .scrolling-text-container {
-    background: var(--primary-color); color: var(--text-light); padding: var(--spacing-sm) 0;
+    background: var(--primary-color);
+    color: var(--text-light); /* === FIX: White text in light mode === */
+    padding: var(--spacing-sm) 0;
     white-space: nowrap; overflow: hidden; width: 100%; position: relative;
     z-index: var(--z-sticky);
     box-shadow: var(--shadow-sm);
+    /* === FIX: Black outline for light mode === */
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
-body.dark-mode .scrolling-text-container { background: var(--secondary-color); color: var(--text-dark); } /* Dark text on secondary green */
-.scrolling-text-content { display: inline-block; padding-left: 100%; animation: scroll-text 30s linear infinite; font-size: 0.95em; font-weight: 500; margin: 0; will-change: transform; }
+body.dark-mode .scrolling-text-container {
+    background: var(--secondary-color);
+    color: var(--text-dark); /* === FIX: Black text in dark mode === */
+    /* === FIX: White outline for dark mode === */
+    text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;
+}
+.scrolling-text-content {
+    display: inline-block; padding-left: 100%;
+    animation: scroll-text 30s linear infinite;
+    /* === CHANGE: Increased scrolling text size === */
+    font-size: 1.1em; /* Was 0.95em */
+    font-weight: 500; margin: 0; will-change: transform;
+}
 .scrolling-text-content span { display: inline-block; margin-right: 60px; }
 @keyframes scroll-text { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 .scrolling-text-container:hover .scrolling-text-content { animation-play-state: paused; }
@@ -653,7 +729,10 @@ main { /* padding-top handled by JS */ }
 
 section {
     margin: var(--spacing-lg) auto; padding: var(--spacing-lg) var(--spacing-md);
-    width: 90%; max-width: 1100px; position: relative; overflow: hidden;
+    width: 90%;
+    /* === CHANGE: Increased max-width for wider displays === */
+    max-width: 1300px; /* Was 1100px */
+    position: relative; overflow: hidden;
     border-radius: var(--border-radius-lg);
 }
 .section-animation { opacity: 0; }
@@ -721,10 +800,28 @@ body.dark-mode .hero-overlay-animated { opacity: 0.6; background: linear-gradien
 }
 .hero-title {
     margin-bottom: var(--spacing-md); font-size: clamp(2.5em, 7vw, 4em); line-height: 1.2;
-    transform: none; filter: none;
-    /* Apply glow via utility class .glow-text */
+    /* === FIX: Attempt to fix blurriness === */
+    transform: translateZ(0); /* Force hardware acceleration / layer promotion */
+    filter: none !important;  /* Explicitly remove any filters */
+    -webkit-font-smoothing: antialiased; /* Ensure smooth fonts */
+    -moz-osx-font-smoothing: grayscale;
+    text-shadow: none; /* Remove any potential text-shadow if not using .glow-text */
+    /* Apply glow via utility class .glow-text if desired */
 }
-.hero-text { font-size: 1.2em; margin-bottom: var(--spacing-lg); text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6); max-width: 700px; margin-left: auto; margin-right: auto; }
+/* If using .glow-text on hero-title, ensure its shadow is sharp */
+.hero-title.glow-text {
+    text-shadow: var(--text-glow-shadow) !important; /* Use the defined sharp glow */
+    /* Make sure the glow variables are sharp enough */
+}
+body.dark-mode .hero-title.glow-text {
+    text-shadow: var(--text-glow-shadow-dark-mode) !important;
+}
+
+.hero-text {
+    /* === CHANGE: Increased hero paragraph text size === */
+    font-size: 1.5em; /* Was 1.2em */
+    margin-bottom: var(--spacing-lg); text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6); max-width: 700px; margin-left: auto; margin-right: auto;
+}
 
 /* --- Buttons --- */
 .button-container { display: flex; gap: var(--spacing-md); justify-content: center; margin-top: var(--spacing-lg); flex-wrap: wrap; }
@@ -769,13 +866,25 @@ body.dark-mode .hero-overlay-animated { opacity: 0.6; background: linear-gradien
 /* Services Section */
 .service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-lg); padding: var(--spacing-lg) 0; }
 /* Use glassmorphism for service cards */
-.service { padding: var(--spacing-lg); text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; background: var(--glass-bg-light); border: 1px solid var(--glass-border-light); border-radius: var(--border-radius-md); box-shadow: var(--shadow-sm); transition: background var(--transition-speed) ease, border-color var(--transition-speed) ease; }
+.service {
+    padding: var(--spacing-lg); text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between;
+    background: var(--glass-bg-light); border: 1px solid var(--glass-border-light); border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+    /* === TECHY: Ensure service card inherits transition for hover effect === */
+     transition: background var(--transition-speed) ease, border-color var(--transition-speed) ease,
+                 transform var(--transition-speed) var(--transition-cubic), box-shadow var(--transition-speed) var(--transition-cubic);
+    /* Add card-hover class in HTML to apply hover effect: <div class="service glass-morphism card-hover"> */
+}
 body.dark-mode .service { background: var(--glass-bg-dark); border-color: var(--glass-border-dark); }
 /* Pulsing Service Icons - Updated colors */
 @keyframes pulseServiceIcon { 0%, 100% { filter: drop-shadow(0 0 4px var(--primary-color)); transform: scale(1); } 50% { filter: drop-shadow(0 0 8px var(--primary-color)); transform: scale(1.05); } }
 @keyframes pulseServiceIconDark { 0%, 100% { filter: drop-shadow(0 0 4px var(--secondary-color)); transform: scale(1); } 50% { filter: drop-shadow(0 0 8px var(--secondary-color)); transform: scale(1.05); } }
 .service-icon { display: inline-block; margin-bottom: var(--spacing-md); transition: transform var(--transition-speed) var(--transition-cubic); }
-.service-icon i { font-size: 3.2em; color: var(--primary-color); animation: pulseServiceIcon 3s infinite ease-in-out; }
+.service-icon i {
+    font-size: 3.2em; color: var(--primary-color);
+    /* === TECHY: Ensure animation is applied === */
+    animation: pulseServiceIcon 3s infinite ease-in-out;
+}
 body.dark-mode .service-icon i { color: var(--secondary-color); animation-name: pulseServiceIconDark; }
 .service:hover .service-icon i { animation-play-state: paused; transform: scale(1.1) rotate(-5deg); filter: drop-shadow(0 0 10px var(--primary-color)); }
 body.dark-mode .service:hover .service-icon i { filter: drop-shadow(0 0 10px var(--secondary-color)); }
@@ -813,7 +922,7 @@ body.dark-mode .os-logo.apple-dark-invert:hover { filter: invert(1) drop-shadow(
 .modal-content {
     padding: var(--spacing-lg); max-width: 650px; width: 100%; text-align: left; position: relative;
     transform: scale(0.95) translateY(10px); opacity: 0;
-    transition: transform var(--transition-speed) var(--transition-cubic), opacity var(--transition-speed) var(--transition-ease-out), background var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    transition: transform var(--transition-speed) var(--transition-cubic), opacity var(--transition-speed) var(--transition-ease-out), background var(--transition-speed) ease, border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease; /* Added box-shadow to transition */
     z-index: var(--z-modal-content); margin: auto; border-radius: var(--border-radius-md);
     max-height: 90vh; overflow-y: auto;
     /* Apply glassmorphism directly */
@@ -921,7 +1030,15 @@ body.dark-mode .carousel-control:hover, body.dark-mode .carousel-control:focus {
 
 /* Case Studies & Blog Preview - Use glassmorphism */
 .case-study-grid, .blog-preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg); padding: var(--spacing-lg) 0; }
-.case-study, .blog-post-preview { padding: var(--spacing-lg); display: flex; flex-direction: column; background: var(--glass-bg-light); border: 1px solid var(--glass-border-light); border-radius: var(--border-radius-md); box-shadow: var(--shadow-sm); transition: background var(--transition-speed) ease, border-color var(--transition-speed) ease; }
+.case-study, .blog-post-preview {
+    padding: var(--spacing-lg); display: flex; flex-direction: column;
+    background: var(--glass-bg-light); border: 1px solid var(--glass-border-light); border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+    /* === TECHY: Ensure transition for hover effect === */
+    transition: background var(--transition-speed) ease, border-color var(--transition-speed) ease,
+                transform var(--transition-speed) var(--transition-cubic), box-shadow var(--transition-speed) var(--transition-cubic);
+    /* Add card-hover class in HTML: <div class="case-study glass-morphism card-hover"> */
+}
 body.dark-mode .case-study, body.dark-mode .blog-post-preview { background: var(--glass-bg-dark); border-color: var(--glass-border-dark); }
 /* Update heading color */
 .case-study h3, .blog-post-preview h3 { margin-bottom: var(--spacing-sm); color: var(--primary-color); font-size: 1.3em; }
@@ -1015,7 +1132,7 @@ body.dark-mode .leaflet-control-attribution a { color: #aaa !important; }
     margin-top: var(--spacing-xl); padding: var(--spacing-lg) var(--spacing-md); text-align: center;
     border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0; border-bottom: none; border-left: none; border-right: none;
     color: var(--text-muted-light); opacity: 0; transform: translateY(40px);
-    transition: opacity var(--transition-speed-slow) var(--transition-ease-out), transform var(--transition-speed-slow) var(--transition-cubic), background var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    transition: opacity var(--transition-speed-slow) var(--transition-ease-out), transform var(--transition-speed-slow) var(--transition-cubic), background var(--transition-speed) ease, border-color var(--transition-speed) ease, backdrop-filter var(--transition-speed) ease; /* Added backdrop-filter */
     /* Apply glassmorphism */
     background: var(--glass-bg-light); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
     border-top: var(--border-width) solid var(--glass-border-light);
@@ -1031,14 +1148,23 @@ body.dark-mode .main-footer {
 .social-links { margin: var(--spacing-md) 0; display: flex; justify-content: center; gap: var(--spacing-lg); }
 .social-links a { color: var(--text-muted-light); font-size: 1.8em; transition: all var(--transition-speed) var(--transition-cubic); display: inline-block; }
 body.dark-mode .social-links a { color: var(--text-muted-dark); }
-.social-links a:hover, .social-links a:focus { color: var(--primary-color); transform: scale(1.25) rotate(8deg); outline: none; }
-body.dark-mode .social-links a:hover, body.dark-mode .social-links a:focus { color: var(--secondary-color); }
+/* Apply default link hover from above */
+/* .social-links a:hover, .social-links a:focus { color: var(--primary-color); transform: scale(1.25) rotate(8deg); outline: none; } */
+/* body.dark-mode .social-links a:hover, body.dark-mode .social-links a:focus { color: var(--secondary-color); } */
+/* === TECHY: Add slight transform to social links on hover (uses default link hover style now) === */
+.social-links a:hover, .social-links a:focus {
+    transform: scale(1.15) rotate(5deg);
+    /* Inherits color and text-shadow from general a:hover */
+}
+
+
 /* Update footer link colors */
 .footer-links { margin-top: var(--spacing-md); font-size: 0.9em; }
-.footer-links a { color: var(--text-muted-light); text-decoration: none; margin: 0 var(--spacing-sm); transition: color var(--transition-speed) var(--transition-ease); }
-.footer-links a:hover, .footer-links a:focus { color: var(--primary-color); text-decoration: underline; outline: none; }
+.footer-links a { color: var(--text-muted-light); text-decoration: none; margin: 0 var(--spacing-sm); /* Inherits transition from 'a' */ }
+/* Apply default link hover from above */
+/* .footer-links a:hover, .footer-links a:focus { color: var(--primary-color); text-decoration: underline; outline: none; } */
 body.dark-mode .footer-links a { color: var(--text-muted-dark); }
-body.dark-mode .footer-links a:hover, body.dark-mode .footer-links a:focus { color: var(--secondary-color); }
+/* body.dark-mode .footer-links a:hover, body.dark-mode .footer-links a:focus { color: var(--secondary-color); } */
 
 /* Floating Elements - Update colors */
 .floating-elements { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); z-index: var(--z-floating); display: flex; flex-direction: column; align-items: flex-end; gap: var(--spacing-sm); }
@@ -1070,8 +1196,9 @@ body.dark-mode .scroll-top-btn:hover, body.dark-mode .scroll-top-btn:focus { bac
 
 /* Medium Devices */
 @media (max-width: 992px) {
-    :root { --font-size-base: 15px; --spacing-lg: 2rem; --spacing-xl: 3rem; }
-    section { width: 92%; padding: var(--spacing-lg) var(--spacing-sm); }
+    /* === CHANGE: Adjusted base font size for responsiveness === */
+    :root { --font-size-base: 16px; --spacing-lg: 2rem; --spacing-xl: 3rem; } /* Was 15px */
+    section { width: 92%; padding: var(--spacing-lg) var(--spacing-sm); max-width: 95%; } /* Adjust max-width slightly */
     .stats-container { gap: var(--spacing-md); flex-basis: 160px; }
     .service-grid, .case-study-grid, .blog-preview-grid { gap: var(--spacing-md); }
     .contact-grid { gap: var(--spacing-lg); }
@@ -1080,18 +1207,22 @@ body.dark-mode .scroll-top-btn:hover, body.dark-mode .scroll-top-btn:focus { bac
     .flipping-logo { width: 55px; height: 55px; }
     .tech-trivia-container { display: none; }
     .hero-title { font-size: clamp(2.2em, 6vw, 3.5em); }
+    .hero-text { font-size: 1.3em; } /* Adjust hero text size down */
+    .scrolling-text-content { font-size: 1em; } /* Adjust scroll text size down */
 }
 
 /* Small Devices (Tablets/Phones) */
 @media (max-width: 768px) {
-    :root { --font-size-base: 14px; }
+    /* === CHANGE: Adjusted base font size for responsiveness === */
+    :root { --font-size-base: 15px; } /* Was 14px */
     h1 { font-size: 2em; } h2 { font-size: 1.8em; } h3 { font-size: 1.4em; }
     #header-brand-title { font-size: 1.8em; }
     .hamburger { display: inline-block; }
     .scrolling-text-container { padding: var(--spacing-sm) 0; }
-    .scrolling-text-content { font-size: 0.9em; animation-duration: 25s; }
+    .scrolling-text-content { font-size: 0.95em; animation-duration: 25s; } /* Was 0.9em */
     .hero { min-height: 60vh; }
     .hero-title { font-size: clamp(2em, 5.5vw, 3em); }
+    .hero-text { font-size: 1.2em; } /* Adjust hero text size down */
     .service-grid, .case-study-grid, .blog-preview-grid { grid-template-columns: 1fr; }
     .stats-container { gap: var(--spacing-md); flex-basis: 140px; }
     .gallery-item { flex-basis: clamp(180px, 50vw, 240px); }
@@ -1107,11 +1238,13 @@ body.dark-mode .scroll-top-btn:hover, body.dark-mode .scroll-top-btn:focus { bac
     .carousel-container { padding-left: 40px; padding-right: 40px; }
     .carousel-prev { left: 5px; transform: translateY(-50%); }
     .carousel-next { right: 5px; transform: translateY(-50%); }
+    section { max-width: 98%; } /* Allow more width on smaller screens */
 }
 
 /* Extra Small Devices */
 @media (max-width: 480px) {
-    :root { --font-size-base: 13px; --spacing-md: 1rem; --spacing-lg: 1.5rem; --spacing-xl: 2.5rem;}
+    /* === CHANGE: Adjusted base font size for responsiveness === */
+    :root { --font-size-base: 14px; --spacing-md: 1rem; --spacing-lg: 1.5rem; --spacing-xl: 2.5rem;} /* Was 13px */
     h1 { font-size: 1.8em; } h2 { font-size: 1.6em; } h3 { font-size: 1.3em; }
     #header-brand-title { font-size: 1.6em; }
     #typing-effect { font-size: 0.95em; height: 1.2em; min-height: 1.2em; line-height: 1.2em; }
@@ -1122,7 +1255,7 @@ body.dark-mode .scroll-top-btn:hover, body.dark-mode .scroll-top-btn:focus { bac
     .main-nav.mobile-nav { width: 90%; max-width: 280px; }
     .hero { min-height: 55vh; }
     .hero-title { font-size: clamp(1.8em, 5vw, 2.5em); }
-    .hero-text { font-size: 1em; }
+    .hero-text { font-size: 1.1em; } /* Adjust hero text size down */
     .button-container { gap: var(--spacing-sm); }
     .modern-button { padding: 12px 24px; font-size: 0.95em; }
     .modern-button.small { padding: 8px 18px; }
