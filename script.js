@@ -1,6 +1,6 @@
 /**
  * SysFX Website Script
- * Version: 2.1 (Revised with bug fixes and IntersectionObserver upgrade)
+ * Version: 2.2 (Performance Optimizations)
  * Author: sysfx (Revised by AI Assistant)
  *
  * Purpose: Manages dynamic interactions, animations, and third-party
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         TYPING_PAUSE_MS: 2500,
         CAROUSEL_INTERVAL_MS: 6000,
         FORM_STATUS_TIMEOUT_MS: 6000,
-        PRELOADER_TIMEOUT_MS: 4000,
+        PRELOADER_TIMEOUT_MS: 2500, // Reduced timeout
         MUSIC_FADE_DURATION_MS: 600,
         MODAL_CLOSE_SCROLL_DELAY_MS: 350, // Delay for scroll after modal close (match CSS transition)
         TAGLINES: [
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const FEATURE_FLAGS = {
         enableParticles: true,
-        enableCustomCursor: true, // Issue 2: Controlled here
+        enableCustomCursor: true,
         enableEasterEgg: true,
         enableBackgroundMusic: true,
         enableFormspree: true // Set to false if not using a service like Formspree
@@ -85,6 +85,25 @@ document.addEventListener('DOMContentLoaded', () => {
         try { return Array.from(context.querySelectorAll(selector)); } catch (e) { logError(`Invalid selector: ${selector}`, e); return []; } // Return empty array
     };
 
+    const loadScript = (src, attributes = {}) => new Promise((resolve, reject) => {
+        if (document.querySelector(`script[src="${src}"]`)) return resolve();
+        const script = document.createElement('script');
+        Object.assign(script, { src, ...attributes });
+        script.onload = resolve;
+        script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+        document.head.append(script);
+    });
+
+    const loadStyle = (href) => new Promise((resolve, reject) => {
+        if (document.querySelector(`link[href="${href}"]`)) return resolve();
+        const link = document.createElement('link');
+        Object.assign(link, { rel: 'stylesheet', href });
+        link.onload = resolve;
+        link.onerror = () => reject(new Error(`Failed to load style: ${href}`));
+        document.head.append(link);
+    });
+
+
     // --- State Variables ---
     let headerHeight = 0;
     let currentTaglineIndex = 0;
@@ -97,8 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeLightboxTarget = null;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let audioFadeInterval = null;
-    let cursorXQuickTo = null; // For Issue 2 GSAP quickTo
-    let cursorYQuickTo = null; // For Issue 2 GSAP quickTo
+    let cursorXQuickTo = null;
+    let cursorYQuickTo = null;
 
     // --- Element Selectors Cache ---
     const ELEMENTS = (() => {
@@ -112,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
             mobileNav: '#mobile-navigation',
             mobileNavClose: '.mobile-nav-close',
             mobileNavOverlay: '#mobile-nav-overlay',
-            // === UPGRADE: New combined selector for all nav links for scrollspy ===
             navLinks: '.main-nav .nav-link[href^="#"]',
             scrollProgress: '.scroll-progress',
             currentTimeDisplay: '#current-time',
@@ -134,7 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
             customCursor: '.cursor',
             form: '.contact-form', formStatus: '#form-status', skipLink: '.skip-link',
             mainContent: '#main-content',
-            // === UPGRADE: New selector for IntersectionObserver ===
             sectionsForScrollspy: 'main section[id]'
         };
         const elements = {};
@@ -231,7 +248,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!ELEMENTS.currentTimeDisplay) return;
         try {
             const now = new Date();
-            // === UPGRADE: Use specific timezone for local business consistency ===
             const timeZone = 'America/New_York';
             const optionsTime = { hour: '2-digit', minute: '2-digit', hour12: true, timeZone };
             const optionsDate = { weekday: 'short', month: 'short', day: 'numeric', timeZone };
@@ -313,6 +329,28 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { logError("Error initializing Leaflet map", error); if (ELEMENTS.mapElement) ELEMENTS.mapElement.innerHTML = '<p>Map could not be loaded.</p>'; mapInstance = null; }
     };
 
+    const setupMapObserver = () => {
+        if (!ELEMENTS.mapElement) return;
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    obs.unobserve(entry.target);
+                    logInfo("Map section in view. Loading Leaflet...");
+                    Promise.all([
+                        loadStyle('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'),
+                        loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', { integrity: 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=', crossOrigin: 'anonymous' })
+                    ])
+                    .then(() => {
+                        logInfo("Leaflet loaded.");
+                        initializeMap();
+                    })
+                    .catch(error => logError("Failed to load Leaflet library", error));
+                }
+            });
+        }, { rootMargin: '200px', threshold: 0.01 });
+        observer.observe(ELEMENTS.mapElement);
+    };
+
     const initializeMapMarker = () => {
         if (!mapInstance || typeof L === 'undefined' || !ELEMENTS.body) return;
         mapInstance.eachLayer((layer) => { if (layer instanceof L.Marker || (layer.options && layer.options.icon instanceof L.DivIcon)) { try { mapInstance.removeLayer(layer); } catch (e) { logWarn("Could not remove previous map marker.", e); } } });
@@ -352,7 +390,6 @@ document.addEventListener('DOMContentLoaded', () => {
             selectElements('.modal-action[data-scroll-target]', modal).forEach(button => {
                 button.addEventListener('click', () => {
                     const targetSelector = button.getAttribute('data-scroll-target');
-                    // === FIX: Pass 'true' to skip focus return, preventing "focus jump" ===
                     closeModal(modal, true);
                     setTimeout(() => {
                         const targetElement = selectElement(targetSelector);
@@ -571,7 +608,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const playPromise = audio.play();
             if (playPromise !== undefined) {
                 playPromise.then(() => {
-                    if (typeof gsap !== 'undefined') { gsap.to(audio, { volume: 1, duration: fadeDurationSeconds, ease: "linear" }); }
+                    if (typeof gsap !== 'undefined') { gsap.to(audio, { volume: 1, duration: fadeDurationSeconds, ease: "linear" }); } 
                     else { let vol = 0; audioFadeInterval = setInterval(() => { vol += 0.1 / (fadeDurationSeconds * 10); if (vol >= 1) { audio.volume = 1; clearInterval(audioFadeInterval); } else { audio.volume = vol; } }, 100); }
                     musicPlaying = true; button.classList.remove('muted'); button.setAttribute('aria-pressed', 'true'); button.setAttribute('aria-label', 'Pause background music');
                 }).catch(error => { logWarn("Music playback failed (user interaction likely needed).", error); button.classList.add('muted'); button.setAttribute('aria-pressed', 'false'); musicPlaying = false; });
@@ -660,15 +697,13 @@ document.addEventListener('DOMContentLoaded', () => {
         ELEMENTS.hamburgerButton.addEventListener('click', () => toggleNav());
         ELEMENTS.mobileNavClose.addEventListener('click', () => toggleNav(true));
         overlay.addEventListener('click', () => { if (ELEMENTS.body.classList.contains('nav-active')) toggleNav(true); });
-        selectElements('.main-nav .nav-link', nav).forEach(link => link.addEventListener('click', () => toggleNav(true))); // Updated selector to match cache
+        selectElements('.main-nav .nav-link', nav).forEach(link => link.addEventListener('click', () => toggleNav(true)));
         document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && ELEMENTS.body.classList.contains('nav-active')) toggleNav(true); });
     };
     
-    // === UPGRADE: Replaced original scrollspy with IntersectionObserver for performance and accuracy ===
     const handleScrollspy = () => {
         if (!('IntersectionObserver' in window)) {
             logWarn("IntersectionObserver not supported. Using fallback scroll-based scrollspy.");
-            // Re-instating original throttled function as a fallback
             window.addEventListener('scroll', throttle(() => {
                 const allNavLinks = selectElements('.main-nav .nav-link[data-section-id]');
                 if (allNavLinks.length === 0) return;
@@ -722,8 +757,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleEasterEgg = () => {
-        if (!FEATURE_FLAGS.enableEasterEgg || !ELEMENTS.easterEggTrigger || typeof confetti === 'undefined' || prefersReducedMotion) return;
-        ELEMENTS.easterEggTrigger.addEventListener('click', () => {
+        if (!FEATURE_FLAGS.enableEasterEgg || !ELEMENTS.easterEggTrigger || prefersReducedMotion) return;
+
+        const runConfetti = () => {
+            if (typeof confetti === 'undefined') {
+                logWarn('Confetti script not ready.');
+                return;
+            }
             const duration = 4 * 1000; const animationEnd = Date.now() + duration;
             const colors = ['#00a000', '#4CAF50', '#ffdd00', '#ffffff', '#dddddd'];
             const zIndex = parseInt(getComputedStyle(ELEMENTS.html).getPropertyValue('--z-lightbox-content'), 10) + 10 || 1320;
@@ -734,6 +774,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 confetti({ startVelocity: 30, spread: 360, ticks: 60, zIndex: zIndex, particleCount: particleCount, origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 }, colors: colors, disableForReducedMotion: true });
             }, 200);
             logInfo("🎉 Confetti!");
+        };
+
+        ELEMENTS.easterEggTrigger.addEventListener('click', () => {
+            if (typeof confetti === 'function') {
+                runConfetti();
+            } else {
+                logInfo('Loading confetti script for the first time...');
+                loadScript('https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js', { defer: true })
+                    .then(() => {
+                        logInfo('Confetti script loaded successfully.');
+                        runConfetti();
+                    })
+                    .catch(err => logError('Could not load confetti script', err));
+            }
         });
     };
 
@@ -769,7 +823,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await fetch(ELEMENTS.form.action, { method: 'POST', body: formData, headers: { 'Accept': 'application/json' } });
                 if (response.ok) {
-                    updateFormStatus('Message sent successfully! We\'ll be in touch.', 'success');
+                    updateFormStatus('Message sent successfully! We\\'be in touch.', 'success');
                     ELEMENTS.form.reset();
                     selectElements('.invalid', ELEMENTS.form).forEach(el => el.classList.remove('invalid'));
                     setTimeout(() => updateFormStatus('', 'idle'), CONFIG.FORM_STATUS_TIMEOUT_MS);
@@ -825,7 +879,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initialization Function ---
     const initialize = () => {
-        logInfo(`Initializing SysFX Script v2.1...`);
+        logInfo(`Initializing SysFX Script v2.2...`);
         hidePreloader();
         initializeDarkMode();
         adjustLayoutPadding();
@@ -840,7 +894,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         requestAnimationFrame(() => {
             initializeParticles();
-            initializeMap();
+            setupMapObserver(); // Changed from initializeMap()
             animateStats();
             revealSections();
             if (FEATURE_FLAGS.enableCustomCursor) handleCustomCursor();
@@ -848,7 +902,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!prefersReducedMotion) typeEffectHandler();
         });
 
-        // Initialize new scrollspy
         setTimeout(handleScrollspy, 300);
 
         logInfo("SysFX Script Initialized.");
@@ -862,10 +915,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('resize', adjustLayoutPadding);
 
-    // === UPGRADE: Removed scrollspy from main scroll listener ===
     window.addEventListener('scroll', throttle(() => {
         updateScrollProgress();
-        // handleScrollspy(); // No longer needed here
         handleScrollTopButton();
         handleHeaderShrink();
     }, 100), { passive: true });
