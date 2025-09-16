@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ELEMENTS.currentTimeDisplay.textContent = '';
             const dateIcon = document.createElement('i'); dateIcon.className = 'far fa-calendar-alt'; dateIcon.setAttribute('aria-hidden', 'true');
             const timeIcon = document.createElement('i'); timeIcon.className = 'far fa-clock'; timeIcon.setAttribute('aria-hidden', 'true');
-            ELEMENTS.currentTimeDisplay.append(dateIcon, ` ${dateString} \u00A0\u00A0 `, timeIcon, ` ${timeString}`);
+            ELEMENTS.currentTimeDisplay.append(dateIcon, ` ${dateString}    `, timeIcon, ` ${timeString}`);
         } catch (e) { logError('Failed to display time', e); ELEMENTS.currentTimeDisplay.textContent = 'Could not load time.'; }
     };
 
@@ -600,7 +600,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (audioFadeInterval) clearInterval(audioFadeInterval);
         if (gsap) gsap.killTweensOf(audio);
         if (musicPlaying) {
-            if (typeof gsap !== 'undefined') { gsap.to(audio, { volume: 0, duration: fadeDurationSeconds, ease: "linear", onComplete: () => audio.pause() }); }
+            if (typeof gsap !== 'undefined') { gsap.to(audio, { volume: 0, duration: fadeDurationSeconds, ease: "linear", onComplete: () => audio.pause() }); } 
             else { let vol = audio.volume; audioFadeInterval = setInterval(() => { vol -= 0.1 / (fadeDurationSeconds * 10); if (vol <= 0) { audio.volume = 0; audio.pause(); clearInterval(audioFadeInterval); } else { audio.volume = vol; } }, 100); }
             musicPlaying = false; button.classList.add('muted'); button.setAttribute('aria-pressed', 'false'); button.setAttribute('aria-label', 'Play background music');
         } else {
@@ -823,7 +823,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await fetch(ELEMENTS.form.action, { method: 'POST', body: formData, headers: { 'Accept': 'application/json' } });
                 if (response.ok) {
-                    updateFormStatus('Message sent successfully! We\\'be in touch.', 'success');
+                    updateFormStatus('Message sent successfully! We\'ll be in touch.', 'success');
                     ELEMENTS.form.reset();
                     selectElements('.invalid', ELEMENTS.form).forEach(el => el.classList.remove('invalid'));
                     setTimeout(() => updateFormStatus('', 'idle'), CONFIG.FORM_STATUS_TIMEOUT_MS);
