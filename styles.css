@@ -1,6 +1,6 @@
 /* ==========================================================================
    SysFX Stylesheet
-   Version: 2.2 (User Revisions + Tech Enhancements)
+   Version: 2.2 (Performance Revisions)
    Author: sysfx (Revised by AI Assistant)
    ========================================================================== */
 
@@ -53,7 +53,7 @@
     --dark-mode-btn-bg-dark: linear-gradient(45deg, #673ab7, #3f51b5);
     --button-gradient-green: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
     --button-gradient-green-hover: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
-    --hero-gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    --hero-gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); /* Kept for fallback */
     --cta-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     --bg-gradient-light: linear-gradient(135deg, #f8f9fa, #e9ecef);
     --bg-gradient-dark: linear-gradient(135deg, var(--bg-dark), var(--bg-surface-dark));
@@ -79,7 +79,8 @@
     --shadow-green-hover: 0 7px 25px rgba(0, 156, 74, 0.35);
 
     /* Typography */
-    --font-family-base: 'Roboto', 'Segoe UI', sans-serif;
+    /* ADDED 'Roboto Mono' */
+    --font-family-base: 'Roboto', 'Roboto Mono', 'Segoe UI', sans-serif;
     --font-awesome: "Font Awesome 6 Free";
     --font-size-base: 17px;
     --line-height-base: 1.7;
@@ -240,6 +241,10 @@ body.dark-mode .cta > *,
 body.dark-mode .stats > * {
     color: var(--text-light);
 }
+/* Hero text color */
+body:not(.dark-mode) .hero p { color: var(--text-light); }
+body.dark-mode .hero p { color: var(--text-light); }
+
 
 /* Explicit paragraph/list colors */
 body:not(.dark-mode) section p, body:not(.dark-mode) section li, body:not(.dark-mode) section address { color: var(--text-dark); }
@@ -257,6 +262,10 @@ h1, h2, h3, h4, h5, h6 {
 body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
     color: var(--heading-color-dark);
 }
+/* Hero heading color */
+body:not(.dark-mode) .hero h2 { color: var(--text-light); }
+body.dark-mode .hero h2 { color: var(--text-light); }
+
 body:not(.dark-mode) .parallax h2, body:not(.dark-mode) .parallax h3,
 body:not(.dark-mode) .cta h2, body:not(.dark-mode) .stats h2 {
     color: var(--text-light);
@@ -282,7 +291,7 @@ body.dark-mode .timeline-description {
 .parallax h2, .parallax h3, .parallax p, .parallax .services-description {
     text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
 }
-body.dark-mode .parallax h2, body.dark-mode .parallax h3, body.dark-mode .parallax p, body.dark-mode .parallax .services-description {
+body.dark-mode .parallax h2, body.dark-mode .parallax h3, body.dark-mode .parallax p, body.dark-mode .services-description {
     text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
 }
 .parallax .glow-text { text-shadow: var(--text-glow-shadow) !important; }
@@ -421,10 +430,48 @@ h3 { font-size: clamp(1.5em, 3.2vw, 1.9em); }
     transition: opacity var(--transition-speed-slow) ease-in-out;
 }
 body.dark-mode .preloader { background-color: var(--bg-dark); }
-.preloader-logo img { max-width: 100px; margin-bottom: var(--spacing-md); animation: pulseLogo 1.5s infinite ease-in-out; }
-@keyframes pulseLogo { 0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px var(--primary-color)); } 50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 10px var(--primary-color)); } }
-body.dark-mode .preloader-logo img { animation: pulseLogoDark 1.5s infinite ease-in-out; }
-@keyframes pulseLogoDark { 0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px var(--secondary-color)); } 50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 10px var(--secondary-color)); } }
+
+/* --- NEW CSS Preloader --- */
+.preloader-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px; /* Match old img height */
+    margin-bottom: var(--spacing-md);
+}
+.css-loader {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 700;
+    font-size: 3.5em;
+    color: var(--primary-color);
+    filter: drop-shadow(0 0 5px var(--primary-color));
+}
+body.dark-mode .css-loader {
+    color: var(--secondary-color);
+    filter: drop-shadow(0 0 5px var(--secondary-color));
+}
+.css-loader span {
+    display: inline-block;
+    animation: pulseLoaderText 1.4s infinite ease-in-out both;
+}
+.css-loader span:nth-child(1) { animation-delay: 0.1s; }
+.css-loader span:nth-child(2) { animation-delay: 0.2s; }
+.css-loader span:nth-child(3) { animation-delay: 0.3s; }
+.css-loader span:nth-child(4) { animation-delay: 0.4s; }
+.css-loader span:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes pulseLoaderText {
+    0%, 100% {
+        opacity: 0.4;
+        transform: translateY(5px);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-5px);
+    }
+}
+/* --- End CSS Preloader --- */
+
 .preloader-dots { display: flex; gap: var(--spacing-sm); }
 .dot { width: 12px; height: 12px; background-color: var(--primary-color); border-radius: 50%; animation: bounceDot 1.4s infinite ease-in-out both; }
 .dot:nth-child(1) { animation-delay: -0.32s; } .dot:nth-child(2) { animation-delay: -0.16s; }
@@ -462,10 +509,15 @@ body.cursor-ready .cursor { opacity: 1; }
    4. Particles Background
    ========================================================================== */
 .particles-container {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: var(--z-back);
-    opacity: 0.25; transition: opacity var(--transition-speed) var(--transition-ease);
+    /* CHANGED: This is now the hero background */
+    position: absolute; 
+    top: 0; left: 0; width: 100%; height: 100%; 
+    z-index: var(--z-base); /* Changed from z-back */
+    opacity: 0.7; /* Increased opacity */
+    transition: opacity var(--transition-speed) var(--transition-ease);
+    border-radius: inherit; /* Inherit hero border radius */
 }
-body.dark-mode .particles-container { opacity: 0.3; }
+body.dark-mode .particles-container { opacity: 0.8; }
 
 /* ==========================================================================
    5. Header & Navigation
@@ -526,17 +578,130 @@ body.dark-mode #darkModeToggle:hover, body.dark-mode #darkModeToggle:focus-visib
 #darkModeToggle:active { transform: scale(1); box-shadow: var(--shadow-sm); }
 
 .header-main { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-sm) var(--spacing-md); gap: var(--spacing-sm); transition: padding var(--transition-speed) var(--transition-cubic); }
-.logo-container { display: flex; flex-shrink: 0; perspective: 1200px; }
-.logo-container a { display: block; line-height: 0; }
-
-.flipping-logo {
-    width: 60px; height: 60px; max-width: 100%; object-fit: contain; border-radius: var(--border-radius-circle);
-    box-shadow: 0 0 15px rgba(5, 135, 67, 0.4); transform-style: preserve-3d; animation: coinFlip 6s infinite ease-in-out;
-    background-color: rgba(255,255,255,0.3); border: 1px solid var(--glass-border-light);
+.logo-container { 
+    display: flex; 
+    flex-shrink: 0;
+    /* Set a fixed size to match old logo, ensures layout stability */
+    width: 60px; 
+    height: 60px;
+    justify-content: center;
+    align-items: center;
     transition: width var(--transition-speed) var(--transition-cubic), height var(--transition-speed) var(--transition-cubic);
 }
-body.dark-mode .flipping-logo { background-color: rgba(5, 40, 20, 0.3); border-color: var(--glass-border-dark); box-shadow: 0 0 15px rgba(0, 156, 74, 0.5); }
-@keyframes coinFlip { 0% { transform: rotateY(0deg); } 45% { transform: rotateY(0deg); } 50% { transform: rotateY(180deg); } 95% { transform: rotateY(180deg); } 100% { transform: rotateY(360deg); } }
+
+/* --- NEW CSS Logo --- */
+.css-logo-link {
+    display: inline-block;
+    text-decoration: none;
+    outline: none;
+}
+.css-logo-text {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 700;
+    font-size: 1.5em; /* 24px */
+    color: var(--primary-color);
+    text-shadow: 0 0 3px var(--primary-color);
+    position: relative;
+    display: inline-block;
+    transition: all var(--transition-speed) var(--transition-ease);
+    line-height: 1;
+}
+body.dark-mode .css-logo-text {
+    color: var(--secondary-color);
+    text-shadow: 0 0 4px var(--secondary-color);
+}
+
+/* Glitch Effect */
+.css-logo-text::before,
+.css-logo-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    clip: rect(0, 0, 0, 0);
+}
+.css-logo-text::before {
+    left: -2px;
+    text-shadow: 2px 0 #ff00c1; /* Magenta */
+    animation: glitch-anim-1 3s infinite linear alternate-reverse;
+}
+.css-logo-text::after {
+    left: 2px;
+    text-shadow: -2px 0 #00fff9; /* Cyan */
+    animation: glitch-anim-2 3s infinite linear alternate-reverse;
+}
+.css-logo-link:hover .css-logo-text,
+.css-logo-link:focus .css-logo-text {
+    color: var(--accent-bright);
+    text-shadow: 0 0 6px var(--accent-bright);
+}
+body.dark-mode .css-logo-link:hover .css-logo-text,
+body.dark-mode .css-logo-link:focus .css-logo-text {
+    color: var(--accent-bright);
+    text-shadow: 0 0 8px var(--accent-bright);
+}
+.css-logo-link:hover .css-logo-text::before { animation: glitch-anim-hover 0.3s infinite linear alternate-reverse; }
+.css-logo-link:hover .css-logo-text::after { animation: glitch-anim-hover 0.3s infinite linear alternate-reverse reverse; }
+
+/* Glitch Animations */
+@keyframes glitch-anim-1 {
+    0% { clip: rect(74px, 9999px, 75px, 0); }
+    5% { clip: rect(51px, 9999px, 98px, 0); }
+    10% { clip: rect(61px, 9999px, 68px, 0); }
+    15% { clip: rect(2px, 9999px, 68px, 0); }
+    20% { clip: rect(44px, 9999px, 51px, 0); }
+    25% { clip: rect(3px, 9999px, 5px, 0); }
+    30% { clip: rect(5px, 9999px, 99px, 0); }
+    35% { clip: rect(7px, 9999px, 55px, 0); }
+    40% { clip: rect(27px, 9999px, 32px, 0); }
+    45% { clip: rect(86px, 9999px, 92px, 0); }
+    50% { clip: rect(41px, 9999px, 73px, 0); }
+    55% { clip: rect(4px, 9999px, 47px, 0); }
+    60% { clip: rect(58px, 9999px, 61px, 0); }
+    65% { clip: rect(48px, 9999px, 77px, 0); }
+    70% { clip: rect(35px, 9999px, 39px, 0); }
+    75% { clip: rect(10px, 9999px, 15px, 0); }
+    80% { clip: rect(28px, 9999px, 84px, 0); }
+    85% { clip: rect(63px, 9999px, 70px, 0); }
+    90% { clip: rect(11px, 9999px, 18px, 0); }
+    95% { clip: rect(4px, 9999px, 12px, 0); }
+    100% { clip: rect(55px, 9999px, 60px, 0); }
+}
+@keyframes glitch-anim-2 {
+    0% { clip: rect(2px, 9999px, 10px, 0); }
+    5% { clip: rect(86px, 9999px, 92px, 0); }
+    10% { clip: rect(36px, 9999px, 40px, 0); }
+    15% { clip: rect(74px, 9999px, 79px, 0); }
+    20% { clip: rect(67px, 9999px, 73px, 0); }
+    25% { clip: rect(25px, 9999px, 30px, 0); }
+    30% { clip: rect(76px, 9999px, 80px, 0); }
+    35% { clip: rect(10px, 9999px, 16px, 0); }
+    40% { clip: rect(14px, 9999px, 19px, 0); }
+    45% { clip: rect(2px, 9999px, 7px, 0); }
+    50% { clip: rect(37px, 9999px, 42px, 0); }
+    55% { clip: rect(20px, 9999px, 25px, 0); }
+    60% { clip: rect(81px, 9999px, 86px, 0); }
+    65% { clip: rect(44px, 9999px, 50px, 0); }
+    70% { clip: rect(60px, 9999px, 65px, 0); }
+    75% { clip: rect(88px, 9999px, 93px, 0); }
+    80% { clip: rect(12px, 9999px, 18px, 0); }
+    85% { clip: rect(41px, 9999px, 47px, 0); }
+    90% { clip: rect(69px, 9999px, 75px, 0); }
+    95% { clip: rect(19px, 9999px, 24px, 0); }
+    100% { clip: rect(1px, 9999px, 5px, 0); }
+}
+@keyframes glitch-anim-hover {
+    0% { clip: rect(0, 9999px, 10px, 0); }
+    25% { clip: rect(10px, 9999px, 20px, 0); }
+    50% { clip: rect(5px, 9999px, 15px, 0); }
+    75% { clip: rect(15px, 9999px, 25px, 0); }
+    100% { clip: rect(0, 9999px, 5px, 0); }
+}
+/* --- End CSS Logo --- */
+
 
 .header-titles { text-align: center; flex-grow: 1; margin: 0 var(--spacing-sm); min-width: 0; transition: opacity var(--transition-speed) var(--transition-ease), visibility var(--transition-speed) var(--transition-ease); }
 #typing-effect { min-height: 1.4em; display: block; font-size: clamp(1em, 2.5vw, 1.2em); color: var(--primary-color); margin-top: var(--spacing-xs); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 300; height: 1.4em; line-height: 1.4em; }
@@ -629,7 +794,9 @@ body.dark-mode .mobile-nav .nav-link.active i { color: var(--secondary-color); }
 body.dark-mode #main-header.header-shrunk { box-shadow: var(--shadow-dark-md); }
 #main-header.header-shrunk .header-top-bar { height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; visibility: hidden; border-bottom: none; }
 #main-header.header-shrunk .header-main { padding-top: var(--spacing-xs); padding-bottom: var(--spacing-xs); }
-#main-header.header-shrunk .flipping-logo { width: 45px; height: 45px; }
+/* Shrunk logo size */
+#main-header.header-shrunk .logo-container { width: 45px; height: 45px; }
+#main-header.header-shrunk .css-logo-text { font-size: 1.2em; }
 #main-header.header-shrunk #typing-effect { font-size: clamp(0.8em, 2vw, 1em); min-height: 1.2em; height: 1.2em; line-height: 1.2em; }
 @media (min-width: 769px) { #main-header.header-shrunk .main-nav.desktop-nav { height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; visibility: hidden; border-top: none; } }
 
@@ -708,7 +875,7 @@ body.dark-mode .services.parallax::before { background: rgba(0, 10, 5, 0.85); }
 }
 body.dark-mode .testimonials.parallax {
     background-color: var(--bg-dark);
-    background-image: linear-gradient(rgba(0, 156, 74, 0.05), rgba(0, 156, 74, 0.05)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23cccccc' fill-opacity='0.04'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-image: linear-gradient(rgba(0, 156, 74, 0.05), rgba(0, 156, 74, 0.05)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23cccccc' fill-opacity='0.04'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%E%3C/g%3E%3C/svg%3E");
 }
 .testimonials.parallax::before { background: rgba(255, 255, 255, 0.6); }
 body.dark-mode .testimonials.parallax::before { background: rgba(0, 0, 0, 0.75); }
@@ -718,15 +885,19 @@ body.dark-mode .testimonials.parallax::before { background: rgba(0, 0, 0, 0.75);
    8. Components
    ========================================================================== */
 .hero {
-    padding: var(--spacing-xl) var(--spacing-md); text-align: center; min-height: 65vh; display: flex;
+    padding: var(--spacing-xl) var(--spacing-md); text-align: center; 
+    min-height: 70vh; /* Increased height slightly */
+    display: flex;
     align-items: center; justify-content: center; position: relative; overflow: hidden; border-radius: 0;
-    background: var(--hero-gradient); color: var(--text-light); margin: 0 auto;
+    /* REMOVED background gradient, will be provided by particles or fallback */
+    background: var(--bg-gradient-dark); /* Fallback */
+    color: var(--text-light); margin: 0 auto;
     width: 100%; max-width: none;
 }
-.hero-video { position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; object-fit: cover; transform: translate(-50%, -50%); z-index: -2; opacity: 0.15; filter: grayscale(80%) brightness(0.6) hue-rotate(90deg); }
-.hero-overlay-animated { position: absolute; inset: 0; background: linear-gradient(110deg, rgba(5, 135, 67, 0.15) 0%, rgba(0, 156, 74, 0.1) 50%, rgba(5, 135, 67, 0.15) 100%); background-size: 200% 200%; animation: gradientShift 15s ease infinite; z-index: -1; opacity: 0.8; pointer-events: none; }
-body.dark-mode .hero-overlay-animated { opacity: 0.6; background: linear-gradient(110deg, rgba(0, 156, 74, 0.2) 0%, rgba(5, 135, 67, 0.15) 50%, rgba(0, 156, 74, 0.2) 100%); }
-@keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+/* REMOVED .hero-video */
+/* REMOVED .hero-overlay-animated */
+/* REMOVED @keyframes gradientShift */
+
 .hero-content {
     max-width: 850px; padding: var(--spacing-lg); position: relative;
     z-index: var(--z-hero-content);
@@ -738,7 +909,15 @@ body.dark-mode .hero-overlay-animated { opacity: 0.6; background: linear-gradien
 }
 .hero-title.glow-text { text-shadow: var(--text-glow-shadow) !important; }
 body.dark-mode .hero-title.glow-text { text-shadow: var(--text-glow-shadow-dark-mode) !important; }
-.hero-text { font-size: 1.5em; margin-bottom: var(--spacing-lg); text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6); max-width: 700px; margin-left: auto; margin-right: auto; }
+
+.hero-text { 
+    font-size: 1.5em; 
+    margin-bottom: var(--spacing-lg); 
+    /* REMOVED text-shadow */
+    max-width: 700px; 
+    margin-left: auto; 
+    margin-right: auto; 
+}
 
 /* === FIX #3: Added rule to center and style CTA subtitle === */
 .cta p {
@@ -1061,7 +1240,8 @@ body.dark-mode .scroll-top-btn:hover, body.dark-mode .scroll-top-btn:focus { bac
     .contact-grid { gap: var(--spacing-lg); }
     #header-brand-title { font-size: 2em; }
     #typing-effect { font-size: 1.1em; height: 1.3em; min-height: 1.3em; line-height: 1.3em;}
-    .flipping-logo { width: 55px; height: 55px; }
+    .logo-container { width: 55px; height: 55px; } /* Shrunk logo container */
+    .css-logo-text { font-size: 1.4em; } /* Shrunk logo text */
     .tech-trivia-container { display: none; }
     .hero-title { font-size: clamp(2.2em, 6vw, 3.5em); }
     .hero-text { font-size: 1.3em; }
@@ -1103,7 +1283,8 @@ body.dark-mode .scroll-top-btn:hover, body.dark-mode .scroll-top-btn:focus { bac
     #typing-effect { font-size: 0.95em; height: 1.2em; min-height: 1.2em; line-height: 1.2em; }
     .header-main { padding: var(--spacing-sm) var(--spacing-sm); }
     .header-top-bar { padding-left: var(--spacing-sm); padding-right: var(--spacing-sm); }
-    .flipping-logo { width: 45px; height: 45px; }
+    .logo-container { width: 45px; height: 45px; } /* Shrunk logo container */
+    .css-logo-text { font-size: 1.2em; } /* Shrunk logo text */
     #darkModeToggle { font-size: 0.8em; padding: 5px 10px; min-width: auto; gap: 4px; }
     .main-nav.mobile-nav { width: 90%; max-width: 280px; }
     .hero { min-height: 55vh; }

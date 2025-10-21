@@ -1,6 +1,6 @@
 /**
  * SysFX Website Script
- * Version: 2.2 (Performance Optimizations)
+ * Version: 2.2 (Performance Revisions)
  * Author: sysfx (Revised by AI Assistant)
  *
  * Purpose: Manages dynamic interactions, animations, and third-party
@@ -300,17 +300,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (!selectElement(`#${particlesContainerId}`)) { logWarn(`Particles container #${particlesContainerId} not found.`); return; }
         try {
-            const isDark = ELEMENTS.body?.classList.contains('dark-mode');
+            // --- REVISION ---
+            // Removed the isDark check. Particles are always on a dark background now (the hero section).
+            // We will *always* use the "dark" theme config.
+            
             const baseConfig = {
                 interactivity: { detect_on: "canvas", events: { resize: true }, modes: { repulse: { distance: 80, duration: 0.4 }, push: { particles_nb: 4 }, grab: { distance: 140, line_opacity: 0.7 }, bubble: { distance: 200, size: 6, duration: 0.3 } } }, retina_detect: true
             };
-            let themeConfig;
-            if (isDark) {
-                themeConfig = { particles: { number: { value: 100, density: { enable: true, value_area: 800 } }, color: { value: "#4CAF50" }, shape: { type: "circle" }, opacity: { value: 0.45, random: true, anim: { enable: true, speed: 0.8, opacity_min: 0.1, sync: false } }, size: { value: 3, random: true }, line_linked: { enable: true, distance: 130, color: "#444444", opacity: 0.5, width: 1 }, move: { enable: true, speed: 1.5, direction: "none", random: true, straight: false, out_mode: "out", bounce: false } }, interactivity: { ...baseConfig.interactivity, events: { ...baseConfig.interactivity.events, onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "bubble" } } } };
-            } else {
-                themeConfig = { particles: { number: { value: 80, density: { enable: true, value_area: 900 } }, color: { value: "#00a000" }, shape: { type: "circle" }, opacity: { value: 0.35, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false } }, size: { value: 3, random: true }, line_linked: { enable: true, distance: 150, color: "#cccccc", opacity: 0.4, width: 1 }, move: { enable: true, speed: 2, direction: "none", random: false, straight: false, out_mode: "out", bounce: false } }, interactivity: { ...baseConfig.interactivity, events: { ...baseConfig.interactivity.events, onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" } } } };
-            }
-            particlesJS(particlesContainerId, themeConfig, () => { logInfo(`Particles.js initialized (${isDark ? 'dark' : 'light'} theme).`); });
+            
+            // This is the original "dark mode" config, now used as the default
+            const themeConfig = { 
+                particles: { 
+                    number: { value: 100, density: { enable: true, value_area: 800 } }, 
+                    color: { value: "#4CAF50" }, 
+                    shape: { type: "circle" }, 
+                    opacity: { value: 0.45, random: true, anim: { enable: true, speed: 0.8, opacity_min: 0.1, sync: false } }, 
+                    size: { value: 3, random: true }, 
+                    line_linked: { enable: true, distance: 130, color: "#444444", opacity: 0.5, width: 1 }, 
+                    move: { enable: true, speed: 1.5, direction: "none", random: true, straight: false, out_mode: "out", bounce: false } 
+                }, 
+                interactivity: { 
+                    ...baseConfig.interactivity, 
+                    events: { 
+                        ...baseConfig.interactivity.events, 
+                        onhover: { enable: true, mode: "grab" }, 
+                        onclick: { enable: true, mode: "bubble" } 
+                    } 
+                } 
+            };
+            // --- END REVISION ---
+
+            particlesJS(particlesContainerId, themeConfig, () => { logInfo(`Particles.js initialized (hero background).`); });
         } catch (error) { logError("Error initializing particles.js", error); selectElement(`#${particlesContainerId}`)?.style.setProperty('display', 'none', 'important'); }
     };
 

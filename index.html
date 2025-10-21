@@ -15,8 +15,7 @@
     <meta property="og:description" content="sysfx: Your local partner for reliable computer repair, security, web design, networking, and comprehensive IT support in Clinton, CT.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.sysfx.net">
-    <meta property="og:image" content="https://www.sysfx.net/assets/logo.jpg">
-    <meta property="og:image:alt" content="sysfx Logo and Tech Background">
+    <meta property="og:image" content="https://www.sysfx.net/assets/logo.jpg"> <meta property="og:image:alt" content="sysfx Logo and Tech Background">
     <meta property="og:locale" content="en_US">
 
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
@@ -28,20 +27,22 @@
 
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"></noscript>
-    <link rel="stylesheet" href="styles.css?v=2.1"> <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="styles.css?v=2.2"> <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js" defer></script>
 
-    <script src="script.js?v=2.1" defer></script> </head>
+    <script src="script.js?v=2.2" defer></script> </head>
 
 <body class="preload">
     <div id="preloader" class="preloader" aria-live="polite" aria-busy="true">
         <div class="preloader-logo">
-            <img src="assets/logo.jpg" alt="sysfx loading..." width="100" height="100">
+            <div class="css-loader" aria-label="sysfx loading...">
+                <span>S</span><span>Y</span><span>S</span><span>F</span><span>X</span>
+            </div>
         </div>
         <div class="preloader-dots" aria-hidden="true">
             <div class="dot"></div>
@@ -54,8 +55,6 @@
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <div class="scroll-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Page scroll progress"></div>
-
-    <div id="particles-js" class="particles-container" aria-hidden="true"></div>
 
     <div class="cursor" aria-hidden="true"></div>
 
@@ -74,8 +73,8 @@
         </div>
         <div class="header-main">
             <div class="logo-container">
-                <a href="#home" aria-label="sysfx Home">
-                    <img src="assets/logo.jpg" alt="sysfx Logo, a symbol of tech expertise" class="flipping-logo" width="60" height="60" loading="eager">
+                <a href="#home" class="css-logo-link" aria-label="sysfx Home">
+                    <span class="css-logo-text" data-text="[sysfx]" aria-hidden="true">[sysfx]</span>
                 </a>
             </div>
             <div class="header-titles">
@@ -121,11 +120,8 @@
     <main id="main-content" role="main">
 
         <section id="home" class="hero section-animation" aria-labelledby="hero-title">
-            <div class="hero-overlay-animated" aria-hidden="true"></div>
-            <video class="hero-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true" poster="assets/hero-poster.jpg">
-                <source src="https://videos.pexels.com/video-files/854097/854097-hd_1920_1080_25fps.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
+            <div id="particles-js" class="particles-container" aria-hidden="true"></div>
+            
             <div class="hero-content">
                 <h2 id="hero-title" class="hero-title gradient-text glow-text centered-text">Welcome to sysfx!</h2>
                 <p class="hero-text">Unlock cutting-edge technology with Sys Fix—your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support in Clinton, CT.</p>
@@ -224,7 +220,7 @@
                         <img src="assets/ios.svg" alt="iOS" class="os-logo apple-dark-invert" loading="lazy" width="50" height="50">
                         <img src="assets/wearos.svg" alt="Wear OS" class="os-logo" loading="lazy" width="50" height="50">
                         <img src="assets/watchos.png" alt="watchOS" class="os-logo apple-dark-invert" loading="lazy" width="50" height="50">
-                        <img src="assets/tvos.png" alt="tvOS" class="os-logo apple-dark-invert" loading="lazy" width="50" height="50">
+                        <img src="assets/tvos.png" alt="tvOS" class="os-logo apple-dark-invert" loading="lazy" width="5m0" height="50">
                         <img src="assets/androidtv.svg" alt="Android TV" class="os-logo" loading="lazy" width="50" height="50">
                         <img src="assets/windowsserver.svg" alt="Windows Server" class="os-logo" loading="lazy" width="50" height="50">
                         <img src="assets/redhat.svg" alt="Red Hat Enterprise Linux" class="os-logo" loading="lazy" width="50" height="50">
@@ -265,10 +261,10 @@
                 <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-label="View image: Web development project" data-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" data-alt="Laptop showing lines of code on screen">
                     <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=70" alt="Web development project" loading="lazy" width="300" height="200">
                 </div>
-                <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-label="View image: Cybersecurity implementation example" data-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" data-alt="Abstract digital security background">
+                <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-label="View image: Cybersecurity implementation example" data-src="httpshttps://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" data-alt="Abstract digital security background">
                     <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=70" alt="Cybersecurity implementation example" loading="lazy" width="300" height="200">
                 </div>
-                <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-label="View image: Cloud solution deployment example" data-src="https://images.unsplash.com/photo-1638398827627-284082155e09?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" data-alt="Cloud computing concept illustration">
+                <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-label="View image: Cloud solution deployment example" data-src="httpsVhttps://images.unsplash.com/photo-1638398827627-284082155e09?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" data-alt="Cloud computing concept illustration">
                     <img src="https://images.unsplash.com/photo-1638398827627-284082155e09?q=80&w=300&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Cloud solution deployment example" loading="lazy" width="300" height="200">
                 </div>
                 <div class="gallery-item card-hover" role="listitem" tabindex="0" aria-label="View image: IT support session example" data-src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" data-alt="Team collaborating around a laptop">
@@ -546,6 +542,7 @@
                         <div class="form-group">
                             <label for="message" class="form-label">Message:<span class="required-star" aria-hidden="true">*</span></label>
                             <textarea id="message" name="message" class="form-textarea" rows="5" required aria-required="true" placeholder="How can we help you today?" aria-describedby="message-error"></textarea>
+
                             <span id="message-error" class="form-error" aria-live="polite"></span>
                         </div>
                         <input type="text" name="_gotcha" style="display:none !important" tabindex="-1" autocomplete="off"> <div class="form-footer">
