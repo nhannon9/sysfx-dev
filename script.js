@@ -1,6 +1,6 @@
 /**
  * SysFX Website Script
- * Version: 2.2 (Performance Revisions)
+ * Version: 2.3 (Cursor Responsiveness & Layout Fixes)
  * Author: sysfx (Revised by AI Assistant)
  *
  * Purpose: Manages dynamic interactions, animations, and third-party
@@ -14,15 +14,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Configuration & Feature Flags ---
     const CONFIG = {
         SCROLLSPY_THROTTLE_MS: 150,
-        RESIZE_DEBOUNCE_MS: 250, // Slightly faster debounce
+        RESIZE_DEBOUNCE_MS: 250,
         TYPING_SPEED_MS: 85,
         TYPING_DELETE_SPEED_MS: 40,
         TYPING_PAUSE_MS: 2500,
         CAROUSEL_INTERVAL_MS: 6000,
         FORM_STATUS_TIMEOUT_MS: 6000,
-        PRELOADER_TIMEOUT_MS: 2500, // Reduced timeout
+        PRELOADER_TIMEOUT_MS: 2500,
         MUSIC_FADE_DURATION_MS: 600,
-        MODAL_CLOSE_SCROLL_DELAY_MS: 350, // Delay for scroll after modal close (match CSS transition)
+        MODAL_CLOSE_SCROLL_DELAY_MS: 350,
+        // --- CURSOR SPEED ---
+        CURSOR_QUICKTO_DURATION: 0.15, // Reduced from 0.4
         TAGLINES: [
             "Your Partner in Tech Solutions.",
             "Expert Computer Repair Services.",
@@ -52,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         enableCustomCursor: true,
         enableEasterEgg: true,
         enableBackgroundMusic: true,
-        enableFormspree: true // Set to false if not using a service like Formspree
+        enableFormspree: true
     };
 
     // --- Utility Functions ---
@@ -82,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try { return context.querySelector(selector); } catch (e) { logError(`Invalid selector: ${selector}`, e); return null; }
     };
     const selectElements = (selector, context = document) => {
-        try { return Array.from(context.querySelectorAll(selector)); } catch (e) { logError(`Invalid selector: ${selector}`, e); return []; } // Return empty array
+        try { return Array.from(context.querySelectorAll(selector)); } catch (e) { logError(`Invalid selector: ${selector}`, e); return []; }
     };
 
     const loadScript = (src, attributes = {}) => new Promise((resolve, reject) => {
@@ -257,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ELEMENTS.currentTimeDisplay.textContent = '';
             const dateIcon = document.createElement('i'); dateIcon.className = 'far fa-calendar-alt'; dateIcon.setAttribute('aria-hidden', 'true');
             const timeIcon = document.createElement('i'); timeIcon.className = 'far fa-clock'; timeIcon.setAttribute('aria-hidden', 'true');
-            ELEMENTS.currentTimeDisplay.append(dateIcon, ` ${dateString}    `, timeIcon, ` ${timeString}`);
+            ELEMENTS.currentTimeDisplay.append(dateIcon, ` ${dateString}    `, timeIcon, ` ${timeString}`);
         } catch (e) { logError('Failed to display time', e); ELEMENTS.currentTimeDisplay.textContent = 'Could not load time.'; }
     };
 
@@ -300,36 +302,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (!selectElement(`#${particlesContainerId}`)) { logWarn(`Particles container #${particlesContainerId} not found.`); return; }
         try {
-            // --- REVISION ---
-            // Removed the isDark check. Particles are always on a dark background now (the hero section).
-            // We will *always* use the "dark" theme config.
-            
             const baseConfig = {
                 interactivity: { detect_on: "canvas", events: { resize: true }, modes: { repulse: { distance: 80, duration: 0.4 }, push: { particles_nb: 4 }, grab: { distance: 140, line_opacity: 0.7 }, bubble: { distance: 200, size: 6, duration: 0.3 } } }, retina_detect: true
             };
-            
-            // This is the original "dark mode" config, now used as the default
-            const themeConfig = { 
-                particles: { 
-                    number: { value: 100, density: { enable: true, value_area: 800 } }, 
-                    color: { value: "#4CAF50" }, 
-                    shape: { type: "circle" }, 
-                    opacity: { value: 0.45, random: true, anim: { enable: true, speed: 0.8, opacity_min: 0.1, sync: false } }, 
-                    size: { value: 3, random: true }, 
-                    line_linked: { enable: true, distance: 130, color: "#444444", opacity: 0.5, width: 1 }, 
-                    move: { enable: true, speed: 1.5, direction: "none", random: true, straight: false, out_mode: "out", bounce: false } 
-                }, 
-                interactivity: { 
-                    ...baseConfig.interactivity, 
-                    events: { 
-                        ...baseConfig.interactivity.events, 
-                        onhover: { enable: true, mode: "grab" }, 
-                        onclick: { enable: true, mode: "bubble" } 
-                    } 
-                } 
+            const themeConfig = {
+                particles: {
+                    number: { value: 100, density: { enable: true, value_area: 800 } },
+                    color: { value: "#4CAF50" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.45, random: true, anim: { enable: true, speed: 0.8, opacity_min: 0.1, sync: false } },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: true, distance: 130, color: "#444444", opacity: 0.5, width: 1 },
+                    move: { enable: true, speed: 1.5, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
+                },
+                interactivity: {
+                    ...baseConfig.interactivity,
+                    events: {
+                        ...baseConfig.interactivity.events,
+                        onhover: { enable: true, mode: "grab" },
+                        onclick: { enable: true, mode: "bubble" }
+                    }
+                }
             };
-            // --- END REVISION ---
-
             particlesJS(particlesContainerId, themeConfig, () => { logInfo(`Particles.js initialized (hero background).`); });
         } catch (error) { logError("Error initializing particles.js", error); selectElement(`#${particlesContainerId}`)?.style.setProperty('display', 'none', 'important'); }
     };
@@ -432,7 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
         activeModal = modal;
         if (triggerElement) activeModal.triggerElement = triggerElement;
         modal.style.display = 'flex';
-        const reflow = modal.offsetHeight;
+        const reflow = modal.offsetHeight; // Force reflow
         requestAnimationFrame(() => {
             modal.classList.add('active');
             ELEMENTS.body?.classList.add('no-scroll');
@@ -475,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     triggerElement?.focus();
                 }
             }
-        }, 500);
+        }, 500); // Slightly longer than CSS transition
     };
 
     const handleLightbox = () => {
@@ -489,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ELEMENTS.lightboxImage.setAttribute('alt', altText);
             ELEMENTS.lightboxAltText.textContent = altText;
             ELEMENTS.lightbox.style.display = 'flex';
-            const reflow = ELEMENTS.lightbox.offsetHeight;
+            const reflow = ELEMENTS.lightbox.offsetHeight; // Force reflow
             requestAnimationFrame(() => {
                 ELEMENTS.lightbox.classList.add('active');
                 ELEMENTS.body?.classList.add('no-scroll');
@@ -526,7 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ELEMENTS.lightboxAltText.textContent = ''; ELEMENTS.body?.classList.remove('no-scroll');
                     trigger?.focus();
                 }
-            }, 500);
+            }, 500); // Slightly longer than CSS transition
         };
         ELEMENTS.galleryItems?.forEach(item => {
             item.addEventListener('click', () => openLightbox(item));
@@ -620,7 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (audioFadeInterval) clearInterval(audioFadeInterval);
         if (gsap) gsap.killTweensOf(audio);
         if (musicPlaying) {
-            if (typeof gsap !== 'undefined') { gsap.to(audio, { volume: 0, duration: fadeDurationSeconds, ease: "linear", onComplete: () => audio.pause() }); } 
+            if (typeof gsap !== 'undefined') { gsap.to(audio, { volume: 0, duration: fadeDurationSeconds, ease: "linear", onComplete: () => audio.pause() }); }
             else { let vol = audio.volume; audioFadeInterval = setInterval(() => { vol -= 0.1 / (fadeDurationSeconds * 10); if (vol <= 0) { audio.volume = 0; audio.pause(); clearInterval(audioFadeInterval); } else { audio.volume = vol; } }, 100); }
             musicPlaying = false; button.classList.add('muted'); button.setAttribute('aria-pressed', 'false'); button.setAttribute('aria-label', 'Play background music');
         } else {
@@ -628,7 +622,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const playPromise = audio.play();
             if (playPromise !== undefined) {
                 playPromise.then(() => {
-                    if (typeof gsap !== 'undefined') { gsap.to(audio, { volume: 1, duration: fadeDurationSeconds, ease: "linear" }); } 
+                    if (typeof gsap !== 'undefined') { gsap.to(audio, { volume: 1, duration: fadeDurationSeconds, ease: "linear" }); }
                     else { let vol = 0; audioFadeInterval = setInterval(() => { vol += 0.1 / (fadeDurationSeconds * 10); if (vol >= 1) { audio.volume = 1; clearInterval(audioFadeInterval); } else { audio.volume = vol; } }, 100); }
                     musicPlaying = true; button.classList.remove('muted'); button.setAttribute('aria-pressed', 'true'); button.setAttribute('aria-label', 'Pause background music');
                 }).catch(error => { logWarn("Music playback failed (user interaction likely needed).", error); button.classList.add('muted'); button.setAttribute('aria-pressed', 'false'); musicPlaying = false; });
@@ -669,8 +663,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         ELEMENTS.body?.classList.add('cursor-ready');
         gsap.set(ELEMENTS.customCursor, { x: window.innerWidth / 2, y: window.innerHeight / 2 });
-        cursorXQuickTo = gsap.quickTo(ELEMENTS.customCursor, "x", { duration: 0.4, ease: "power3.out" });
-        cursorYQuickTo = gsap.quickTo(ELEMENTS.customCursor, "y", { duration: 0.4, ease: "power3.out" });
+
+        // --- CURSOR LAG FIX: Reduced duration ---
+        cursorXQuickTo = gsap.quickTo(ELEMENTS.customCursor, "x", { duration: CONFIG.CURSOR_QUICKTO_DURATION, ease: "power3.out" });
+        cursorYQuickTo = gsap.quickTo(ELEMENTS.customCursor, "y", { duration: CONFIG.CURSOR_QUICKTO_DURATION, ease: "power3.out" });
+        // --- END FIX ---
+
         const moveCursor = (e) => {
             cursorXQuickTo(e.clientX);
             cursorYQuickTo(e.clientY);
@@ -720,7 +718,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectElements('.main-nav .nav-link', nav).forEach(link => link.addEventListener('click', () => toggleNav(true)));
         document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && ELEMENTS.body.classList.contains('nav-active')) toggleNav(true); });
     };
-    
+
     const handleScrollspy = () => {
         if (!('IntersectionObserver' in window)) {
             logWarn("IntersectionObserver not supported. Using fallback scroll-based scrollspy.");
@@ -765,7 +763,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         };
-        
+
         const observerOptions = {
             rootMargin: `-${(ELEMENTS.header?.offsetHeight || 80) + 60}px 0px -40% 0px`,
             threshold: 0
@@ -899,7 +897,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initialization Function ---
     const initialize = () => {
-        logInfo(`Initializing SysFX Script v2.2...`);
+        logInfo(`Initializing SysFX Script v2.3...`);
         hidePreloader();
         initializeDarkMode();
         adjustLayoutPadding();
@@ -914,7 +912,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         requestAnimationFrame(() => {
             initializeParticles();
-            setupMapObserver(); // Changed from initializeMap()
+            setupMapObserver();
             animateStats();
             revealSections();
             if (FEATURE_FLAGS.enableCustomCursor) handleCustomCursor();

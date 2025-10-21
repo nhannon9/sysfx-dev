@@ -1,6 +1,6 @@
 /* ==========================================================================
    SysFX Stylesheet
-   Version: 2.2 (Performance Revisions)
+   Version: 2.3 (Layout & Style Revisions)
    Author: sysfx (Revised by AI Assistant)
    ========================================================================== */
 
@@ -79,7 +79,6 @@
     --shadow-green-hover: 0 7px 25px rgba(0, 156, 74, 0.35);
 
     /* Typography */
-    /* ADDED 'Roboto Mono' */
     --font-family-base: 'Roboto', 'Roboto Mono', 'Segoe UI', sans-serif;
     --font-awesome: "Font Awesome 6 Free";
     --font-size-base: 17px;
@@ -325,6 +324,22 @@ body.dark-mode .glass-morphism {
     background: var(--glass-bg-dark); border-color: var(--glass-border-dark);
 }
 
+/* Styles for sections that are NOT glass-morphism */
+#welcome:not(.glass-morphism),
+#about:not(.glass-morphism) {
+    background-color: var(--bg-surface-light);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg) var(--spacing-md);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+}
+body.dark-mode #welcome:not(.glass-morphism),
+body.dark-mode #about:not(.glass-morphism) {
+    background-color: var(--bg-surface-dark);
+    border-color: var(--border-dark);
+    box-shadow: var(--shadow-dark-md);
+}
+
 .sysfx-green { color: var(--primary-color) !important; }
 
 .gradient-text {
@@ -431,7 +446,7 @@ h3 { font-size: clamp(1.5em, 3.2vw, 1.9em); }
 }
 body.dark-mode .preloader { background-color: var(--bg-dark); }
 
-/* --- NEW CSS Preloader --- */
+/* --- CSS Preloader --- */
 .preloader-logo {
     display: flex;
     justify-content: center;
@@ -509,13 +524,12 @@ body.cursor-ready .cursor { opacity: 1; }
    4. Particles Background
    ========================================================================== */
 .particles-container {
-    /* CHANGED: This is now the hero background */
-    position: absolute; 
-    top: 0; left: 0; width: 100%; height: 100%; 
-    z-index: var(--z-base); /* Changed from z-back */
-    opacity: 0.7; /* Increased opacity */
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: var(--z-base);
+    opacity: 0.7;
     transition: opacity var(--transition-speed) var(--transition-ease);
-    border-radius: inherit; /* Inherit hero border radius */
+    border-radius: inherit;
 }
 body.dark-mode .particles-container { opacity: 0.8; }
 
@@ -578,18 +592,17 @@ body.dark-mode #darkModeToggle:hover, body.dark-mode #darkModeToggle:focus-visib
 #darkModeToggle:active { transform: scale(1); box-shadow: var(--shadow-sm); }
 
 .header-main { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-sm) var(--spacing-md); gap: var(--spacing-sm); transition: padding var(--transition-speed) var(--transition-cubic); }
-.logo-container { 
-    display: flex; 
+.logo-container {
+    display: flex;
     flex-shrink: 0;
-    /* Set a fixed size to match old logo, ensures layout stability */
-    width: 60px; 
+    width: 60px;
     height: 60px;
     justify-content: center;
     align-items: center;
     transition: width var(--transition-speed) var(--transition-cubic), height var(--transition-speed) var(--transition-cubic);
 }
 
-/* --- NEW CSS Logo --- */
+/* --- CSS Logo --- */
 .css-logo-link {
     display: inline-block;
     text-decoration: none;
@@ -610,8 +623,6 @@ body.dark-mode .css-logo-text {
     color: var(--secondary-color);
     text-shadow: 0 0 4px var(--secondary-color);
 }
-
-/* Glitch Effect */
 .css-logo-text::before,
 .css-logo-text::after {
     content: attr(data-text);
@@ -645,61 +656,9 @@ body.dark-mode .css-logo-link:focus .css-logo-text {
 }
 .css-logo-link:hover .css-logo-text::before { animation: glitch-anim-hover 0.3s infinite linear alternate-reverse; }
 .css-logo-link:hover .css-logo-text::after { animation: glitch-anim-hover 0.3s infinite linear alternate-reverse reverse; }
-
-/* Glitch Animations */
-@keyframes glitch-anim-1 {
-    0% { clip: rect(74px, 9999px, 75px, 0); }
-    5% { clip: rect(51px, 9999px, 98px, 0); }
-    10% { clip: rect(61px, 9999px, 68px, 0); }
-    15% { clip: rect(2px, 9999px, 68px, 0); }
-    20% { clip: rect(44px, 9999px, 51px, 0); }
-    25% { clip: rect(3px, 9999px, 5px, 0); }
-    30% { clip: rect(5px, 9999px, 99px, 0); }
-    35% { clip: rect(7px, 9999px, 55px, 0); }
-    40% { clip: rect(27px, 9999px, 32px, 0); }
-    45% { clip: rect(86px, 9999px, 92px, 0); }
-    50% { clip: rect(41px, 9999px, 73px, 0); }
-    55% { clip: rect(4px, 9999px, 47px, 0); }
-    60% { clip: rect(58px, 9999px, 61px, 0); }
-    65% { clip: rect(48px, 9999px, 77px, 0); }
-    70% { clip: rect(35px, 9999px, 39px, 0); }
-    75% { clip: rect(10px, 9999px, 15px, 0); }
-    80% { clip: rect(28px, 9999px, 84px, 0); }
-    85% { clip: rect(63px, 9999px, 70px, 0); }
-    90% { clip: rect(11px, 9999px, 18px, 0); }
-    95% { clip: rect(4px, 9999px, 12px, 0); }
-    100% { clip: rect(55px, 9999px, 60px, 0); }
-}
-@keyframes glitch-anim-2 {
-    0% { clip: rect(2px, 9999px, 10px, 0); }
-    5% { clip: rect(86px, 9999px, 92px, 0); }
-    10% { clip: rect(36px, 9999px, 40px, 0); }
-    15% { clip: rect(74px, 9999px, 79px, 0); }
-    20% { clip: rect(67px, 9999px, 73px, 0); }
-    25% { clip: rect(25px, 9999px, 30px, 0); }
-    30% { clip: rect(76px, 9999px, 80px, 0); }
-    35% { clip: rect(10px, 9999px, 16px, 0); }
-    40% { clip: rect(14px, 9999px, 19px, 0); }
-    45% { clip: rect(2px, 9999px, 7px, 0); }
-    50% { clip: rect(37px, 9999px, 42px, 0); }
-    55% { clip: rect(20px, 9999px, 25px, 0); }
-    60% { clip: rect(81px, 9999px, 86px, 0); }
-    65% { clip: rect(44px, 9999px, 50px, 0); }
-    70% { clip: rect(60px, 9999px, 65px, 0); }
-    75% { clip: rect(88px, 9999px, 93px, 0); }
-    80% { clip: rect(12px, 9999px, 18px, 0); }
-    85% { clip: rect(41px, 9999px, 47px, 0); }
-    90% { clip: rect(69px, 9999px, 75px, 0); }
-    95% { clip: rect(19px, 9999px, 24px, 0); }
-    100% { clip: rect(1px, 9999px, 5px, 0); }
-}
-@keyframes glitch-anim-hover {
-    0% { clip: rect(0, 9999px, 10px, 0); }
-    25% { clip: rect(10px, 9999px, 20px, 0); }
-    50% { clip: rect(5px, 9999px, 15px, 0); }
-    75% { clip: rect(15px, 9999px, 25px, 0); }
-    100% { clip: rect(0, 9999px, 5px, 0); }
-}
+@keyframes glitch-anim-1 { 0% { clip: rect(74px, 9999px, 75px, 0); } 5% { clip: rect(51px, 9999px, 98px, 0); } 10% { clip: rect(61px, 9999px, 68px, 0); } 15% { clip: rect(2px, 9999px, 68px, 0); } 20% { clip: rect(44px, 9999px, 51px, 0); } 25% { clip: rect(3px, 9999px, 5px, 0); } 30% { clip: rect(5px, 9999px, 99px, 0); } 35% { clip: rect(7px, 9999px, 55px, 0); } 40% { clip: rect(27px, 9999px, 32px, 0); } 45% { clip: rect(86px, 9999px, 92px, 0); } 50% { clip: rect(41px, 9999px, 73px, 0); } 55% { clip: rect(4px, 9999px, 47px, 0); } 60% { clip: rect(58px, 9999px, 61px, 0); } 65% { clip: rect(48px, 9999px, 77px, 0); } 70% { clip: rect(35px, 9999px, 39px, 0); } 75% { clip: rect(10px, 9999px, 15px, 0); } 80% { clip: rect(28px, 9999px, 84px, 0); } 85% { clip: rect(63px, 9999px, 70px, 0); } 90% { clip: rect(11px, 9999px, 18px, 0); } 95% { clip: rect(4px, 9999px, 12px, 0); } 100% { clip: rect(55px, 9999px, 60px, 0); } }
+@keyframes glitch-anim-2 { 0% { clip: rect(2px, 9999px, 10px, 0); } 5% { clip: rect(86px, 9999px, 92px, 0); } 10% { clip: rect(36px, 9999px, 40px, 0); } 15% { clip: rect(74px, 9999px, 79px, 0); } 20% { clip: rect(67px, 9999px, 73px, 0); } 25% { clip: rect(25px, 9999px, 30px, 0); } 30% { clip: rect(76px, 9999px, 80px, 0); } 35% { clip: rect(10px, 9999px, 16px, 0); } 40% { clip: rect(14px, 9999px, 19px, 0); } 45% { clip: rect(2px, 9999px, 7px, 0); } 50% { clip: rect(37px, 9999px, 42px, 0); } 55% { clip: rect(20px, 9999px, 25px, 0); } 60% { clip: rect(81px, 9999px, 86px, 0); } 65% { clip: rect(44px, 9999px, 50px, 0); } 70% { clip: rect(60px, 9999px, 65px, 0); } 75% { clip: rect(88px, 9999px, 93px, 0); } 80% { clip: rect(12px, 9999px, 18px, 0); } 85% { clip: rect(41px, 9999px, 47px, 0); } 90% { clip: rect(69px, 9999px, 75px, 0); } 95% { clip: rect(19px, 9999px, 24px, 0); } 100% { clip: rect(1px, 9999px, 5px, 0); } }
+@keyframes glitch-anim-hover { 0% { clip: rect(0, 9999px, 10px, 0); } 25% { clip: rect(10px, 9999px, 20px, 0); } 50% { clip: rect(5px, 9999px, 15px, 0); } 75% { clip: rect(15px, 9999px, 25px, 0); } 100% { clip: rect(0, 9999px, 5px, 0); } }
 /* --- End CSS Logo --- */
 
 
@@ -794,7 +753,6 @@ body.dark-mode .mobile-nav .nav-link.active i { color: var(--secondary-color); }
 body.dark-mode #main-header.header-shrunk { box-shadow: var(--shadow-dark-md); }
 #main-header.header-shrunk .header-top-bar { height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; visibility: hidden; border-bottom: none; }
 #main-header.header-shrunk .header-main { padding-top: var(--spacing-xs); padding-bottom: var(--spacing-xs); }
-/* Shrunk logo size */
 #main-header.header-shrunk .logo-container { width: 45px; height: 45px; }
 #main-header.header-shrunk .css-logo-text { font-size: 1.2em; }
 #main-header.header-shrunk #typing-effect { font-size: clamp(0.8em, 2vw, 1em); min-height: 1.2em; height: 1.2em; line-height: 1.2em; }
@@ -845,10 +803,10 @@ section {
 
 #home { margin-top: 0; padding-top: var(--spacing-xl); }
 
-.welcome { padding-top: var(--spacing-md); padding-bottom: var(--spacing-lg); position: relative; overflow: hidden; }
-.welcome::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(160deg, rgba(5, 135, 67, 0.05) 0%, rgba(5, 135, 67, 0) 60%); opacity: 0.5; pointer-events: none; z-index: 0; }
-body.dark-mode .welcome::before { background: linear-gradient(160deg, rgba(0, 208, 98, 0.05) 0%, rgba(0, 208, 98, 0) 60%); opacity: 0.7; }
-.welcome > * { position: relative; z-index: 1; }
+.welcome:not(.glass-morphism) { padding-top: var(--spacing-md); padding-bottom: var(--spacing-lg); position: relative; overflow: hidden; }
+.welcome:not(.glass-morphism)::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(160deg, rgba(5, 135, 67, 0.05) 0%, rgba(5, 135, 67, 0) 60%); opacity: 0.5; pointer-events: none; z-index: 0; }
+body.dark-mode .welcome:not(.glass-morphism)::before { background: linear-gradient(160deg, rgba(0, 208, 98, 0.05) 0%, rgba(0, 208, 98, 0) 60%); opacity: 0.7; }
+.welcome:not(.glass-morphism) > * { position: relative; z-index: 1; }
 
 .location-content { padding: var(--spacing-lg); }
 .location-content p { margin-bottom: var(--spacing-md); }
@@ -875,7 +833,7 @@ body.dark-mode .services.parallax::before { background: rgba(0, 10, 5, 0.85); }
 }
 body.dark-mode .testimonials.parallax {
     background-color: var(--bg-dark);
-    background-image: linear-gradient(rgba(0, 156, 74, 0.05), rgba(0, 156, 74, 0.05)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23cccccc' fill-opacity='0.04'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%E%3C/g%3E%3C/svg%3E");
+    background-image: linear-gradient(rgba(0, 156, 74, 0.05), rgba(0, 156, 74, 0.05)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23cccccc' fill-opacity='0.04'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 .testimonials.parallax::before { background: rgba(255, 255, 255, 0.6); }
 body.dark-mode .testimonials.parallax::before { background: rgba(0, 0, 0, 0.75); }
@@ -885,19 +843,14 @@ body.dark-mode .testimonials.parallax::before { background: rgba(0, 0, 0, 0.75);
    8. Components
    ========================================================================== */
 .hero {
-    padding: var(--spacing-xl) var(--spacing-md); text-align: center; 
-    min-height: 70vh; /* Increased height slightly */
+    padding: var(--spacing-xl) var(--spacing-md); text-align: center;
+    min-height: 70vh;
     display: flex;
     align-items: center; justify-content: center; position: relative; overflow: hidden; border-radius: 0;
-    /* REMOVED background gradient, will be provided by particles or fallback */
     background: var(--bg-gradient-dark); /* Fallback */
     color: var(--text-light); margin: 0 auto;
     width: 100%; max-width: none;
 }
-/* REMOVED .hero-video */
-/* REMOVED .hero-overlay-animated */
-/* REMOVED @keyframes gradientShift */
-
 .hero-content {
     max-width: 850px; padding: var(--spacing-lg); position: relative;
     z-index: var(--z-hero-content);
@@ -909,17 +862,14 @@ body.dark-mode .testimonials.parallax::before { background: rgba(0, 0, 0, 0.75);
 }
 .hero-title.glow-text { text-shadow: var(--text-glow-shadow) !important; }
 body.dark-mode .hero-title.glow-text { text-shadow: var(--text-glow-shadow-dark-mode) !important; }
-
-.hero-text { 
-    font-size: 1.5em; 
-    margin-bottom: var(--spacing-lg); 
-    /* REMOVED text-shadow */
-    max-width: 700px; 
-    margin-left: auto; 
-    margin-right: auto; 
+.hero-text {
+    font-size: 1.5em;
+    margin-bottom: var(--spacing-lg);
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-/* === FIX #3: Added rule to center and style CTA subtitle === */
 .cta p {
     text-align: center;
     max-width: 650px;
@@ -932,10 +882,12 @@ body.dark-mode .hero-title.glow-text { text-shadow: var(--text-glow-shadow-dark-
 }
 
 .button-container { display: flex; gap: var(--spacing-md); justify-content: center; margin-top: var(--spacing-lg); flex-wrap: wrap; }
+/* Modernized Button */
 .modern-button {
     background: var(--button-gradient-green); border: none; color: var(--text-light); padding: 14px 32px;
     text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
-    gap: var(--spacing-sm); font-size: var(--font-size-base); font-weight: 500; border-radius: var(--border-radius-pill);
+    gap: var(--spacing-sm); font-size: var(--font-size-base); font-weight: 500;
+    border-radius: var(--border-radius-lg); /* Reduced roundness */
     cursor: pointer; transition: all var(--transition-speed) var(--transition-cubic); position: relative;
     overflow: hidden; box-shadow: var(--shadow-green); transform: perspective(1px) translateZ(0);
     -webkit-tap-highlight-color: transparent;
@@ -943,8 +895,15 @@ body.dark-mode .hero-title.glow-text { text-shadow: var(--text-glow-shadow-dark-
 .modern-button:hover { text-decoration: none; }
 .modern-button::before { content: ''; position: absolute; top: 0; left: -80%; z-index: 1; width: 60%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,.4) 100%); transform: skewX(-25deg); transition: left var(--transition-speed-slow) var(--transition-ease); pointer-events: none; }
 .modern-button:hover::before { left: 120%; }
-.modern-button:hover, .modern-button:focus-visible { transform: translateY(-4px); background: var(--button-gradient-green-hover); box-shadow: var(--shadow-green-hover); color: var(--text-light); outline: none; }
-.modern-button:active { transform: translateY(-1px); box-shadow: var(--shadow-green); transition-duration: var(--transition-speed-fast); }
+.modern-button:hover, .modern-button:focus-visible {
+    transform: translateY(-3px); /* Slightly reduced hover lift */
+    background: var(--button-gradient-green-hover);
+    box-shadow: var(--shadow-green-hover); color: var(--text-light); outline: none;
+}
+.modern-button:active {
+    transform: translateY(0px); /* Changed active state to return to base */
+    box-shadow: var(--shadow-green); transition-duration: var(--transition-speed-fast);
+}
 .modern-button.primary { font-weight: 700; }
 .modern-button.secondary { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(0, 156, 74, 0.3); }
 .modern-button.secondary:hover, .modern-button.secondary:focus-visible { background: var(--primary-color); box-shadow: 0 6px 20px rgba(0, 156, 74, 0.5); }
@@ -956,14 +915,25 @@ body.dark-mode .hero-title.glow-text { text-shadow: var(--text-glow-shadow-dark-
 .modern-button.pulse-effect-green { animation: pulseGreen 2.5s infinite cubic-bezier(0.66, 0, 0, 1); }
 .modern-button.pulse-effect-green:hover, .modern-button.pulse-effect-green:focus-visible { animation: none; box-shadow: var(--shadow-green-hover); }
 
-.service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-lg); padding: var(--spacing-lg) 0; }
+/* --- Service Grid Layout Change --- */
+.service-grid {
+    display: flex; /* Changed from grid */
+    flex-wrap: wrap; /* Allow items to wrap */
+    justify-content: center; /* Center items horizontally */
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg) 0;
+}
 .service {
     padding: var(--spacing-lg); text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between;
     background: var(--glass-bg-light); border: 1px solid var(--glass-border-light); border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-sm);
     transition: background var(--transition-speed) ease, border-color var(--transition-speed) ease,
                 transform var(--transition-speed) var(--transition-cubic), box-shadow var(--transition-speed) var(--transition-cubic);
+    flex: 0 1 300px; /* Added flex-basis for sizing */
+    min-width: 280px; /* Ensure minimum width */
 }
+/* --- End Service Grid Change --- */
+
 body.dark-mode .service { background: var(--glass-bg-dark); border-color: var(--glass-border-dark); }
 @keyframes pulseServiceIcon { 0%, 100% { filter: drop-shadow(0 0 4px var(--primary-color)); transform: scale(1); } 50% { filter: drop-shadow(0 0 8px var(--primary-color)); transform: scale(1.05); } }
 @keyframes pulseServiceIconDark { 0%, 100% { filter: drop-shadow(0 0 4px var(--secondary-color)); transform: scale(1); } 50% { filter: drop-shadow(0 0 8px var(--secondary-color)); transform: scale(1.05); } }
@@ -991,7 +961,6 @@ body.dark-mode .os-logo.apple-dark-invert { filter: invert(1) drop-shadow(2px 2p
 body.dark-mode .os-logo:hover { filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.5)); }
 body.dark-mode .os-logo.apple-dark-invert:hover { filter: invert(1) drop-shadow(3px 3px 5px rgba(0,0,0,0.5)); }
 
-/* === FIX #1: Modal overflow and layout === */
 .modal {
     position: fixed; inset: 0; background: rgba(0, 20, 5, 0.7); backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px); z-index: var(--z-modal-backdrop); display: flex;
@@ -1007,7 +976,6 @@ body.dark-mode .os-logo.apple-dark-invert:hover { filter: invert(1) drop-shadow(
     z-index: var(--z-modal-content); margin: auto; border-radius: var(--border-radius-md);
     background: var(--glass-bg-light); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
     border: var(--border-width) solid var(--glass-border-light); box-shadow: var(--shadow-lg);
-    /* Flexbox layout for scrollable body */
     display: flex;
     flex-direction: column;
     max-height: 90vh;
@@ -1063,11 +1031,10 @@ body.dark-mode .gallery-item:focus-visible { outline-color: var(--secondary-colo
 .lightbox-close { position: absolute; top: var(--spacing-md); right: var(--spacing-md); color: rgba(200, 255, 220, 0.8); font-size: 2.5em; line-height: 1; background: none; border: none; cursor: pointer; transition: color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); padding: var(--spacing-sm); z-index: calc(var(--z-lightbox-content) + 1); text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
 .lightbox-close:hover, .lightbox-close:focus { color: var(--accent-bright); transform: scale(1.2) rotate(90deg); outline: none; }
 
-/* === FIX #2: Testimonial arrow visibility === */
 #testimonials { padding-top: var(--spacing-md); padding-bottom: var(--spacing-md); }
 .carousel-container {
-    position: relative; max-width: 800px; /* Increased max-width to account for padding */ margin: var(--spacing-md) auto 0;
-    min-height: 280px; padding: 0 50px; /* Add padding to make space for arrows */
+    position: relative; max-width: 800px; margin: var(--spacing-md) auto 0;
+    min-height: 280px; padding: 0 50px;
 }
 .testimonial-slider { display: flex; position: relative; min-height: inherit; overflow: hidden; border-radius: var(--border-radius-lg); }
 .testimonial { flex-shrink: 0; width: 100%; padding: var(--spacing-lg); box-sizing: border-box; opacity: 0; position: absolute; top: 0; left: 0; transition: opacity var(--transition-speed-slow) var(--transition-cubic), visibility 0s var(--transition-speed-slow); visibility: hidden; }
@@ -1087,8 +1054,8 @@ body.dark-mode .testimonial-author { color: var(--secondary-color); }
     box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center;
 }
 .carousel-control i { font-size: 1.2em; line-height: 1; }
-.carousel-prev { left: 0; } /* Removed transform */
-.carousel-next { right: 0; } /* Removed transform */
+.carousel-prev { left: 0; }
+.carousel-next { right: 0; }
 .carousel-control:hover, .carousel-control:focus { background: var(--primary-color); transform: translateY(-50%) scale(1.1); box-shadow: var(--shadow-md); outline: none; }
 .carousel-control:focus-visible { outline: 3px solid var(--accent-bright); outline-offset: 2px; }
 body.dark-mode .carousel-control { background: rgba(0, 156, 74, 0.5); }
@@ -1099,7 +1066,6 @@ body.dark-mode .carousel-control:hover, body.dark-mode .carousel-control:focus {
     .carousel-next { right: 5px; transform: translateY(-50%); }
 }
 
-/* (The rest of your original CSS from here on is great, no changes needed for the fixes) */
 .case-study-grid, .blog-preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg); padding: var(--spacing-lg) 0; }
 .case-study, .blog-post-preview { padding: var(--spacing-lg); display: flex; flex-direction: column; background: var(--glass-bg-light); border: 1px solid var(--glass-border-light); border-radius: var(--border-radius-md); box-shadow: var(--shadow-sm); transition: background var(--transition-speed) ease, border-color var(--transition-speed) ease, transform var(--transition-speed) var(--transition-cubic), box-shadow var(--transition-speed) var(--transition-cubic); }
 body.dark-mode .case-study, body.dark-mode .blog-post-preview { background: var(--glass-bg-dark); border-color: var(--glass-border-dark); }
@@ -1236,12 +1202,12 @@ body.dark-mode .scroll-top-btn:hover, body.dark-mode .scroll-top-btn:focus { bac
     :root { --font-size-base: 16px; --spacing-lg: 2rem; --spacing-xl: 3rem; }
     section { width: 92%; padding: var(--spacing-lg) var(--spacing-sm); max-width: 95%; }
     .stats-container { gap: var(--spacing-md); flex-basis: 160px; }
-    .service-grid, .case-study-grid, .blog-preview-grid { gap: var(--spacing-md); }
+    .service-grid { gap: var(--spacing-md); }
     .contact-grid { gap: var(--spacing-lg); }
     #header-brand-title { font-size: 2em; }
     #typing-effect { font-size: 1.1em; height: 1.3em; min-height: 1.3em; line-height: 1.3em;}
-    .logo-container { width: 55px; height: 55px; } /* Shrunk logo container */
-    .css-logo-text { font-size: 1.4em; } /* Shrunk logo text */
+    .logo-container { width: 55px; height: 55px; }
+    .css-logo-text { font-size: 1.4em; }
     .tech-trivia-container { display: none; }
     .hero-title { font-size: clamp(2.2em, 6vw, 3.5em); }
     .hero-text { font-size: 1.3em; }
@@ -1258,7 +1224,8 @@ body.dark-mode .scroll-top-btn:hover, body.dark-mode .scroll-top-btn:focus { bac
     .hero { min-height: 60vh; }
     .hero-title { font-size: clamp(2em, 5.5vw, 3em); }
     .hero-text { font-size: 1.2em; }
-    .service-grid, .case-study-grid, .blog-preview-grid { grid-template-columns: 1fr; }
+    .service-grid { grid-template-columns: 1fr; } /* Fallback for flex */
+    .case-study-grid, .blog-preview-grid { grid-template-columns: 1fr; }
     .stats-container { gap: var(--spacing-md); flex-basis: 140px; }
     .gallery-item { flex-basis: clamp(180px, 50vw, 240px); }
     .event-timeline { padding-left: 45px; }
@@ -1283,8 +1250,8 @@ body.dark-mode .scroll-top-btn:hover, body.dark-mode .scroll-top-btn:focus { bac
     #typing-effect { font-size: 0.95em; height: 1.2em; min-height: 1.2em; line-height: 1.2em; }
     .header-main { padding: var(--spacing-sm) var(--spacing-sm); }
     .header-top-bar { padding-left: var(--spacing-sm); padding-right: var(--spacing-sm); }
-    .logo-container { width: 45px; height: 45px; } /* Shrunk logo container */
-    .css-logo-text { font-size: 1.2em; } /* Shrunk logo text */
+    .logo-container { width: 45px; height: 45px; }
+    .css-logo-text { font-size: 1.2em; }
     #darkModeToggle { font-size: 0.8em; padding: 5px 10px; min-width: auto; gap: 4px; }
     .main-nav.mobile-nav { width: 90%; max-width: 280px; }
     .hero { min-height: 55vh; }
