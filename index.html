@@ -11,29 +11,17 @@
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://www.sysfx.net">
 
-    <meta property="og:title" content="sysfx - Expert Tech Solutions in Clinton, CT">
-    <meta property="og:description" content="sysfx: Your local partner for reliable computer repair, security, web design, networking, and comprehensive IT support in Clinton, CT.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.sysfx.net">
-    <meta property="og:image" content="https://www.sysfx.net/assets/logo.jpg"> 
-    <meta property="og:image:alt" content="sysfx Logo and Tech Background">
-    <meta property="og:locale" content="en_US">
-
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-    <link rel="icon" type="image/png" href="assets/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
-    <link rel="manifest" href="assets/site.webmanifest" />
-
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"></noscript>
-    <link rel="stylesheet" href="styles.css?v=3.0">
+    <link rel="stylesheet" href="styles.css?v=3.1">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
@@ -44,6 +32,8 @@
 </head>
 
 <body class="preload">
+    <a href="#main-content" class="skip-link fw-bold">Skip to main content</a>
+
     <div id="preloader" class="preloader" aria-live="polite" aria-busy="true">
         <div class="preloader-logo">
             <div class="css-loader" aria-label="sysfx loading...">
@@ -51,43 +41,38 @@
             </div>
         </div>
         <div class="preloader-dots" aria-hidden="true">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
         </div>
         <p class="sr-only">Loading sysfx website...</p>
     </div>
-
-    <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <div class="scroll-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Page scroll progress"></div>
     <div class="cursor" aria-hidden="true"></div>
 
     <header id="main-header" class="glass-morphism fixed-top border-0" role="banner">
-        <div class="header-top-bar d-none d-md-flex">
-            <div id="current-time" aria-live="polite">Loading time...</div>
-            <div class="tech-trivia-container" role="note">
-                <div class="tech-trivia">
-                    <span id="trivia-icon" aria-hidden="true">💡</span> <span id="trivia-text">Loading tech fact...</span>
-                </div>
+        <div class="header-top-bar d-none d-md-flex w-100 px-4 py-2 border-bottom border-secondary border-opacity-25 align-items-center">
+            <div id="current-time" aria-live="polite" class="text-nowrap text-muted small fw-medium" style="width: 200px;">Loading time...</div>
+            <div class="tech-trivia-container flex-grow-1 text-center px-3 text-truncate">
+                <span id="trivia-icon" aria-hidden="true" class="text-warning me-1">💡</span> 
+                <span id="trivia-text" class="text-muted small fw-medium">Loading tech fact...</span>
             </div>
-        </div>
+            <div style="width: 200px;"></div> </div>
         
-        <div class="header-main d-flex align-items-center justify-content-between position-relative">
-            <div class="brand-wrapper d-flex align-items-center">
+        <div class="header-main d-flex align-items-center justify-content-between position-relative px-4 py-3">
+            <div class="brand-wrapper d-flex align-items-center z-3">
                 <div class="logo-container">
                     <a href="#home" class="css-logo-link" aria-label="sysfx Home">
-                        <span class="css-logo-text" data-text="[sysfx]" aria-hidden="true">[sysfx]</span>
+                        <span class="css-logo-text fs-4" data-text="[sysfx]" aria-hidden="true">[sysfx]</span>
                     </a>
                 </div>
-                <div class="header-titles ms-3 d-none d-sm-block text-start">
-                    <h1 class="glow-text m-0" id="header-brand-title">sysfx</h1>
-                    <p id="typing-effect" class="m-0" aria-label="Company Tagline - changes dynamically"> </p>
+                <div class="header-titles ms-3 d-none d-xl-block text-start">
+                    <h1 class="glow-text m-0 fs-3" id="header-brand-title">sysfx</h1>
+                    <p id="typing-effect" class="m-0 text-muted small" aria-label="Company Tagline"> </p>
                 </div>
             </div>
 
             <nav id="desktop-navigation" class="main-nav desktop-nav d-none d-lg-flex position-absolute top-50 start-50 translate-middle" role="navigation" aria-label="Main website navigation">
-                <ul class="nav-list d-flex list-unstyled m-0 p-0 gap-4">
+                <ul class="nav-list d-flex list-unstyled m-0 p-0 gap-3 gap-xl-4">
                     <li><a href="#home" class="nav-link">Home</a></li>
                     <li><a href="#services" class="nav-link">Services</a></li>
                     <li><a href="#about" class="nav-link">About</a></li>
@@ -97,11 +82,11 @@
             </nav>
 
             <div class="header-actions d-flex align-items-center gap-3 z-3">
-                <button id="darkModeToggle" class="mode-button modern-button" aria-label="Switch to dark mode" aria-pressed="false">
+                <button id="darkModeToggle" class="mode-button modern-button py-2 px-3 m-0" aria-label="Switch to dark mode" aria-pressed="false">
                     <span class="icon-container"><i class="fas fa-moon" aria-hidden="true"></i></span>
-                    <span class="mode-button-text d-none d-xl-inline">Dark Mode</span>
+                    <span class="mode-button-text d-none d-xl-inline ms-2 small">Dark Mode</span>
                 </button>
-                <button class="hamburger d-lg-none border-0 bg-transparent" id="hamburger-button" aria-label="Toggle Navigation Menu" aria-expanded="false" aria-controls="mobile-navigation">
+                <button class="hamburger d-lg-none border-0 bg-transparent p-0 ms-2" id="hamburger-button" aria-label="Toggle Navigation Menu" aria-expanded="false" aria-controls="mobile-navigation">
                     <span class="hamburger-box" aria-hidden="true">
                         <span class="hamburger-inner"></span>
                     </span>
@@ -124,116 +109,100 @@
         </ul>
     </nav>
 
-    <div class="scrolling-text-container tech-ticker" role="region" aria-label="Announcements">
-        <p class="scrolling-text-content">
-            <span>N-TEC IS NOW SYSFX. CUTTING-EDGE TECH SOLUTIONS AVAILABLE TODAY. SERVING CLINTON, CT AND BEYOND.</span>
-            <span>DIAGNOSTICS. NETWORKING. SECURITY. NEXT-GEN IT SUPPORT.</span>
-        </p>
+    <div class="tech-ticker overflow-hidden position-relative py-2">
+        <div class="ticker-track d-inline-block text-nowrap">
+            <span class="mx-4">N-TEC IS NOW SYSFX. CUTTING-EDGE TECH SOLUTIONS.</span><span class="mx-4 text-white-50 opacity-50">•</span>
+            <span class="mx-4">DIAGNOSTICS. NETWORKING. SECURITY. NEXT-GEN IT SUPPORT.</span><span class="mx-4 text-white-50 opacity-50">•</span>
+            <span class="mx-4">N-TEC IS NOW SYSFX. CUTTING-EDGE TECH SOLUTIONS.</span><span class="mx-4 text-white-50 opacity-50">•</span>
+            <span class="mx-4">DIAGNOSTICS. NETWORKING. SECURITY. NEXT-GEN IT SUPPORT.</span><span class="mx-4 text-white-50 opacity-50">•</span>
+        </div>
     </div>
 
     <main id="main-content" role="main">
-        <section id="home" class="hero section-animation d-flex align-items-center" aria-labelledby="hero-title">
-            <div id="particles-js" class="particles-container" aria-hidden="true"></div>
-            <div class="hero-content container text-center z-2">
-                <h2 id="hero-title" class="hero-title gradient-text glow-text display-1 fw-bold mb-4">Welcome to sysfx</h2>
-                <p class="hero-text lead mx-auto mb-5">Unlock cutting-edge technology with Sys Fix—your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support in Clinton, CT.</p>
-                <div class="button-container d-flex justify-content-center gap-3">
-                    <a href="#contact" class="modern-button primary action-button pulse-effect-green" aria-label="Get started with sysfx services">
-                        <i class="fas fa-paper-plane" aria-hidden="true"></i> <span class="button-text">Get Started</span>
+        <section id="home" class="hero section-animation position-relative m-0 p-0 w-100" aria-labelledby="hero-title">
+            <div id="particles-js" class="particles-container position-absolute top-0 start-0 w-100 h-100" aria-hidden="true"></div>
+            <div class="hero-content position-relative z-2 w-100 px-4 d-flex flex-column align-items-center justify-content-center">
+                <h2 id="hero-title" class="hero-title gradient-text glow-text display-1 fw-bold mb-4 text-center">Welcome to sysfx</h2>
+                <p class="hero-text lead mb-5 text-center text-white opacity-75" style="max-width: 750px;">Unlock cutting-edge technology with Sys Fix—your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support in Clinton, CT.</p>
+                <div class="button-container d-flex flex-wrap justify-content-center gap-3">
+                    <a href="#contact" class="modern-button primary action-button pulse-effect-primary" aria-label="Get started with sysfx services">
+                        <i class="fas fa-paper-plane" aria-hidden="true"></i> <span class="button-text ms-2">Get Started</span>
                     </a>
-                    <a href="#services" class="modern-button secondary action-button button-blue explore-services" aria-label="Explore sysfx services list">
+                    <a href="#services" class="modern-button secondary action-button explore-services" aria-label="Explore sysfx services list">
                         <span class="button-text">Explore Services</span> <i class="fas fa-arrow-right ms-2"></i>
                     </a>
                 </div>
             </div>
         </section>
 
-        <section id="welcome" class="welcome section-animation container py-5" aria-labelledby="welcome-title">
+        <section id="welcome" class="welcome section-animation container py-5 my-5" aria-labelledby="welcome-title">
             <div class="row align-items-center gy-5 gap-lg-5">
                 <div class="col-lg-6 text-start">
                     <h2 id="welcome-title" class="gradient-text glow-text fw-bold mb-4">Why Choose sysfx?</h2>
                     <p class="text-secondary fs-5 mb-4">At sysfx, we deliver expert tech solutions tailored to your needs. Our certified technicians specialize in computer repairs, cybersecurity, web development, networking, and cloud solutions.</p>
                     <p class="text-secondary mb-4">With over a decade of experience, we are committed to precision, innovation, and customer satisfaction. Based in Clinton, CT, we serve clients regionally and remotely, transforming your technical infrastructure.</p>
-                    <div class="d-flex align-items-center gap-3 mb-4">
-                        <div class="bg-success rounded-circle p-3 bg-opacity-10 text-success">
+                    <div class="d-flex align-items-center gap-3 mb-4 mt-5">
+                        <div class="bg-primary rounded-circle p-3 bg-opacity-10 text-primary shadow-sm">
                             <i class="fas fa-headset fa-2x"></i>
                         </div>
                         <div>
                             <span class="d-block text-muted small text-uppercase fw-bold tracking-wide">24/7 Support</span>
-                            <a href="mailto:nick@sysfx.net" class="email-link text-decoration-none fs-5 fw-medium" id="email-display">nick@sysfx.net</a>
+                            <a href="mailto:nick@sysfx.net" class="email-link text-decoration-none fs-5 fw-bold gradient-text" id="email-display">nick@sysfx.net</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-5 position-relative d-none d-lg-block">
+                <div class="col-lg-5 position-relative d-none d-lg-block ms-auto">
                     <div class="modern-image-stack">
                         <div class="glass-morphism p-4 rounded-4 shadow-lg position-relative z-2">
-                            <div class="d-flex align-items-center gap-3 mb-3 border-bottom border-secondary border-opacity-25 pb-3">
-                                <i class="fas fa-server text-success fa-2x"></i>
+                            <div class="d-flex align-items-center gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-3">
+                                <i class="fas fa-server text-primary fa-2x"></i>
                                 <h4 class="m-0 fw-bold">System Status</h4>
                             </div>
-                            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Network Optimization</span><span class="text-success fw-bold">100%</span></div>
-                            <div class="progress bg-secondary bg-opacity-25 mb-3" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
-                            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Security Threat Deflection</span><span class="text-success fw-bold">Active</span></div>
-                            <div class="progress bg-secondary bg-opacity-25" style="height: 6px;"><div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 100%"></div></div>
+                            <div class="d-flex justify-content-between mb-2"><span class="text-muted fw-medium">Network Optimization</span><span class="text-primary fw-bold">100%</span></div>
+                            <div class="progress bg-secondary bg-opacity-25 mb-4 rounded-pill" style="height: 6px;"><div class="progress-bar bg-primary rounded-pill" style="width: 100%"></div></div>
+                            <div class="d-flex justify-content-between mb-2"><span class="text-muted fw-medium">Threat Deflection</span><span class="text-tertiary fw-bold">Active</span></div>
+                            <div class="progress bg-secondary bg-opacity-25 rounded-pill" style="height: 6px;"><div class="progress-bar bg-tertiary rounded-pill progress-bar-striped progress-bar-animated" style="width: 100%"></div></div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="location" class="location-section section-animation container py-5" aria-labelledby="location-title">
-            <div class="location-content glass-morphism rounded-4 p-4 p-md-5">
-                <div class="row align-items-center gy-4">
-                    <div class="col-lg-5 text-start">
-                        <h2 id="location-title" class="glow-text fw-bold mb-3">Find Us in Clinton, CT</h2>
-                        <p class="text-secondary mb-4">Visit our headquarters, or reach out for remote support. We deploy enterprise-grade tech solutions across the entire region.</p>
-                        <div class="d-flex flex-column gap-3 mb-4">
-                            <a href="https://maps.google.com/" target="_blank" rel="noopener noreferrer" class="modern-button action-button pulse-effect-green w-100 text-center"><span class="button-text">Get Directions</span></a>
-                            <a href="#contact" class="modern-button secondary action-button button-blue w-100 text-center"><span class="button-text">Schedule a Visit</span></a>
-                        </div>
-                    </div>
-                    <div class="col-lg-7">
-                        <div id="map" class="rounded-4 overflow-hidden shadow-sm" aria-label="Interactive map showing sysfx location in Clinton, CT" style="height: 350px;"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="services" class="services parallax section-animation py-5" aria-labelledby="services-title">
-            <div class="container position-relative z-2">
+        <section id="services" class="services parallax section-animation py-5 my-5" aria-labelledby="services-title">
+            <div class="container position-relative z-2 py-5">
                 <div class="text-center mb-5 max-w-700 mx-auto">
                     <h2 id="services-title" class="gradient-text glow-text fw-bold">Our Services</h2>
-                    <p class="services-description text-white opacity-75 fs-5">sysfx offers a comprehensive suite of tech services to empower your business. From hardware fixes to cloud migrations, we engineer robust solutions.</p>
+                    <p class="services-description text-white opacity-75 fs-5 mt-3">sysfx offers a comprehensive suite of tech services to empower your business. From hardware fixes to cloud migrations, we engineer robust solutions.</p>
                 </div>
                 
-                <div class="bento-grid">
+                <div class="bento-grid mt-5">
                     <article class="service bento-large glass-morphism card-hover text-start p-4 p-lg-5" data-modal-target="computer-repair-modal" tabindex="0" role="button" aria-haspopup="dialog">
-                        <div class="service-icon mb-4"><i class="fas fa-laptop fa-2x" aria-hidden="true"></i></div>
+                        <div class="service-icon mb-4"><i class="fas fa-laptop fa-2x text-primary" aria-hidden="true"></i></div>
                         <h3 class="fw-bold mb-3">Computer Repair & Diagnostics</h3>
-                        <p class="text-secondary flex-grow-1">Fast, reliable repairs for desktops, laptops, and custom builds. We resolve deep hardware faults, optimize OS environments, and guarantee rigorous diagnostic testing.</p>
-                        <div class="mt-4"><span class="text-success fw-bold tracking-wide text-uppercase small">Learn More <i class="fas fa-arrow-right ms-1"></i></span></div>
+                        <p class="text-secondary flex-grow-1 fs-5">Fast, reliable repairs for desktops, laptops, and custom builds. We resolve deep hardware faults, optimize OS environments, and guarantee rigorous diagnostic testing.</p>
+                        <div class="mt-4"><span class="text-primary fw-bold tracking-wide text-uppercase small">Learn More <i class="fas fa-arrow-right ms-1"></i></span></div>
                     </article>
                     
                     <article class="service glass-morphism card-hover text-start p-4" data-modal-target="cybersecurity-modal" tabindex="0" role="button" aria-haspopup="dialog">
-                        <div class="service-icon mb-3"><i class="fas fa-shield-alt fa-2x" aria-hidden="true"></i></div>
+                        <div class="service-icon mb-3"><i class="fas fa-shield-alt fa-2x text-tertiary" aria-hidden="true"></i></div>
                         <h3 class="fw-bold h5 mb-2">Cybersecurity</h3>
                         <p class="text-secondary small mb-0">Advanced threat detection and fortified network perimeters.</p>
                     </article>
                     
                     <article class="service glass-morphism card-hover text-start p-4" data-modal-target="web-development-modal" tabindex="0" role="button" aria-haspopup="dialog">
-                        <div class="service-icon mb-3"><i class="fas fa-code fa-2x" aria-hidden="true"></i></div>
+                        <div class="service-icon mb-3"><i class="fas fa-code fa-2x text-primary" aria-hidden="true"></i></div>
                         <h3 class="fw-bold h5 mb-2">Web Architecture</h3>
                         <p class="text-secondary small mb-0">High-performance, SEO-optimized digital storefronts.</p>
                     </article>
                     
                     <article class="service glass-morphism card-hover text-start p-4" data-modal-target="networking-modal" tabindex="0" role="button" aria-haspopup="dialog">
-                        <div class="service-icon mb-3"><i class="fas fa-network-wired fa-2x" aria-hidden="true"></i></div>
+                        <div class="service-icon mb-3"><i class="fas fa-network-wired fa-2x text-tertiary" aria-hidden="true"></i></div>
                         <h3 class="fw-bold h5 mb-2">Enterprise Networking</h3>
                         <p class="text-secondary small mb-0">Seamless, secure, and infinitely scalable local networks.</p>
                     </article>
                     
                     <article class="service glass-morphism card-hover text-start p-4" data-modal-target="cloud-solutions-modal" tabindex="0" role="button" aria-haspopup="dialog">
-                        <div class="service-icon mb-3"><i class="fas fa-cloud fa-2x" aria-hidden="true"></i></div>
+                        <div class="service-icon mb-3"><i class="fas fa-cloud fa-2x text-primary" aria-hidden="true"></i></div>
                         <h3 class="fw-bold h5 mb-2">Cloud Migrations</h3>
                         <p class="text-secondary small mb-0">Fluid transition to scalable off-site infrastructures.</p>
                     </article>
@@ -241,7 +210,7 @@
             </div>
         </section>
 
-        <section class="py-4 border-top border-bottom border-secondary border-opacity-25 my-5">
+        <section class="py-5 border-top border-bottom border-secondary border-opacity-25 my-5">
             <div class="container text-center">
                 <h4 class="text-muted small text-uppercase tracking-wide fw-bold mb-4">Supporting All Major Environments</h4>
                 <div class="os-logo-scroller" aria-label="Supported Operating Systems Logos">
@@ -265,16 +234,16 @@
             </div>
         </section>
 
-        <section id="gallery" class="gallery section-animation container py-5" aria-labelledby="gallery-title">
-            <div class="d-flex justify-content-between align-items-end mb-4">
+        <section id="gallery" class="gallery section-animation container py-5 my-5" aria-labelledby="gallery-title">
+            <div class="d-flex justify-content-between align-items-end mb-4 px-2">
                 <div class="text-start">
                     <h2 id="gallery-title" class="glow-text fw-bold m-0">Our Work</h2>
-                    <p class="text-secondary mt-2 m-0">Precision deployment and flawless cable management.</p>
+                    <p class="text-secondary mt-2 m-0 fs-5">Precision deployment and flawless cable management.</p>
                 </div>
-                <button type="button" class="btn btn-outline-success border-2 fw-bold d-none d-md-block" onclick="alert('Full portfolio coming soon!')" aria-label="View full project portfolio">View Archive <i class="fas fa-arrow-right ms-2"></i></button>
+                <button type="button" class="modern-button secondary small fw-bold d-none d-md-flex" onclick="alert('Full portfolio coming soon!')" aria-label="View full project portfolio">View Archive <i class="fas fa-arrow-right ms-2"></i></button>
             </div>
             
-            <div class="gallery-container p-0 m-0" role="list">
+            <div class="gallery-container p-0 m-0 pb-4" role="list">
                 <div class="gallery-item card-hover rounded-4" role="listitem" tabindex="0" aria-label="View image: Tech hardware repair project" data-src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" data-alt="Close-up of a computer motherboard with components">
                     <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70" alt="Tech hardware repair project" loading="lazy">
                 </div>
@@ -292,68 +261,53 @@
             </div>
         </section>
 
-        <section id="about" class="about container section-animation py-5" aria-labelledby="about-title">
-            <div class="row align-items-center flex-row-reverse gy-5 gap-lg-5">
-                <div class="col-lg-6 text-start">
-                    <h2 id="about-title" class="glow-text fw-bold mb-4">About Us</h2>
-                    <p class="text-secondary fs-5 mb-4">sysfx is a collective of highly disciplined tech professionals. We approach every infrastructure issue with a focus on system longevity and clean, maintainable architecture.</p>
-                    <p class="text-secondary mb-4">Our mission is to empower local businesses through uncompromised technical reliability. From fixing complex OS failures to deploying comprehensive cloud networks across the Connecticut shoreline, we ensure your tech stack is an asset, not a liability.</p>
-                    <a href="#contact" class="modern-button action-button pulse-effect-green mt-2" aria-label="Contact sysfx today"><span class="button-text">Start a Project</span></a>
-                </div>
-                <div class="col-lg-5 d-none d-lg-block">
-                    <div class="bg-success bg-opacity-10 rounded-4 p-5 text-center shadow-sm border border-success border-opacity-25 h-100 d-flex flex-column justify-content-center">
-                        <i class="fas fa-microchip fa-4x text-success mb-4 opacity-75"></i>
-                        <h3 class="fw-bold mb-3">15+ Years</h3>
-                        <p class="text-muted m-0">Of meticulous technical execution.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="contact" class="contact section-animation container py-5" aria-labelledby="contact-title">
-            <div class="glass-morphism rounded-4 p-4 p-md-5">
-                <div class="text-center mb-5 max-w-700 mx-auto">
-                    <h2 id="contact-title" class="glow-text fw-bold">Initiate Contact</h2>
-                    <p class="text-secondary fs-5 m-0">Ready to elevate your infrastructure? Our lines are open 24/7.</p>
+        <section id="contact" class="contact section-animation container py-5 my-5" aria-labelledby="contact-title">
+            <div class="glass-morphism rounded-4 p-4 p-lg-5 shadow-lg position-relative overflow-hidden">
+                <div class="position-absolute top-0 end-0 bg-primary opacity-25" style="width: 300px; height: 300px; filter: blur(100px); border-radius: 50%;"></div>
+                <div class="position-absolute bottom-0 start-0 bg-tertiary opacity-25" style="width: 250px; height: 250px; filter: blur(80px); border-radius: 50%;"></div>
+                
+                <div class="text-center mb-5 max-w-700 mx-auto position-relative z-2">
+                    <h2 id="contact-title" class="glow-text fw-bold display-5 mb-3">Initiate Contact</h2>
+                    <p class="text-secondary fs-5 m-0">Ready to elevate your infrastructure? Our lines are open.</p>
                 </div>
                 
-                <div class="row gy-5 gap-lg-5 justify-content-center">
+                <div class="row gy-5 gap-lg-5 justify-content-center position-relative z-2 mt-4">
                     <div class="col-lg-4 text-start">
                         <div class="contact-item d-flex align-items-center mb-4 pb-4 border-bottom border-secondary border-opacity-25">
-                            <div class="bg-success bg-opacity-10 p-3 rounded-3 text-success me-4"><i class="fas fa-envelope fa-xl m-0"></i></div>
-                            <div><span class="d-block text-muted small text-uppercase tracking-wide fw-bold mb-1">Email Us</span><a href="mailto:nick@sysfx.net" class="fw-medium text-decoration-none email-link text-body">nick@sysfx.net</a></div>
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-3 text-primary me-4 shadow-sm"><i class="fas fa-envelope fa-xl m-0"></i></div>
+                            <div><span class="d-block text-muted small text-uppercase tracking-wide fw-bold mb-1">Email Us</span><a href="mailto:nick@sysfx.net" class="fw-bold text-decoration-none email-link text-body fs-5">nick@sysfx.net</a></div>
                         </div>
                         <div class="contact-item d-flex align-items-center mb-4 pb-4 border-bottom border-secondary border-opacity-25">
-                            <div class="bg-success bg-opacity-10 p-3 rounded-3 text-success me-4"><i class="fas fa-phone fa-xl m-0"></i></div>
-                            <div><span class="d-block text-muted small text-uppercase tracking-wide fw-bold mb-1">Call Us</span><a href="tel:+18603754425" class="fw-medium text-decoration-none text-body">(860) 375-4425</a></div>
+                            <div class="bg-tertiary bg-opacity-10 p-3 rounded-3 text-tertiary me-4 shadow-sm"><i class="fas fa-phone fa-xl m-0"></i></div>
+                            <div><span class="d-block text-muted small text-uppercase tracking-wide fw-bold mb-1">Call Us</span><a href="tel:+18603754425" class="fw-bold text-decoration-none text-body fs-5">(860) 375-4425</a></div>
                         </div>
                         <div class="contact-item d-flex align-items-center">
-                            <div class="bg-success bg-opacity-10 p-3 rounded-3 text-success me-4"><i class="fas fa-map-marker-alt fa-xl m-0"></i></div>
-                            <div><span class="d-block text-muted small text-uppercase tracking-wide fw-bold mb-1">Headquarters</span><address class="m-0 text-body">123 Main Street<br>Clinton, CT 06413</address></div>
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-3 text-primary me-4 shadow-sm"><i class="fas fa-map-marker-alt fa-xl m-0"></i></div>
+                            <div><span class="d-block text-muted small text-uppercase tracking-wide fw-bold mb-1">Headquarters</span><address class="m-0 text-body fw-medium">123 Main Street<br>Clinton, CT 06413</address></div>
                         </div>
                     </div>
                     
                     <div class="col-lg-7">
-                        <form class="contact-form glass-morphism border-0 shadow-none bg-transparent" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate>
-                            <div class="row g-3">
+                        <form class="contact-form bg-body bg-opacity-50 p-4 p-md-5 rounded-4 shadow-sm border border-secondary border-opacity-10" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate>
+                            <div class="row g-4">
                                 <div class="col-md-6 form-group">
-                                    <label for="name" class="form-label visually-hidden">Name</label>
-                                    <input type="text" id="name" name="name" class="form-control form-control-lg bg-body text-body border-secondary border-opacity-25" required placeholder="Your Name">
+                                    <label for="name" class="form-label text-muted small fw-bold tracking-wide text-uppercase mb-2">Name</label>
+                                    <input type="text" id="name" name="name" class="form-control form-control-lg bg-body text-body border-secondary border-opacity-25 rounded-3" required placeholder="John Doe">
                                 </div>
                                 <div class="col-md-6 form-group">
-                                    <label for="email-input" class="form-label visually-hidden">Email</label>
-                                    <input type="email" id="email-input" name="email" class="form-control form-control-lg bg-body text-body border-secondary border-opacity-25" required placeholder="Email Address">
+                                    <label for="email-input" class="form-label text-muted small fw-bold tracking-wide text-uppercase mb-2">Email</label>
+                                    <input type="email" id="email-input" name="email" class="form-control form-control-lg bg-body text-body border-secondary border-opacity-25 rounded-3" required placeholder="john@example.com">
                                 </div>
                                 <div class="col-12 form-group">
-                                    <label for="subject" class="form-label visually-hidden">Subject</label>
-                                    <input type="text" id="subject" name="subject" class="form-control form-control-lg bg-body text-body border-secondary border-opacity-25" required placeholder="Diagnostic Subject">
+                                    <label for="subject" class="form-label text-muted small fw-bold tracking-wide text-uppercase mb-2">Subject</label>
+                                    <input type="text" id="subject" name="subject" class="form-control form-control-lg bg-body text-body border-secondary border-opacity-25 rounded-3" required placeholder="Diagnostic Request">
                                 </div>
                                 <div class="col-12 form-group">
-                                    <label for="message" class="form-label visually-hidden">Message</label>
-                                    <textarea id="message" name="message" class="form-control bg-body text-body border-secondary border-opacity-25" rows="5" required placeholder="Describe the system fault or requirements..."></textarea>
+                                    <label for="message" class="form-label text-muted small fw-bold tracking-wide text-uppercase mb-2">Message</label>
+                                    <textarea id="message" name="message" class="form-control bg-body text-body border-secondary border-opacity-25 rounded-3 p-3" rows="5" required placeholder="Describe the system fault or requirements..."></textarea>
                                 </div>
-                                <div class="col-12 mt-4 text-end">
-                                    <button type="submit" class="btn btn-success btn-lg px-5 fw-bold rounded-pill shadow-sm">Transmit <i class="fas fa-paper-plane ms-2"></i></button>
+                                <div class="col-12 mt-4 pt-2 text-end">
+                                    <button type="submit" class="modern-button primary action-button pulse-effect-primary w-100 w-sm-auto shadow-lg border-0 py-3 px-5">Transmit Request <i class="fas fa-paper-plane ms-2"></i></button>
                                 </div>
                             </div>
                         </form>
@@ -363,36 +317,36 @@
         </section>
     </main>
 
-    <footer class="main-footer py-4 border-top border-secondary border-opacity-25" role="contentinfo">
+    <footer class="main-footer py-4 border-top border-secondary border-opacity-25 bg-body bg-opacity-50" role="contentinfo">
         <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
-            <p class="copyright text-muted m-0 small">© <span id="current-year">2026</span> sysfx. Engineered in Connecticut.</p>
-            <div class="social-links d-flex gap-3 mt-3 mt-md-0">
-                <a href="#" class="text-muted"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="text-muted"><i class="fab fa-linkedin"></i></a>
-                <a href="https://www.instagram.com/sys.fx/" class="text-muted"><i class="fab fa-instagram"></i></a>
+            <p class="copyright text-muted m-0 small fw-medium">© <span id="current-year">2026</span> sysfx. Engineered in Connecticut.</p>
+            <div class="social-links d-flex gap-4 mt-3 mt-md-0">
+                <a href="#" class="text-muted"><i class="fab fa-twitter fs-5"></i></a>
+                <a href="#" class="text-muted"><i class="fab fa-linkedin fs-5"></i></a>
+                <a href="https://www.instagram.com/sys.fx/" class="text-muted"><i class="fab fa-instagram fs-5"></i></a>
             </div>
         </div>
     </footer>
 
     <div class="modal-container" aria-hidden="true">
         <div id="computer-repair-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="computer-repair-title" aria-hidden="true">
-            <div class="modal-content glass-morphism rounded-4 border-0">
-                <div class="d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25 pb-3 mb-4">
-                    <h3 id="computer-repair-title" class="modal-title text-success m-0 fw-bold fs-4"><i class="fas fa-laptop me-2"></i> System Diagnostics</h3>
+            <div class="modal-content glass-morphism rounded-4 border-0 shadow-lg">
+                <div class="d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25 p-4 pb-3">
+                    <h3 id="computer-repair-title" class="modal-title text-primary m-0 fw-bold fs-4"><i class="fas fa-laptop me-2"></i> System Diagnostics</h3>
                     <button class="btn-close btn-close-white opacity-75" aria-label="Close" type="button" onclick="document.querySelector('.modal-close').click()"></button>
                     <button class="modal-close d-none"></button>
                 </div>
-                <div class="modal-body text-secondary">
-                    <p>We execute rigorous hardware and software diagnostics to identify underlying faults within your infrastructure.</p>
-                    <ul class="list-unstyled mb-4">
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Component-level hardware replacement</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Deep-level OS optimization and registry repair</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Forensic data recovery attempts</li>
+                <div class="modal-body text-secondary p-4 fs-6">
+                    <p class="mb-4">We execute rigorous hardware and software diagnostics to identify underlying faults within your infrastructure.</p>
+                    <ul class="list-unstyled m-0">
+                        <li class="mb-3 d-flex align-items-start"><i class="fas fa-check text-primary mt-1 me-3"></i> <span>Component-level hardware replacement and upgrades.</span></li>
+                        <li class="mb-3 d-flex align-items-start"><i class="fas fa-check text-tertiary mt-1 me-3"></i> <span>Deep-level OS optimization and registry repair.</span></li>
+                        <li class="mb-0 d-flex align-items-start"><i class="fas fa-check text-primary mt-1 me-3"></i> <span>Forensic data recovery attempts.</span></li>
                     </ul>
                 </div>
-                <div class="modal-footer border-top border-secondary border-opacity-25 pt-4 mt-0 border-0">
-                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 modal-close-alt">Cancel</button>
-                    <button type="button" class="btn btn-success rounded-pill px-4 modal-action pulse-effect-green" data-scroll-target="#contact">Initiate Ticket</button>
+                <div class="modal-footer border-top border-secondary border-opacity-25 p-4 pt-3 border-0 bg-body bg-opacity-25 rounded-bottom-4">
+                    <button type="button" class="btn btn-link text-muted text-decoration-none fw-medium modal-close-alt me-2">Cancel</button>
+                    <button type="button" class="modern-button primary modal-action pulse-effect-primary py-2 px-4 m-0" data-scroll-target="#contact">Initiate Ticket</button>
                 </div>
             </div>
         </div>
@@ -404,10 +358,10 @@
 
     <aside class="floating-elements position-fixed bottom-0 end-0 p-4 z-3" aria-label="Quick access tools">
         <div class="d-flex flex-column gap-2">
-            <button id="music-toggle" class="btn btn-dark rounded-circle shadow-lg d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;" aria-label="Play background music">
+            <button id="music-toggle" class="btn btn-dark border-secondary border-opacity-25 rounded-circle shadow-lg d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;" aria-label="Play background music">
                 <i class="fas fa-music"></i>
             </button>
-            <button class="btn btn-success rounded-circle shadow-lg d-flex align-items-center justify-content-center scroll-top-btn" id="scroll-top-button" style="width: 45px; height: 45px; display: none;" aria-label="Scroll back to top">
+            <button class="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center scroll-top-btn border-0" id="scroll-top-button" style="width: 48px; height: 48px; display: none; background: var(--button-gradient-primary);" aria-label="Scroll back to top">
                 <i class="fas fa-arrow-up"></i>
             </button>
         </div>

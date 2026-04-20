@@ -1,20 +1,10 @@
 /* ==========================================================================
    SysFX Stylesheet
-   Version: 3.0 (Bootstrap Hybrid & Bento Grid Optimized)
+   Version: 3.1 (Cyber-Tech Palette, Ticker & Hero Fixes)
    Author: sysfx
    ========================================================================== */
 
-/* ==========================================================================
-   1. Root Variables & Base Styles
-   ========================================================================== */
 :root {
-    /* Colors - Matrix/Emerald Palette */
-    --primary-color: #058743;
-    --secondary-color: #009c4a;
-    --accent-bright: #00d062;
-    --accent-dark: #004d24;
-    --glow-color: var(--accent-bright);
-
     /* Base Tones */
     --text-light: #f8f9fa;
     --text-dark: #212529;
@@ -23,33 +13,47 @@
     --border-light: rgba(0, 0, 0, 0.1);
     --border-dark: rgba(255, 255, 255, 0.15);
     --bg-light: #f8f9fa;
-    --bg-dark: #121212;
+    --bg-dark: #0d0e15; /* Deeper, richer dark mode background */
     --bg-surface-light: #ffffff;
-    --bg-surface-dark: #1e1e1e;
+    --bg-surface-dark: #151623;
     
-    /* Glow & Outline */
+    /* New Cyber-Tech Palette */
+    --primary-color: #058743; /* Sysfx Green */
+    --accent-bright: #00d062; /* Neon Green */
+    
+    --secondary-color: #6f42c1; /* Deep Purple Accent */
+    --tertiary-color: #0d6efd; /* Electric Blue Accent */
+    
+    --glow-color: var(--accent-bright);
+
+    /* Glow & Shadows */
     --glow-intensity: 5px;
     --glow-spread: 8px;
     --text-glow-shadow: 0 0 var(--glow-intensity) var(--glow-color), 0 0 var(--glow-spread) var(--glow-color);
     --text-glow-shadow-dark-mode: 0 0 calc(var(--glow-intensity) * 1.2) var(--glow-color), 0 0 calc(var(--glow-spread) * 1.3) var(--glow-color);
 
-    /* Gradients */
-    --text-gradient: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    --button-gradient-green: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    --button-gradient-green-hover: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+    /* Gradients (Mixing Green, Blue, and Purple) */
+    --text-gradient: linear-gradient(45deg, var(--accent-bright), var(--tertiary-color));
+    --button-gradient-primary: linear-gradient(135deg, var(--primary-color), var(--tertiary-color));
+    --button-gradient-secondary: linear-gradient(135deg, var(--secondary-color), var(--tertiary-color));
+    
     --bg-gradient-light: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    --bg-gradient-dark: linear-gradient(135deg, var(--bg-dark), var(--bg-surface-dark));
+    --bg-gradient-dark: linear-gradient(135deg, #0d0e15, #161224);
 
-    /* Glassmorphism - Heavily Optimized for Performance */
+    /* Glassmorphism */
     --glass-bg-light: rgba(255, 255, 255, 0.75);
     --glass-border-light: rgba(255, 255, 255, 0.4);
-    --glass-bg-dark: rgba(5, 30, 15, 0.6);
-    --glass-border-dark: rgba(0, 208, 98, 0.15);
-    --glass-blur: 8px; /* Reduced from 10px to eliminate scroll lag */
+    --glass-bg-dark: rgba(20, 22, 35, 0.6);
+    --glass-border-dark: rgba(255, 255, 255, 0.08);
+    --glass-blur: 8px; 
 
     /* Typography */
-    --font-family-base: 'Roboto', 'Segoe UI', sans-serif;
-    --font-family-mono: 'Roboto Mono', monospace;
+    --font-family-base: 'Inter', 'Segoe UI', sans-serif;
+    --font-family-mono: 'JetBrains Mono', monospace;
+
+    /* Shadows */
+    --shadow-primary: 0 4px 20px rgba(13, 110, 253, 0.25);
+    --shadow-primary-hover: 0 6px 25px rgba(13, 110, 253, 0.4);
 
     /* Transitions */
     --transition-speed-fast: 0.15s;
@@ -77,7 +81,7 @@ body:not(.preload) { opacity: 1; }
 body.no-scroll { overflow: hidden; }
 
 /* ==========================================================================
-   2. Dark Mode Mechanics & Bootstrap Synergy
+   Dark Mode Mechanics & Bootstrap Customization
    ========================================================================== */
 body.dark-mode {
     background: var(--bg-gradient-dark);
@@ -85,7 +89,7 @@ body.dark-mode {
     color: var(--text-light);
 }
 
-/* Force Bootstrap utility classes to respect custom dark mode */
+/* Force Bootstrap utilities to respect theme and palette */
 body.dark-mode .text-body { color: var(--text-light) !important; }
 body.dark-mode .bg-body { background-color: var(--bg-surface-dark) !important; }
 body.dark-mode .text-secondary { color: #adb5bd !important; }
@@ -93,8 +97,40 @@ body.dark-mode .text-muted { color: rgba(255, 255, 255, 0.5) !important; }
 body.dark-mode .border-secondary { border-color: rgba(255, 255, 255, 0.1) !important; }
 body.dark-mode .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
 
+/* Apply Palette to Utilities */
+.text-primary { color: var(--primary-color) !important; }
+.text-secondary { color: var(--secondary-color) !important; }
+.text-tertiary { color: var(--tertiary-color) !important; }
+.bg-primary { background-color: var(--primary-color) !important; }
+.bg-secondary { background-color: var(--secondary-color) !important; }
+.bg-tertiary { background-color: var(--tertiary-color) !important; }
+
+body.dark-mode .text-primary { color: var(--accent-bright) !important; }
+
 /* ==========================================================================
-   3. Typography, Glows & Glassmorphism
+   Accessibility
+   ========================================================================== */
+.skip-link {
+    position: fixed;
+    top: -100px; /* Hidden off screen */
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--button-gradient-primary);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 0 0 8px 8px;
+    z-index: 999999;
+    transition: top 0.3s ease;
+    text-decoration: none;
+    box-shadow: var(--shadow-primary);
+}
+.skip-link:focus {
+    top: 0;
+    outline: none;
+}
+
+/* ==========================================================================
+   Typography & Effects
    ========================================================================== */
 .glass-morphism {
     background: var(--glass-bg-light);
@@ -130,7 +166,7 @@ body.dark-mode .glow-text { animation-name: pulseGlowDark; }
 .max-w-700 { max-width: 700px; }
 
 /* ==========================================================================
-   4. Buttons & Interactions
+   Buttons & Interactions
    ========================================================================== */
 .card-hover {
     transition: transform var(--transition-speed-fast) var(--transition-cubic),
@@ -138,15 +174,15 @@ body.dark-mode .glow-text { animation-name: pulseGlowDark; }
 }
 .card-hover:hover, .card-hover:focus-within {
     transform: translateY(-4px) scale(1.01);
-    box-shadow: var(--shadow-green-hover) !important;
-    border-color: rgba(0, 208, 98, 0.4);
+    box-shadow: var(--shadow-primary-hover) !important;
+    border-color: rgba(13, 110, 253, 0.4);
 }
 
 .modern-button {
-    background: var(--button-gradient-green);
+    background: var(--button-gradient-primary);
     border: none;
     color: #fff;
-    padding: 12px 28px;
+    padding: 14px 32px;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -154,63 +190,63 @@ body.dark-mode .glow-text { animation-name: pulseGlowDark; }
     font-weight: 600;
     border-radius: 50px;
     transition: all var(--transition-speed) var(--transition-cubic);
-    box-shadow: var(--shadow-green);
+    box-shadow: var(--shadow-primary);
 }
 .modern-button:hover, .modern-button:focus-visible {
     transform: translateY(-3px);
     color: #fff;
-    box-shadow: var(--shadow-green-hover);
+    box-shadow: var(--shadow-primary-hover);
 }
-.modern-button.secondary { background: var(--secondary-color); }
-.modern-button.secondary:hover { background: var(--primary-color); }
+.modern-button.secondary { background: var(--button-gradient-secondary); box-shadow: 0 4px 15px rgba(111, 66, 193, 0.25); }
+.modern-button.secondary:hover { box-shadow: 0 6px 20px rgba(111, 66, 193, 0.4); }
+.modern-button.small { padding: 10px 24px; font-size: 0.9em; }
 
-@keyframes pulseGreen { 
-    0% { box-shadow: 0 0 0 0 rgba(5, 135, 67, 0.7), var(--shadow-green); } 
-    70% { box-shadow: 0 0 0 15px rgba(5, 135, 67, 0), var(--shadow-green); } 
-    100% { box-shadow: 0 0 0 0 rgba(5, 135, 67, 0), var(--shadow-green); } 
+@keyframes pulsePrimary { 
+    0% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.5), var(--shadow-primary); } 
+    70% { box-shadow: 0 0 0 15px rgba(13, 110, 253, 0), var(--shadow-primary); } 
+    100% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0), var(--shadow-primary); } 
 }
-.pulse-effect-green { animation: pulseGreen 2.5s infinite cubic-bezier(0.66, 0, 0, 1); }
-.pulse-effect-green:hover { animation: none; }
+.pulse-effect-primary { animation: pulsePrimary 2.5s infinite cubic-bezier(0.66, 0, 0, 1); }
+.pulse-effect-primary:hover { animation: none; }
 
 /* Custom Cursor */
 .cursor {
     position: fixed; top: 0; left: 0; width: 16px; height: 16px;
-    background-color: var(--primary-color); border-radius: 50%;
+    background-color: var(--tertiary-color); border-radius: 50%;
     pointer-events: none; z-index: 9999; opacity: 0;
-    border: 2px solid rgba(0, 208, 98, 0.5); mix-blend-mode: difference;
+    border: 2px solid rgba(13, 110, 253, 0.5); mix-blend-mode: difference;
     transform: translate(-50%, -50%) scale(1);
     transition: width var(--transition-speed-fast), height var(--transition-speed-fast);
 }
 body.cursor-ready .cursor { opacity: 1; }
-.cursor.hover { transform: translate(-50%, -50%) scale(2.5); background-color: rgba(0, 156, 74, 0.3); }
+.cursor.hover { transform: translate(-50%, -50%) scale(2.5); background-color: rgba(13, 110, 253, 0.3); }
 @media (pointer: coarse) or (hover: none) { .cursor { display: none !important; } }
 
 /* ==========================================================================
-   5. Header & Navigation (Absolute Desktop)
+   Header & Navigation
    ========================================================================== */
 #main-header { transition: all var(--transition-speed) ease; }
 #main-header.header-shrunk { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
 body.dark-mode #main-header.header-shrunk { box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
 
 .css-logo-text {
-    font-family: var(--font-family-mono); font-size: 1.5em; font-weight: 700;
+    font-family: var(--font-family-mono); font-weight: 700;
     color: var(--primary-color); text-decoration: none;
+    text-shadow: 0 0 5px var(--primary-color);
 }
-body.dark-mode .css-logo-text { color: var(--secondary-color); }
+body.dark-mode .css-logo-text { color: var(--accent-bright); text-shadow: 0 0 5px var(--accent-bright); }
 
 /* Desktop Absolute Nav */
 .desktop-nav .nav-link {
-    color: var(--text-dark); font-weight: 500; text-decoration: none;
-    padding: 8px 16px; border-radius: 50px;
+    color: var(--text-dark); font-weight: 600; text-decoration: none;
+    padding: 8px 18px; border-radius: 50px; font-size: 0.95rem;
     transition: all var(--transition-speed) ease;
 }
 body.dark-mode .desktop-nav .nav-link { color: var(--text-light); }
-.desktop-nav .nav-link:hover { color: var(--primary-color); background: rgba(5, 135, 67, 0.08); }
-body.dark-mode .desktop-nav .nav-link:hover { background: rgba(0, 156, 74, 0.15); color: var(--secondary-color); }
+.desktop-nav .nav-link:hover { color: var(--tertiary-color); background: rgba(13, 110, 253, 0.08); }
+body.dark-mode .desktop-nav .nav-link:hover { background: rgba(13, 110, 253, 0.15); color: #fff; }
 
-/* OnePageNav Active State */
-.desktop-nav li.current .nav-link { background: var(--primary-color); color: #fff; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-body.dark-mode .desktop-nav li.current .nav-link { background: var(--secondary-color); color: var(--bg-dark); }
+.desktop-nav li.current .nav-link { background: var(--button-gradient-primary); color: #fff; box-shadow: var(--shadow-primary); }
 
 /* Mobile Nav Drawer */
 .mobile-nav {
@@ -230,64 +266,66 @@ body.nav-active .mobile-nav-overlay { opacity: 1; visibility: visible; }
     text-decoration: none; border-bottom: 1px solid var(--border-light);
 }
 body.dark-mode .mobile-nav .nav-link { color: var(--text-light); border-bottom-color: var(--border-dark); }
-.mobile-nav li.current .nav-link { color: var(--primary-color); background: rgba(5,135,67,0.1); }
-body.dark-mode .mobile-nav li.current .nav-link { color: var(--secondary-color); background: rgba(0,156,74,0.15); }
+.mobile-nav li.current .nav-link { color: var(--tertiary-color); background: rgba(13,110,253,0.1); }
+body.dark-mode .mobile-nav li.current .nav-link { color: #fff; background: rgba(13,110,253,0.15); }
 
 /* Hamburger Icon */
 .hamburger-box { width: 24px; height: 20px; display: inline-block; position: relative; }
-.hamburger-inner, .hamburger-inner::before, .hamburger-inner::after { width: 24px; height: 2px; background-color: currentColor; border-radius: 2px; position: absolute; transition: all 0.2s; }
+.hamburger-inner, .hamburger-inner::before, .hamburger-inner::after { width: 24px; height: 2px; background-color: var(--text-dark); border-radius: 2px; position: absolute; transition: all 0.2s; }
+body.dark-mode .hamburger-inner, body.dark-mode .hamburger-inner::before, body.dark-mode .hamburger-inner::after { background-color: var(--text-light); }
 .hamburger-inner { top: 50%; transform: translateY(-50%); }
 .hamburger-inner::before { content: ""; top: -8px; }
 .hamburger-inner::after { content: ""; bottom: -8px; }
-.hamburger.is-active .hamburger-inner { background: transparent; }
+.hamburger.is-active .hamburger-inner { background: transparent !important; }
 .hamburger.is-active .hamburger-inner::before { top: 0; transform: rotate(45deg); }
 .hamburger.is-active .hamburger-inner::after { bottom: 0; transform: rotate(-45deg); }
 
 /* ==========================================================================
-   6. Sections & Components
+   Sections & Components
    ========================================================================== */
+
+/* Fixed Ticker Animation */
 .tech-ticker {
-    background: var(--primary-color); color: #fff;
+    background: var(--bg-dark); color: #fff;
     font-family: var(--font-family-mono); letter-spacing: 1px; font-weight: 700;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
 }
-body.dark-mode .tech-ticker { background: var(--secondary-color); color: var(--bg-dark); }
+.ticker-track {
+    animation: scroll-ticker 35s linear infinite;
+}
+@keyframes scroll-ticker {
+    0% { transform: translateX(0); }
+    /* Shifts exactly half its width to seamlessly loop the duplicated content */
+    100% { transform: translateX(-50%); } 
+}
+
+/* Hero Center Fix */
+.hero { min-height: 80vh; display: flex; align-items: center; justify-content: center; }
 
 /* Parallax Overlay */
 .parallax {
     background-attachment: fixed; background-size: cover; background-position: center;
     position: relative; z-index: 1;
 }
-.parallax::before {
-    content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.7); z-index: -1;
-}
+.parallax::before { content: ''; position: absolute; inset: 0; background: rgba(13, 14, 21, 0.85); z-index: -1; }
 
 /* Bento Box Grid */
 .bento-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+    display: grid; grid-template-columns: 1fr; gap: 1.5rem;
 }
 @media (min-width: 992px) {
-    .bento-grid {
-        grid-template-columns: repeat(3, 1fr);
-        grid-auto-rows: minmax(180px, auto);
-    }
-    .bento-large {
-        grid-column: span 2;
-        grid-row: span 2;
-    }
+    .bento-grid { grid-template-columns: repeat(3, 1fr); grid-auto-rows: minmax(180px, auto); }
+    .bento-large { grid-column: span 2; grid-row: span 2; }
 }
-.service-icon i { transition: transform 0.3s ease; }
-.service:hover .service-icon i { transform: scale(1.1) rotate(-5deg); }
 
 /* Horizontal Gallery */
 .gallery-container {
     display: flex; overflow-x: auto; gap: 1.5rem;
     scroll-snap-type: x mandatory; padding-bottom: 1rem;
-    scrollbar-width: thin; scrollbar-color: var(--primary-color) transparent;
+    scrollbar-width: thin; scrollbar-color: var(--tertiary-color) transparent;
 }
 .gallery-container::-webkit-scrollbar { height: 6px; }
-.gallery-container::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 10px; }
+.gallery-container::-webkit-scrollbar-thumb { background-color: var(--tertiary-color); border-radius: 10px; }
 .gallery-item {
     flex: 0 0 min(350px, 85vw); scroll-snap-align: center;
     position: relative; overflow: hidden;
@@ -300,12 +338,12 @@ body.dark-mode .tech-ticker { background: var(--secondary-color); color: var(--b
 
 /* Lightbox & Modals */
 .lightbox, .modal {
-    position: fixed; inset: 0; background: rgba(0, 10, 5, 0.85); backdrop-filter: blur(5px);
+    position: fixed; inset: 0; background: rgba(0, 5, 10, 0.85); backdrop-filter: blur(8px);
     z-index: 1200; display: none; align-items: center; justify-content: center;
     opacity: 0; transition: opacity 0.3s ease;
 }
 .lightbox.active, .modal.active { display: flex; opacity: 1; }
-.lightbox-image { max-width: 90vw; max-height: 85vh; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+.lightbox-image { max-width: 90vw; max-height: 85vh; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
 .modal-content {
     width: 90%; max-width: 600px; transform: translateY(20px);
     transition: transform 0.3s var(--transition-cubic);
@@ -314,22 +352,13 @@ body.dark-mode .tech-ticker { background: var(--secondary-color); color: var(--b
 
 /* Form Elements */
 .form-control:focus {
-    background-color: var(--bg-surface-light);
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(5, 135, 67, 0.2);
+    background-color: var(--bg-surface-light); border-color: var(--tertiary-color);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2); outline: none;
 }
 body.dark-mode .form-control:focus {
-    background-color: var(--bg-surface-dark) !important;
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgba(0, 156, 74, 0.3);
+    background-color: var(--bg-surface-dark) !important; border-color: var(--tertiary-color);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.3);
 }
-
-/* Scroll Progress */
-.scroll-progress {
-    position: fixed; top: 0; left: 0; height: 4px; z-index: 9999;
-    background: var(--primary-color); box-shadow: 0 0 10px var(--primary-color);
-}
-body.dark-mode .scroll-progress { background: var(--secondary-color); box-shadow: 0 0 10px var(--secondary-color); }
 
 /* Preloader */
 .preloader {
@@ -338,23 +367,28 @@ body.dark-mode .scroll-progress { background: var(--secondary-color); box-shadow
     transition: opacity 0.5s ease;
 }
 body.dark-mode .preloader { background: var(--bg-dark); }
-.css-loader span { display: inline-block; animation: bounce 1.4s infinite ease-in-out both; }
+.css-loader span { display: inline-block; animation: bounce 1.4s infinite ease-in-out both; color: var(--tertiary-color); }
 .css-loader span:nth-child(1) { animation-delay: 0.1s; } .css-loader span:nth-child(2) { animation-delay: 0.2s; }
 .css-loader span:nth-child(3) { animation-delay: 0.3s; } .css-loader span:nth-child(4) { animation-delay: 0.4s; }
 .css-loader span:nth-child(5) { animation-delay: 0.5s; }
 @keyframes bounce { 0%, 100% { transform: translateY(5px); opacity: 0.5; } 50% { transform: translateY(-5px); opacity: 1; } }
 
+/* Scroll Progress */
+.scroll-progress {
+    position: fixed; top: 0; left: 0; height: 3px; z-index: 9999;
+    background: var(--button-gradient-primary); box-shadow: 0 0 10px var(--tertiary-color);
+}
+
 /* ==========================================================================
-   7. Media Queries (Only the essentials remain)
+   Media Queries
    ========================================================================== */
 @media (max-width: 991px) {
-    #typing-effect { font-size: 0.95rem; }
     .hero { min-height: 60vh; }
 }
 
 @media (max-width: 576px) {
-    .logo-container { width: 45px; height: 45px; }
+    .logo-container { width: 40px; height: 40px; }
     .css-logo-text { font-size: 1.2em; }
-    .hero-title { font-size: 2.5rem; }
+    .hero-title { font-size: 2.2rem; }
     .floating-elements { padding: 1rem !important; }
 }
