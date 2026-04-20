@@ -25,9 +25,11 @@
     <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
     <link rel="manifest" href="assets/site.webmanifest" />
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap-utilities.min.css">
+    
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"></noscript>
-    <link rel="stylesheet" href="styles.css?v=2.4">
+    <link rel="stylesheet" href="styles.css?v=2.5">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,7 +38,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js" defer></script>
-    <script src="script.js?v=2.4" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js" defer></script>
+    <script src="script.js?v=2.5" defer></script>
 </head>
 
 <body class="preload">
@@ -59,56 +63,65 @@
     <div class="scroll-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Page scroll progress"></div>
     <div class="cursor" aria-hidden="true"></div>
 
-    <header id="main-header" class="glass-morphism" role="banner">
-        <div class="header-top-bar">
+    <header id="main-header" class="glass-morphism fixed-top" role="banner">
+        <div class="header-top-bar d-none d-md-flex">
             <div id="current-time" aria-live="polite">Loading time...</div>
             <div class="tech-trivia-container" role="note">
                 <div class="tech-trivia">
-                    <span id="trivia-icon" aria-hidden="true">ðŸ’¡</span> <span id="trivia-text">Loading tech fact...</span>
+                    <span id="trivia-icon" aria-hidden="true">💡</span> <span id="trivia-text">Loading tech fact...</span>
                 </div>
             </div>
-            <button id="darkModeToggle" class="mode-button modern-button" aria-label="Switch to dark mode" aria-pressed="false">
-                <span class="icon-container"><i class="fas fa-moon" aria-hidden="true"></i></span>
-                <span class="mode-button-text">Dark Mode</span>
-            </button>
         </div>
-        <div class="header-main">
-            <div class="logo-container">
-                <a href="#home" class="css-logo-link" aria-label="sysfx Home">
-                    <span class="css-logo-text" data-text="[sysfx]" aria-hidden="true">[sysfx]</span>
-                </a>
+        
+        <div class="header-main d-flex align-items-center justify-content-between">
+            <div class="brand-wrapper d-flex align-items-center">
+                <div class="logo-container">
+                    <a href="#home" class="css-logo-link" aria-label="sysfx Home">
+                        <span class="css-logo-text" data-text="[sysfx]" aria-hidden="true">[sysfx]</span>
+                    </a>
+                </div>
+                <div class="header-titles ms-3 d-none d-sm-block">
+                    <h1 class="glow-text m-0" id="header-brand-title">sysfx</h1>
+                    <p id="typing-effect" class="m-0" aria-label="Company Tagline - changes dynamically"> </p>
+                </div>
             </div>
-            <div class="header-titles">
-                <h1 class="glow-text centered-text" id="header-brand-title">sysfx</h1>
-                <p id="typing-effect" class="centered-text" aria-label="Company Tagline - changes dynamically"> </p>
+
+            <nav id="desktop-navigation" class="main-nav desktop-nav d-none d-lg-flex align-items-center" role="navigation" aria-label="Main website navigation">
+                <ul class="nav-list d-flex list-unstyled m-0 p-0 gap-3">
+                    <li><a href="#home" class="nav-link"><i class="fas fa-home fa-fw" aria-hidden="true"></i> Home</a></li>
+                    <li><a href="#services" class="nav-link"><i class="fas fa-cogs fa-fw" aria-hidden="true"></i> Services</a></li>
+                    <li><a href="#about" class="nav-link"><i class="fas fa-info-circle fa-fw" aria-hidden="true"></i> About</a></li>
+                    <li><a href="#gallery" class="nav-link"><i class="fas fa-image fa-fw" aria-hidden="true"></i> Our Work</a></li>
+                    <li><a href="#contact" class="nav-link"><i class="fas fa-envelope fa-fw" aria-hidden="true"></i> Contact</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions d-flex align-items-center gap-3">
+                <button id="darkModeToggle" class="mode-button modern-button" aria-label="Switch to dark mode" aria-pressed="false">
+                    <span class="icon-container"><i class="fas fa-moon" aria-hidden="true"></i></span>
+                    <span class="mode-button-text d-none d-xl-inline">Dark Mode</span>
+                </button>
+                <button class="hamburger d-lg-none" id="hamburger-button" aria-label="Toggle Navigation Menu" aria-expanded="false" aria-controls="mobile-navigation">
+                    <span class="hamburger-box" aria-hidden="true">
+                        <span class="hamburger-inner"></span>
+                    </span>
+                </button>
             </div>
-            <button class="hamburger" id="hamburger-button" aria-label="Toggle Navigation Menu" aria-expanded="false" aria-controls="mobile-navigation">
-                <span class="hamburger-box" aria-hidden="true">
-                    <span class="hamburger-inner"></span>
-                </span>
-            </button>
         </div>
-        <nav id="desktop-navigation" class="main-nav desktop-nav" role="navigation" aria-label="Main website navigation">
-            <a href="#home" class="nav-link" data-section-id="home"><i class="fas fa-home fa-fw" aria-hidden="true"></i> Home</a>
-            <a href="#services" class="nav-link" data-section-id="services"><i class="fas fa-cogs fa-fw" aria-hidden="true"></i> Services</a>
-            <a href="#about" class="nav-link" data-section-id="about"><i class="fas fa-info-circle fa-fw" aria-hidden="true"></i> About</a>
-            <a href="#gallery" class="nav-link" data-section-id="gallery"><i class="fas fa-image fa-fw" aria-hidden="true"></i> Our Work</a>
-            <a href="#blog" class="nav-link" data-section-id="blog"><i class="fas fa-blog fa-fw" aria-hidden="true"></i> Tech Insights</a>
-            <a href="#contact" class="nav-link" data-section-id="contact"><i class="fas fa-envelope fa-fw" aria-hidden="true"></i> Contact</a>
-        </nav>
     </header>
 
-    <div class="mobile-nav-overlay" id="mobile-nav-overlay" aria-hidden="true"></div>
-    <nav id="mobile-navigation" class="main-nav mobile-nav" role="navigation" aria-label="Mobile website navigation" aria-hidden="true">
+    <div class="mobile-nav-overlay d-lg-none" id="mobile-nav-overlay" aria-hidden="true"></div>
+    <nav id="mobile-navigation" class="main-nav mobile-nav d-lg-none" role="navigation" aria-label="Mobile website navigation" aria-hidden="true">
         <button class="mobile-nav-close" aria-label="Close Navigation Menu">
             <i class="fas fa-times" aria-hidden="true"></i>
         </button>
-        <a href="#home" class="nav-link" data-section-id="home"><i class="fas fa-home fa-fw" aria-hidden="true"></i> Home</a>
-        <a href="#services" class="nav-link" data-section-id="services"><i class="fas fa-cogs fa-fw" aria-hidden="true"></i> Services</a>
-        <a href="#about" class="nav-link" data-section-id="about"><i class="fas fa-info-circle fa-fw" aria-hidden="true"></i> About</a>
-        <a href="#gallery" class="nav-link" data-section-id="gallery"><i class="fas fa-image fa-fw" aria-hidden="true"></i> Our Work</a>
-        <a href="#blog" class="nav-link" data-section-id="blog"><i class="fas fa-blog fa-fw" aria-hidden="true"></i> Tech Insights</a>
-        <a href="#contact" class="nav-link" data-section-id="contact"><i class="fas fa-envelope fa-fw" aria-hidden="true"></i> Contact</a>
+        <ul class="nav-list list-unstyled p-0 m-0">
+            <li><a href="#home" class="nav-link"><i class="fas fa-home fa-fw" aria-hidden="true"></i> Home</a></li>
+            <li><a href="#services" class="nav-link"><i class="fas fa-cogs fa-fw" aria-hidden="true"></i> Services</a></li>
+            <li><a href="#about" class="nav-link"><i class="fas fa-info-circle fa-fw" aria-hidden="true"></i> About</a></li>
+            <li><a href="#gallery" class="nav-link"><i class="fas fa-image fa-fw" aria-hidden="true"></i> Our Work</a></li>
+            <li><a href="#contact" class="nav-link"><i class="fas fa-envelope fa-fw" aria-hidden="true"></i> Contact</a></li>
+        </ul>
     </nav>
 
     <div class="scrolling-text-container" role="region" aria-label="Announcements">
@@ -123,7 +136,7 @@
             <div id="particles-js" class="particles-container" aria-hidden="true"></div>
             <div class="hero-content">
                 <h2 id="hero-title" class="hero-title gradient-text glow-text centered-text">Welcome to sysfx!</h2>
-                <p class="hero-text">Unlock cutting-edge technology with Sys Fixâ€”your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support in Clinton, CT.</p>
+                <p class="hero-text">Unlock cutting-edge technology with Sys Fix—your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support in Clinton, CT.</p>
                 <div class="button-container">
                     <a href="#contact" class="modern-button primary action-button pulse-effect-green" aria-label="Get started with sysfx services">
                         <i class="fas fa-paper-plane" aria-hidden="true"></i> <span class="button-text">Get Started</span>
@@ -160,7 +173,7 @@
 
         <section id="services" class="services glass-morphism parallax section-animation" aria-labelledby="services-title">
             <h2 id="services-title" class="gradient-text glow-text centered-text">Our Services</h2>
-            <p class="services-description">sysfx offers a comprehensive suite of tech services to empower your business. From hardware fixes to cloud migrations, weâ€™re here to solve your challenges with expertise and efficiency.</p>
+            <p class="services-description">sysfx offers a comprehensive suite of tech services to empower your business. From hardware fixes to cloud migrations, we’re here to solve your challenges with expertise and efficiency.</p>
             <div class="service-grid">
                 <article class="service card-hover" data-modal-target="computer-repair-modal" tabindex="0" role="button" aria-haspopup="dialog">
                     <div class="service-icon"><i class="fas fa-laptop fa-fw" aria-hidden="true"></i></div>
@@ -265,7 +278,7 @@
                 <button type="button" class="modern-button action-button button-blue" onclick="alert('Full portfolio coming soon!')" aria-label="View full project portfolio"><span class="button-text">View Full Portfolio</span></button>
             </div>
             <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-alt-text" aria-hidden="true" style="display: none;">
-                <button class="lightbox-close" aria-label="Close lightbox" type="button">Ã—</button>
+                <button class="lightbox-close" aria-label="Close lightbox" type="button">×</button>
                 <img src="" alt="" id="lightbox-image" class="lightbox-image">
                 <span id="lightbox-alt-text" class="sr-only"></span>
             </div>
@@ -273,7 +286,7 @@
 
         <section id="stats" class="stats section-animation" aria-labelledby="stats-title">
             <h2 id="stats-title" class="glow-text centered-text">Our Impact</h2>
-            <p>Hereâ€™s how sysfx has made a difference for our clients through innovative tech solutions.</p>
+            <p>Here’s how sysfx has made a difference for our clients through innovative tech solutions.</p>
             <div class="stats-container">
                 <div class="stat-item card-hover"> <span class="stat-number" data-target="100">0</span>+ <span class="stat-label">Clients Served</span> </div>
                 <div class="stat-item card-hover"> <span class="stat-number" data-target="150">0</span>+ <span class="stat-label">Repairs Completed</span> </div>
@@ -305,7 +318,7 @@
                     <div class="event-content">
                         <h3>Intro to Web Development</h3>
                         <p>Start your journey in web development with practical coding exercises and real-world applications.</p>
-                        <p class="extra-info">Perfect for beginnersâ€”bring your laptop for hands-on learning.</p>
+                        <p class="extra-info">Perfect for beginners—bring your laptop for hands-on learning.</p>
                         <a href="#contact" class="modern-button small action-button" aria-label="Sign up for Introduction to Web Development"><span class="button-text">Sign Up</span></a>
                     </div>
                 </article>
@@ -345,7 +358,7 @@
 
         <section id="testimonials" class="testimonials glass-morphism parallax section-animation" aria-labelledby="testimonials-title">
             <h2 id="testimonials-title" class="gradient-text glow-text centered-text">What Our Clients Say</h2>
-            <p>Hear from businesses like yours whoâ€™ve transformed their tech with sysfxâ€™s expertise.</p>
+            <p>Hear from businesses like yours who’ve transformed their tech with sysfx’s expertise.</p>
             <div class="carousel-container" aria-roledescription="carousel" aria-label="Client Testimonials">
                 <div class="testimonial-slider">
                     <article class="testimonial" role="group" aria-roledescription="slide" aria-label="1 of 4" aria-hidden="true">
@@ -354,7 +367,7 @@
                     </article>
                     <article class="testimonial" role="group" aria-roledescription="slide" aria-label="2 of 4" aria-hidden="true">
                         <div class="quote-icon" aria-hidden="true"><i class="fas fa-quote-left"></i></div>
-                        <blockquote> <p>"Iâ€™m absolutely thrilled with the website sysfx built for my business. Itâ€™s modern, incredibly fast, and drives significantly more traffic than our old site."</p> <footer class="testimonial-author"><cite>Jane S., Founder of WebWise Co.</cite></footer> </blockquote>
+                        <blockquote> <p>"I’m absolutely thrilled with the website sysfx built for my business. It’s modern, incredibly fast, and drives significantly more traffic than our old site."</p> <footer class="testimonial-author"><cite>Jane S., Founder of WebWise Co.</cite></footer> </blockquote>
                     </article>
                 </div>
                 <button type="button" class="carousel-control carousel-prev" aria-label="Previous testimonial" aria-controls="testimonial-slider"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
@@ -363,7 +376,7 @@
             </div>
         </section>
 
-        <section id="about" class="about section-animation" aria-labelledby="about-title">
+        <section id="about" class="about glass-morphism parallax section-animation" aria-labelledby="about-title">
             <h2 id="about-title" class="glow-text centered-text">About Us</h2>
             <p>sysfx is a team of experienced tech professionals dedicated to delivering top-notch solutions to our clients. With over 15 years of industry expertise, we specialize in computer repairs, cybersecurity, web development, networking, cloud solutions, and 24/7 IT support.</p>
             <p>Our mission is to empower businesses with innovative technology, ensuring precision, reliability, and exceptional customer service. Located in Clinton, CT, we serve clients across the region, helping them thrive in a digital-first world.</p>
@@ -386,7 +399,7 @@
             </div>
         </section>
 
-		<section class="tech-timeline-section glass-morphism section-animation" aria-labelledby="timeline-title">
+        <section class="tech-timeline-section glass-morphism section-animation" aria-labelledby="timeline-title">
             <h2 id="timeline-title" class="glow-text centered-text">Our Tech Journey</h2>
             <p>A brief history of sysfx’s evolution in the tech world.</p>
             <div class="timeline">
@@ -415,7 +428,7 @@
 
         <section id="contact" class="contact glass-morphism section-animation" aria-labelledby="contact-title">
             <h2 id="contact-title" class="glow-text centered-text">Contact Us</h2>
-            <p>Ready to elevate your tech with sysfx? Contact our team for a free consultation, quote, or support. Weâ€™re here to help 24/7!</p>
+            <p>Ready to elevate your tech with sysfx? Contact our team for a free consultation, quote, or support. We’re here to help 24/7!</p>
             <div class="contact-grid">
                 <div class="contact-info">
                     <h3>Contact Information</h3>
@@ -485,7 +498,7 @@
 
     <footer class="main-footer glass-morphism" role="contentinfo">
         <div class="footer-content">
-            <p class="copyright">Â© <span id="current-year">2026</span> sysfx. All rights reserved.</p>
+            <p class="copyright">© <span id="current-year">2026</span> sysfx. All rights reserved.</p>
             <div class="social-links">
                 <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Follow sysfx on Twitter (opens in new tab)"><i class="fab fa-twitter"></i></a>
                 <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Follow sysfx on Facebook (opens in new tab)"><i class="fab fa-facebook"></i></a>
@@ -498,7 +511,7 @@
     <div class="modal-container" aria-hidden="true">
         <div id="computer-repair-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="computer-repair-title" aria-hidden="true">
             <div class="modal-content glass-morphism">
-                <button class="modal-close" aria-label="Close Computer Repair Details" type="button">Ã—</button>
+                <button class="modal-close" aria-label="Close Computer Repair Details" type="button">×</button>
                 <h3 id="computer-repair-title" class="modal-title"><i class="fas fa-laptop fa-fw" aria-hidden="true"></i> Computer Repair</h3>
                 <div class="modal-body">
                     <p>We offer fast, reliable repairs for desktops, laptops (PC & Mac), and peripherals. Our services include:</p>
@@ -516,7 +529,7 @@
                 </div>
             </div>
         </div>
-        </div> 
+    </div> 
 
     <audio id="background-music" loop preload="metadata" aria-label="Background music player">
         <source src="https://ia802208.us.archive.org/30/items/title_20240514_0432/title.mp3" type="audio/mpeg">

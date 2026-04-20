@@ -1,6 +1,6 @@
 /**
  * SysFX Website Script
- * Version: 2.4 (Optimized & Cleaned)
+ * Version: 2.5 (Optimized & Cleaned with OnePageNav)
  * Author: sysfx 
  *
  * Purpose: Manages dynamic interactions, animations, and third-party
@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Configuration & Feature Flags ---
     const CONFIG = {
-        SCROLLSPY_THROTTLE_MS: 150,
         RESIZE_DEBOUNCE_MS: 250,
         TYPING_SPEED_MS: 85,
         TYPING_DELETE_SPEED_MS: 40,
@@ -76,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const logError = (message, error = '') => console.error(`[SysFX Script Error] ${message}`, error);
     const logWarn = (message) => console.warn(`[SysFX Script Warn] ${message}`);
-    const logInfo = (message) => console.info(`[SysFX Script Info] ${message}`);
 
     const selectElement = (selector, context = document) => {
         try { return context.querySelector(selector); } catch (e) { logError(`Invalid selector: ${selector}`, e); return null; }
@@ -114,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeModal = null;
     let activeLightboxTarget = null;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let audioFadeInterval = null;
     let cursorXQuickTo = null;
     let cursorYQuickTo = null;
 
@@ -130,7 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
             mobileNav: '#mobile-navigation',
             mobileNavClose: '.mobile-nav-close',
             mobileNavOverlay: '#mobile-nav-overlay',
-            navLinks: '.main-nav .nav-link[href^="#"]',
             scrollProgress: '.scroll-progress',
             currentTimeDisplay: '#current-time',
             typingEffectElement: '#typing-effect', mapElement: '#map',
@@ -150,12 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
             easterEggTrigger: '.easter-egg-trigger',
             customCursor: '.cursor',
             form: '.contact-form', formStatus: '#form-status', skipLink: '.skip-link',
-            mainContent: '#main-content',
-            sectionsForScrollspy: 'main section[id]'
+            mainContent: '#main-content'
         };
         const elements = {};
         for (const key in selectors) {
-            const multiple = ['modals', 'navLinks', 'serviceCards', 'modalScrollButtons', 'galleryItems', 'testimonials', 'statsNumbers', 'animatedSections', 'sectionsForScrollspy'].includes(key);
+            const multiple = ['modals', 'serviceCards', 'modalScrollButtons', 'galleryItems', 'testimonials', 'statsNumbers', 'animatedSections'].includes(key);
             elements[key] = multiple ? selectElements(selectors[key]) : selectElement(selectors[key]);
         }
         if (!elements.body) console.error("FATAL: Body element not found!");
@@ -593,46 +588,54 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('mouseenter', () => gsap.to(ELEMENTS.customCursor, { opacity: 1, scale: 1, duration: 0.2 }));
     };
 
-    const handleMobileNav = () => {
+    const handleMobileNavToggle = (forceClose = false) => {
         if (!ELEMENTS.hamburgerButton || !ELEMENTS.mobileNav) return;
-        const toggleNav = (forceClose = false) => {
-            const openNav = !ELEMENTS.body.classList.contains('nav-active') && !forceClose;
-            ELEMENTS.body.classList.toggle('nav-active', openNav);
-            ELEMENTS.hamburgerButton.classList.toggle('is-active', openNav);
-            ELEMENTS.hamburgerButton.setAttribute('aria-expanded', String(openNav));
-            ELEMENTS.mobileNav.setAttribute('aria-hidden', String(!openNav));
-            ELEMENTS.mobileNavOverlay.setAttribute('aria-hidden', String(!openNav));
-            
-            if (openNav) {
-                ELEMENTS.mainContent?.setAttribute('inert', ''); ELEMENTS.footer?.setAttribute('inert', '');
-                setTimeout(() => (selectElement('a[href], button', ELEMENTS.mobileNav) || ELEMENTS.mobileNav).focus(), 50);
-            } else {
-                ELEMENTS.mainContent?.removeAttribute('inert'); ELEMENTS.footer?.removeAttribute('inert');
-                ELEMENTS.hamburgerButton.focus();
-            }
-        };
+        const openNav = !ELEMENTS.body.classList.contains('nav-active') && !forceClose;
+        ELEMENTS.body.classList.toggle('nav-active', openNav);
+        ELEMENTS.hamburgerButton.classList.toggle('is-active', openNav);
+        ELEMENTS.hamburgerButton.setAttribute('aria-expanded', String(openNav));
+        ELEMENTS.mobileNav.setAttribute('aria-hidden', String(!openNav));
+        ELEMENTS.mobileNavOverlay.setAttribute('aria-hidden', String(!openNav));
         
-        ELEMENTS.hamburgerButton.addEventListener('click', () => toggleNav());
-        ELEMENTS.mobileNavClose?.addEventListener('click', () => toggleNav(true));
-        ELEMENTS.mobileNavOverlay?.addEventListener('click', () => toggleNav(true));
-        ELEMENTS.navLinks.forEach(link => link.addEventListener('click', () => toggleNav(true)));
+        if (openNav) {
+            ELEMENTS.mainContent?.setAttribute('inert', ''); ELEMENTS.footer?.setAttribute('inert', '');
+            setTimeout(() => (selectElement('a[href], button', ELEMENTS.mobileNav) || ELEMENTS.mobileNav).focus(), 50);
+        } else {
+            ELEMENTS.mainContent?.removeAttribute('inert'); ELEMENTS.footer?.removeAttribute('inert');
+            ELEMENTS.hamburgerButton.focus();
+        }
     };
 
-    const handleScrollspy = () => {
-        if (ELEMENTS.sectionsForScrollspy.length === 0 || !window.IntersectionObserver) return;
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    ELEMENTS.navLinks.forEach(link => {
-                        const isActive = link.getAttribute('href') === `#${entry.target.id}`;
-                        link.classList.toggle('active', isActive);
-                        link.setAttribute('aria-current', isActive ? 'page' : 'false');
-                    });
+    const setupMobileNavListeners = () => {
+        ELEMENTS.hamburgerButton?.addEventListener('click', () => handleMobileNavToggle());
+        ELEMENTS.mobileNavClose?.addEventListener('click', () => handleMobileNavToggle(true));
+        ELEMENTS.mobileNavOverlay?.addEventListener('click', () => handleMobileNavToggle(true));
+    };
+
+    // --- OnePageNav Initialization ---
+    const initializeOnePageNav = () => {
+        if (typeof $ === 'undefined' || !$.fn.onePageNav) {
+            logWarn("jQuery or OnePageNav plugin is missing. Smooth scrolling disabled.");
+            return;
+        }
+
+        const navOptions = {
+            currentClass: 'current',
+            changeHash: false,
+            scrollSpeed: 750,
+            scrollThreshold: 0.5,
+            filter: '',
+            easing: 'swing',
+            begin: function() {
+                // Ensure mobile nav closes smoothly when a link is clicked
+                if (ELEMENTS.body.classList.contains('nav-active')) {
+                    handleMobileNavToggle(true);
                 }
-            });
-        }, { rootMargin: `-${(ELEMENTS.header?.offsetHeight || 80) + 60}px 0px -40% 0px`, threshold: 0 });
-        
-        ELEMENTS.sectionsForScrollspy.forEach(section => observer.observe(section));
+            }
+        };
+
+        $('#desktop-navigation .nav-list').onePageNav(navOptions);
+        $('#mobile-navigation .nav-list').onePageNav(navOptions);
     };
 
     const handleEasterEgg = () => {
@@ -711,7 +714,8 @@ document.addEventListener('DOMContentLoaded', () => {
         adjustLayoutPadding();
         displayTime(); setInterval(displayTime, 60000);
         displayTechTrivia();
-        handleMobileNav();
+        setupMobileNavListeners();
+        initializeOnePageNav(); 
         handleScrollTopButton();
         handleModals();
         handleLightbox();
@@ -727,8 +731,6 @@ document.addEventListener('DOMContentLoaded', () => {
             handleEasterEgg();
             typeEffectHandler();
         });
-
-        setTimeout(handleScrollspy, 300);
     };
 
     // --- Global Listeners ---
