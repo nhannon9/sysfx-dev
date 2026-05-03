@@ -14,10 +14,9 @@
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"></noscript>
-    <link rel="stylesheet" href="styles.css?v=3.2">
+    <link rel="stylesheet" href="styles.css?v=3.3">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,13 +49,14 @@
     <div class="cursor" aria-hidden="true"></div>
 
     <header id="main-header" class="glass-morphism fixed-top border-0" role="banner">
-        <div class="header-top-bar d-none d-md-flex w-100 px-4 py-2 border-bottom border-secondary border-opacity-25 align-items-center">
-            <div id="current-time" aria-live="polite" class="text-nowrap text-muted small fw-medium" style="width: 200px;">Loading time...</div>
-            <div class="tech-trivia-container flex-grow-1 text-center px-3 text-truncate">
+        <div class="header-top-bar d-none d-lg-flex w-100 px-4 py-2 border-bottom border-secondary border-opacity-25 align-items-center justify-content-between">
+            <div id="current-time" aria-live="polite" class="text-nowrap text-muted small fw-medium" style="min-width: 180px;">Loading time...</div>
+            <div class="tech-trivia-container text-center px-4">
                 <span id="trivia-icon" aria-hidden="true" class="text-warning me-1">💡</span> 
                 <span id="trivia-text" class="text-muted small fw-medium">Loading tech fact...</span>
             </div>
-            <div style="width: 200px;"></div> </div>
+            <div style="min-width: 180px;" class="d-none d-xl-block"></div>
+        </div>
         
         <div class="header-main d-flex align-items-center justify-content-between position-relative px-4 py-3">
             <div class="brand-wrapper d-flex align-items-center z-3">
@@ -109,21 +109,18 @@
         </ul>
     </nav>
 
-    <div class="tech-ticker overflow-hidden position-relative py-2">
-        <div class="ticker-track d-inline-block text-nowrap">
-            <span class="mx-4">N-TEC IS NOW SYSFX. CUTTING-EDGE TECH SOLUTIONS.</span><span class="mx-4 text-white-50 opacity-50">•</span>
-            <span class="mx-4">DIAGNOSTICS. NETWORKING. SECURITY. NEXT-GEN IT SUPPORT.</span><span class="mx-4 text-white-50 opacity-50">•</span>
-            <span class="mx-4">N-TEC IS NOW SYSFX. CUTTING-EDGE TECH SOLUTIONS.</span><span class="mx-4 text-white-50 opacity-50">•</span>
-            <span class="mx-4">DIAGNOSTICS. NETWORKING. SECURITY. NEXT-GEN IT SUPPORT.</span><span class="mx-4 text-white-50 opacity-50">•</span>
-        </div>
+    <div class="tech-ticker py-2 text-center">
+        <span class="px-2">N-TEC IS NOW SYSFX.</span><span class="px-2 text-white-50 opacity-50">•</span>
+        <span class="px-2">DIAGNOSTICS. NETWORKING. SECURITY.</span><span class="px-2 text-white-50 opacity-50">•</span>
+        <span class="px-2">NEXT-GEN IT SUPPORT.</span>
     </div>
 
     <main id="main-content" role="main">
-        <section id="home" class="hero section-animation position-relative m-0 p-0 w-100" aria-labelledby="hero-title">
+        <section id="home" class="hero section-animation m-0 p-0 w-100" aria-labelledby="hero-title">
             <div id="particles-js" class="particles-container position-absolute top-0 start-0 w-100 h-100" aria-hidden="true"></div>
-            <div class="hero-content position-relative z-2 w-100 px-4 d-flex flex-column align-items-center justify-content-center">
-                <h2 id="hero-title" class="hero-title gradient-text glow-text display-1 fw-bold mb-4 text-center">Welcome to sysfx</h2>
-                <p class="hero-text lead mb-5 text-center text-white opacity-75" style="max-width: 750px;">Unlock cutting-edge technology with Sys Fix—your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support in Clinton, CT.</p>
+            <div class="hero-content position-relative z-2 w-100 px-4 d-flex flex-column align-items-center justify-content-center mx-auto text-center">
+                <h2 id="hero-title" class="hero-title gradient-text glow-text display-1 fw-bold mb-4">Welcome to sysfx</h2>
+                <p class="hero-text lead mb-5 text-white opacity-75" style="max-width: 750px;">Unlock cutting-edge technology with Sys Fix—your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support in Clinton, CT.</p>
                 <div class="button-container d-flex flex-wrap justify-content-center gap-3">
                     <a href="#contact" class="modern-button primary action-button pulse-effect-primary" aria-label="Get started with sysfx services">
                         <i class="fas fa-paper-plane" aria-hidden="true"></i> <span class="button-text ms-2">Get Started</span>
@@ -142,7 +139,7 @@
                     <p class="text-secondary fs-5 mb-4">At sysfx, we deliver expert tech solutions tailored to your needs. Our certified technicians specialize in computer repairs, cybersecurity, web development, networking, and cloud solutions.</p>
                     <p class="text-secondary mb-4">With over a decade of experience, we are committed to precision, innovation, and customer satisfaction. Based in Clinton, CT, we serve clients regionally and remotely, transforming your technical infrastructure.</p>
                     <div class="d-flex align-items-center gap-3 mb-4 mt-5">
-                        <div class="bg-primary rounded-circle p-3 bg-opacity-10 text-primary shadow-sm">
+                        <div class="bg-primary-soft rounded-circle p-3 text-primary shadow-sm">
                             <i class="fas fa-headset fa-2x"></i>
                         </div>
                         <div>
@@ -159,9 +156,9 @@
                                 <h4 class="m-0 fw-bold">System Status</h4>
                             </div>
                             <div class="d-flex justify-content-between mb-2"><span class="text-muted fw-medium">Network Optimization</span><span class="text-primary fw-bold">100%</span></div>
-                            <div class="progress bg-secondary bg-opacity-25 mb-4 rounded-pill" style="height: 6px;"><div class="progress-bar bg-primary rounded-pill" style="width: 100%"></div></div>
+                            <div class="progress bg-secondary-soft mb-4 rounded-pill" style="height: 6px;"><div class="progress-bar bg-primary rounded-pill" style="width: 100%"></div></div>
                             <div class="d-flex justify-content-between mb-2"><span class="text-muted fw-medium">Threat Deflection</span><span class="text-tertiary fw-bold">Active</span></div>
-                            <div class="progress bg-secondary bg-opacity-25 rounded-pill" style="height: 6px;"><div class="progress-bar bg-tertiary rounded-pill progress-bar-striped progress-bar-animated" style="width: 100%"></div></div>
+                            <div class="progress bg-secondary-soft rounded-pill" style="height: 6px;"><div class="progress-bar bg-tertiary rounded-pill progress-bar-striped progress-bar-animated" style="width: 100%"></div></div>
                         </div>
                     </div>
                 </div>
@@ -270,7 +267,7 @@
                     <a href="#contact" class="modern-button action-button pulse-effect-primary mt-2" aria-label="Contact sysfx today"><span class="button-text">Start a Project</span></a>
                 </div>
                 <div class="col-lg-5 d-none d-lg-block">
-                    <div class="bg-primary bg-opacity-10 rounded-4 p-5 text-center shadow-sm border border-primary border-opacity-25 h-100 d-flex flex-column justify-content-center">
+                    <div class="bg-primary-soft rounded-4 p-5 text-center shadow-sm border border-primary border-opacity-25 h-100 d-flex flex-column justify-content-center">
                         <i class="fas fa-microchip fa-4x text-primary mb-4 opacity-75"></i>
                         <h3 class="fw-bold mb-3">15+ Years</h3>
                         <p class="text-muted m-0">Of meticulous technical execution.</p>
@@ -322,15 +319,15 @@
                 <div class="row gy-5 gap-lg-5 justify-content-center position-relative z-2 mt-4">
                     <div class="col-lg-4 text-start">
                         <div class="contact-item d-flex align-items-center mb-4 pb-4 border-bottom border-secondary border-opacity-25">
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-3 text-primary me-4 shadow-sm"><i class="fas fa-envelope fa-xl m-0"></i></div>
+                            <div class="bg-primary-soft p-3 rounded-3 text-primary me-4 shadow-sm"><i class="fas fa-envelope fa-xl m-0"></i></div>
                             <div><span class="d-block text-muted small text-uppercase tracking-wide fw-bold mb-1">Email Us</span><a href="mailto:nick@sysfx.net" class="fw-bold text-decoration-none email-link text-body fs-5">nick@sysfx.net</a></div>
                         </div>
                         <div class="contact-item d-flex align-items-center mb-4 pb-4 border-bottom border-secondary border-opacity-25">
-                            <div class="bg-tertiary bg-opacity-10 p-3 rounded-3 text-tertiary me-4 shadow-sm"><i class="fas fa-phone fa-xl m-0"></i></div>
+                            <div class="bg-tertiary-soft p-3 rounded-3 text-tertiary me-4 shadow-sm"><i class="fas fa-phone fa-xl m-0"></i></div>
                             <div><span class="d-block text-muted small text-uppercase tracking-wide fw-bold mb-1">Call Us</span><a href="tel:+18603754425" class="fw-bold text-decoration-none text-body fs-5">(860) 375-4425</a></div>
                         </div>
                         <div class="contact-item d-flex align-items-center">
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-3 text-primary me-4 shadow-sm"><i class="fas fa-map-marker-alt fa-xl m-0"></i></div>
+                            <div class="bg-primary-soft p-3 rounded-3 text-primary me-4 shadow-sm"><i class="fas fa-map-marker-alt fa-xl m-0"></i></div>
                             <div><span class="d-block text-muted small text-uppercase tracking-wide fw-bold mb-1">Headquarters</span><address class="m-0 text-body fw-medium">123 Main Street<br>Clinton, CT 06413</address></div>
                         </div>
                     </div>
@@ -401,7 +398,7 @@
     </div> 
 
     <audio id="background-music" loop preload="metadata" aria-label="Background music player">
-        <source src="https://archive.org/download/soundcloud-826123573/826123573.mp3" type="audio/mpeg">
+        <source src="https://ia802208.us.archive.org/30/items/title_20240514_0432/title.mp3" type="audio/mpeg">
     </audio>
 
     <aside class="floating-elements position-fixed bottom-0 end-0 p-4 z-3" aria-label="Quick access tools">
