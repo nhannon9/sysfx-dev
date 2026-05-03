@@ -250,12 +250,16 @@ body.dark-mode .desktop-nav .nav-link:hover { background: rgba(13, 110, 253, 0.1
 
 /* Mobile Nav Drawer */
 .mobile-nav {
+    position: fixed;
+    top: 0; left: 0; height: 100vh; z-index: 1050;
     width: 85%; max-width: 320px;
     transform: translateX(-105%);
     transition: transform 0.4s var(--transition-cubic), visibility 0.4s, opacity 0.4s;
 }
 body.nav-active .mobile-nav { transform: translateX(0); visibility: visible; opacity: 1; }
 .mobile-nav-overlay {
+    position: fixed;
+    inset: 0; z-index: 1040;
     background: rgba(0,0,0,0.6); backdrop-filter: blur(3px);
     opacity: 0; visibility: hidden; transition: opacity 0.4s ease;
 }

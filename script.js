@@ -765,6 +765,10 @@ document.addEventListener('DOMContentLoaded', () => {
         runDebianBootSequence();
         handleEasterEggHotkeys();
 
+        // Dynamically update the copyright year in the footer
+        const currentYearSpan = selectElement('#current-year');
+        if (currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
+
         requestAnimationFrame(() => {
             initializeParticles();
             setupMapObserver();
