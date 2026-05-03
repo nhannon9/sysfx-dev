@@ -25,7 +25,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js" defer></script>
     <script src="script.js?v=3.2" defer></script>
@@ -99,11 +98,11 @@
             <div class="ticker-track">
                 <span class="px-2">N-TEC IS NOW SYSFX.</span><span class="px-2 text-white-50 opacity-50">•</span>
                 <span class="px-2">DIAGNOSTICS. NETWORKING. SECURITY.</span><span class="px-2 text-white-50 opacity-50">•</span>
-                <span class="px-2 text-warning">NEXT-GEN IT SUPPORT.</span><span class="px-2 text-white-50 opacity-50" style="padding-right: 3rem !important;">•</span>
+                <span class="px-2 text-warning">NEXT-GEN IT SUPPORT.</span><span class="px-2 text-white-50 opacity-50" style="padding-right: 25vw !important;">•</span>
                 
                 <span class="px-2">N-TEC IS NOW SYSFX.</span><span class="px-2 text-white-50 opacity-50">•</span>
                 <span class="px-2">DIAGNOSTICS. NETWORKING. SECURITY.</span><span class="px-2 text-white-50 opacity-50">•</span>
-                <span class="px-2 text-warning">NEXT-GEN IT SUPPORT.</span><span class="px-2 text-white-50 opacity-50" style="padding-right: 3rem !important;">•</span>
+                <span class="px-2 text-warning">NEXT-GEN IT SUPPORT.</span><span class="px-2 text-white-50 opacity-50" style="padding-right: 25vw !important;">•</span>
             </div>
         </div>
     </header>
@@ -124,7 +123,7 @@
 
     <main id="main-content" role="main">
         <section id="home" class="hero section-animation m-0 p-0 w-100" aria-labelledby="hero-title">
-            <div id="particles-js" class="particles-container position-absolute top-0 start-0 w-100 h-100" aria-hidden="true"></div>
+            <div class="hero-cyber-grid" aria-hidden="true"></div>
             <div class="hero-content position-relative z-2 w-100 px-4 d-flex flex-column align-items-center justify-content-center mx-auto text-center">
                 <h2 id="hero-title" class="hero-title gradient-text glow-text display-1 fw-bold mb-4">Welcome to sysfx</h2>
                 <p class="hero-text lead mb-5 text-secondary fs-5" style="max-width: 750px;">Unlock cutting-edge technology with Sys Fix—your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support in Clinton, CT.</p>
@@ -210,6 +209,18 @@
                         <h3 class="fw-bold h5 mb-2">Cloud Migrations</h3>
                         <p class="text-secondary small mb-0">Fluid transition to scalable off-site infrastructures.</p>
                     </article>
+
+                <article class="service glass-morphism text-start p-4 d-flex flex-column overflow-hidden position-relative card-hover" tabindex="0" style="background: rgba(5, 10, 15, 0.85) !important; border-color: rgba(13, 110, 253, 0.3);">
+                    <div class="d-flex align-items-center mb-3 border-bottom border-secondary border-opacity-25 pb-2 z-2">
+                        <i class="fas fa-terminal text-primary me-2"></i>
+                        <span class="text-muted small font-monospace text-uppercase fw-bold tracking-wide">Live Diagnostics</span>
+                    </div>
+                    <div id="bento-console" class="font-monospace small text-primary d-flex flex-column justify-content-end flex-grow-1 z-2" style="font-size: 0.8rem; opacity: 0.85;">
+                        <div>> init_sysfx_core</div>
+                        <div>> network_uplink: STABLE</div>
+                        <div class="d-flex">> <span class="cursor-blink ms-1" style="width: 8px; height: 14px; background: var(--primary-color);"></span></div>
+                    </div>
+                </article>
                 </div>
             </div>
         </section>

@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const FEATURE_FLAGS = {
-        enableParticles: true,
         enableCustomCursor: true,
         enableBackgroundMusic: true,
         enableFormspree: true
@@ -188,19 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
         updateDarkModeButton(isDark);
         if (mapInstance) initializeMapMarker();
-        if (typeof particlesJS !== 'undefined' && FEATURE_FLAGS.enableParticles) ReInitializeParticles();
-    };
-
-    const ReInitializeParticles = () => {
-        if (!FEATURE_FLAGS.enableParticles || prefersReducedMotion || typeof particlesJS === 'undefined') return;
-        const particlesElement = selectElement('#particles-js');
-        if (particlesElement) {
-            const existingCanvas = selectElement('canvas.particles-js-canvas-el', particlesElement);
-            if (existingCanvas) existingCanvas.remove();
-            window.pJSDom?.[0]?.pJS?.fn?.vendors?.destroypJS();
-            window.pJSDom = [];
-            initializeParticles();
-        }
     };
 
     const adjustLayoutPadding = debounce(() => {
@@ -222,13 +208,20 @@ document.addEventListener('DOMContentLoaded', () => {
         lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
     };
 
-    const updateScrollProgress = throttle(() => {
-        if (!ELEMENTS.scrollProgress || !ELEMENTS.html) return;
-        const scrollableHeight = ELEMENTS.html.scrollHeight - window.innerHeight;
-        const scrolled = scrollableHeight > 0 ? (window.scrollY / scrollableHeight) * 100 : 0;
-        ELEMENTS.scrollProgress.style.width = `${Math.min(scrolled, 100)}%`;
-        ELEMENTS.scrollProgress.setAttribute('aria-valuenow', String(Math.round(scrolled)));
-    }, 50);
+    let isScrollingProgress = false;
+    const updateScrollProgress = () => {
+        if (!isScrollingProgress) {
+            window.requestAnimationFrame(() => {
+                if (!ELEMENTS.scrollProgress || !ELEMENTS.html) return;
+                const scrollableHeight = ELEMENTS.html.scrollHeight - window.innerHeight;
+                const scrolled = scrollableHeight > 0 ? (window.scrollY / scrollableHeight) * 100 : 0;
+                ELEMENTS.scrollProgress.style.width = `${Math.min(scrolled, 100)}%`;
+                ELEMENTS.scrollProgress.setAttribute('aria-valuenow', String(Math.round(scrolled)));
+                isScrollingProgress = false;
+            });
+            isScrollingProgress = true;
+        }
+    };
 
     const displayTime = () => {
         if (!ELEMENTS.currentTimeDisplay) return;
@@ -239,9 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const dateString = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone });
 
             ELEMENTS.currentTimeDisplay.textContent = '';
-            const dateIcon = document.createElement('i'); dateIcon.className = 'far fa-calendar-alt'; dateIcon.setAttribute('aria-hidden', 'true');
-            const timeIcon = document.createElement('i'); timeIcon.className = 'far fa-clock'; timeIcon.setAttribute('aria-hidden', 'true');
-            ELEMENTS.currentTimeDisplay.append(dateIcon, ` ${dateString}    `, timeIcon, ` ${timeString}`);
+            ELEMENTS.currentTimeDisplay.innerHTML = `<span class="me-4"><i class="far fa-calendar-alt me-1" aria-hidden="true"></i> ${dateString}</span><span><i class="far fa-clock me-1" aria-hidden="true"></i> ${timeString}</span>`;
         } catch (e) { logError('Failed to display time', e); ELEMENTS.currentTimeDisplay.textContent = 'Could not load time.'; }
     };
 
@@ -272,30 +263,6 @@ document.addEventListener('DOMContentLoaded', () => {
             await new Promise(resolve => setTimeout(resolve, CONFIG.TYPING_DELETE_SPEED_MS * 3));
             currentTaglineIndex = (currentTaglineIndex + 1) % CONFIG.TAGLINES.length;
         }
-    };
-
-    const initializeParticles = () => {
-        if (!FEATURE_FLAGS.enableParticles || prefersReducedMotion || typeof particlesJS === 'undefined') {
-            selectElement('#particles-js')?.style.setProperty('display', 'none', 'important');
-            return;
-        }
-        try {
-            particlesJS('particles-js', {
-                particles: {
-                    number: { value: 60, density: { enable: true, value_area: 800 } },
-                    color: { value: ["#058743", "#00d062", "#0d6efd"] },
-                    shape: { type: "circle" },
-                    opacity: { value: 0.5, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false } },
-                    size: { value: 3, random: true, anim: { enable: true, speed: 2, size_min: 0.1, sync: false } },
-                    line_linked: { enable: true, distance: 150, color: "#058743", opacity: 0.2, width: 1 },
-                    move: { enable: true, speed: 1, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
-                },
-                interactivity: {
-                    detect_on: "canvas", events: { resize: true, onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" } },
-                    modes: { grab: { distance: 140, line_opacity: 0.5 }, push: { particles_nb: 3 } }
-                }, retina_detect: true
-            });
-        } catch (error) { selectElement('#particles-js')?.style.setProperty('display', 'none', 'important'); }
     };
 
     const initializeMap = () => {
@@ -731,6 +698,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // --- Cool Feature 3: Live Mini Console ---
+    const runMiniConsole = () => {
+        const consoleEl = document.getElementById('bento-console');
+        if(!consoleEl) return;
+        const logs = [
+            "securing_protocols...", "uplink_established.", "block_ping: 192.168.1.x", 
+            "fw_rule_updated()", "ssh_login: DENIED", "temp_sensor: 42C", 
+            "mem_alloc: OK", "kernel_task_active", "packet_loss: 0%",
+            "bypassing_proxy...", "cloud_sync: ACTIVE"
+        ];
+        setInterval(() => {
+            const newLog = document.createElement('div');
+            newLog.textContent = `> ${logs[Math.floor(Math.random() * logs.length)]}`;
+            const cursorLine = consoleEl.lastElementChild;
+            consoleEl.insertBefore(newLog, cursorLine);
+            if(consoleEl.children.length > 5) consoleEl.removeChild(consoleEl.firstElementChild);
+        }, 2200);
+    };
+
     // --- Initialization ---
     const initialize = () => {
         hidePreloader();
@@ -749,13 +735,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Execute the new Easter Egg functions
         runDebianBootSequence();
         handleEasterEggHotkeys();
+        runMiniConsole();
 
         // Dynamically update the copyright year in the footer
         const currentYearSpan = selectElement('#current-year');
         if (currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
 
         requestAnimationFrame(() => {
-            initializeParticles();
             setupMapObserver();
             animateStats();
             revealSections();
@@ -770,8 +756,12 @@ document.addEventListener('DOMContentLoaded', () => {
     ELEMENTS.scrollTopButton?.addEventListener('click', () => ELEMENTS.html.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' }));
     
     window.addEventListener('resize', adjustLayoutPadding);
-    window.addEventListener('scroll', throttle(() => {
+    
+    window.addEventListener('scroll', () => {
         updateScrollProgress();
+    }, { passive: true });
+
+    window.addEventListener('scroll', throttle(() => {
         handleScrollTopButton();
         handleHeaderShrink();
     }, 100), { passive: true });

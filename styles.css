@@ -319,8 +319,31 @@ body.dark-mode .hamburger-inner, body.dark-mode .hamburger-inner::before, body.d
     100% { transform: translateX(-50%); } 
 }
 
-/* Hero Center Fix */
-.hero { min-height: 80vh; display: flex; align-items: center; justify-content: center; }
+/* Hero Center Fix & Sci-Fi Grid */
+.hero { min-height: 55vh; display: flex; align-items: center; justify-content: center; }
+
+.hero-cyber-grid {
+    position: absolute; inset: 0; overflow: hidden;
+    perspective: 600px; z-index: 0;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 40%, black 80%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 40%, black 80%, transparent 100%);
+}
+.hero-cyber-grid::before {
+    content: ''; position: absolute;
+    bottom: -50%; left: -50%; width: 200%; height: 200%;
+    background-image: 
+        linear-gradient(var(--tertiary-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--primary-color) 1px, transparent 1px);
+    background-size: 60px 60px;
+    transform: rotateX(75deg) translateY(0);
+    animation: cyberGridScroll 10s linear infinite;
+    opacity: 0.15;
+}
+body.dark-mode .hero-cyber-grid::before { opacity: 0.3; }
+@keyframes cyberGridScroll {
+    0% { transform: rotateX(75deg) translateY(0); }
+    100% { transform: rotateX(75deg) translateY(60px); }
+}
 
 /* Parallax Overlay */
 .parallax {
@@ -397,6 +420,7 @@ body.dark-mode .preloader { background: var(--bg-dark); }
 .scroll-progress {
     position: fixed; top: 0; left: 0; height: 3px; z-index: 9999;
     background: var(--button-gradient-primary); box-shadow: 0 0 10px var(--tertiary-color);
+    transition: width 0.15s ease-out;
 }
 
 /* ==========================================================================
@@ -442,11 +466,15 @@ body.terminal-mode img, body.terminal-mode .particles-container {
     filter: sepia(100%) hue-rotate(90deg) saturate(300%) !important;
 }
 
+/* Blinking Terminal Cursor */
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.cursor-blink { animation: blink 1s step-end infinite; }
+
 /* ==========================================================================
    Media Queries
    ========================================================================== */
 @media (max-width: 991px) {
-    .hero { min-height: 60vh; }
+    .hero { min-height: 40vh; }
 }
 
 @media (max-width: 576px) {
