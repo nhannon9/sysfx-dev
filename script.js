@@ -1,6 +1,6 @@
 /**
  * SysFX Website Script
- * Version: 2.5 (Optimized & Cleaned with OnePageNav)
+ * Version: 3.2 (Optimized with OnePageNav, Debian Boot & Terminal Mode)
  * Author: sysfx 
  *
  * Purpose: Manages dynamic interactions, animations, and third-party
@@ -27,8 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
             "Your Partner in Tech Solutions.",
             "Expert Computer Repair Services.",
             "Robust Cybersecurity Solutions.",
-            "Custom Web Development.",
-            "Reliable Networking & IT Support.",
+            "Custom Web Architecture.",
+            "Enterprise Networking.",
             "Serving Clinton, CT and Beyond."
         ],
         TECH_TRIVIA: [
@@ -150,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         const elements = {};
         for (const key in selectors) {
+            // Include legacy selectors to prevent errors if you ever add those sections back
             const multiple = ['modals', 'serviceCards', 'modalScrollButtons', 'galleryItems', 'testimonials', 'statsNumbers', 'animatedSections'].includes(key);
             elements[key] = multiple ? selectElements(selectors[key]) : selectElement(selectors[key]);
         }
@@ -284,11 +285,11 @@ document.addEventListener('DOMContentLoaded', () => {
             particlesJS('particles-js', {
                 particles: {
                     number: { value: 100, density: { enable: true, value_area: 800 } },
-                    color: { value: "#4CAF50" },
+                    color: { value: "#0dcaf0" },
                     shape: { type: "circle" },
-                    opacity: { value: 0.45, random: true, anim: { enable: true, speed: 0.8, opacity_min: 0.1, sync: false } },
+                    opacity: { value: 0.35, random: true, anim: { enable: true, speed: 0.8, opacity_min: 0.1, sync: false } },
                     size: { value: 3, random: true },
-                    line_linked: { enable: true, distance: 130, color: "#444444", opacity: 0.5, width: 1 },
+                    line_linked: { enable: true, distance: 130, color: "#6f42c1", opacity: 0.3, width: 1 },
                     move: { enable: true, speed: 1.5, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
                 },
                 interactivity: {
@@ -333,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mapInstance.eachLayer((layer) => { if (layer instanceof L.Marker || (layer.options && layer.options.icon instanceof L.DivIcon)) mapInstance.removeLayer(layer); });
         try {
             const computedStyle = getComputedStyle(ELEMENTS.body);
-            const markerColor = ELEMENTS.body.classList.contains('dark-mode') ? (computedStyle.getPropertyValue('--secondary-color').trim() || '#4CAF50') : (computedStyle.getPropertyValue('--primary-color').trim() || '#00a000');
+            const markerColor = ELEMENTS.body.classList.contains('dark-mode') ? (computedStyle.getPropertyValue('--tertiary-color').trim() || '#0d6efd') : (computedStyle.getPropertyValue('--primary-color').trim() || '#058743');
             const borderColor = ELEMENTS.body.classList.contains('dark-mode') ? '#212529' : '#f8f9fa';
             
             const styleId = 'map-marker-keyframes';
@@ -430,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleLightbox = () => {
-        if (!ELEMENTS.lightbox) return;
+        if (!ELEMENTS.lightbox || ELEMENTS.galleryItems.length === 0) return;
         const openLightbox = (item) => {
             activeLightboxTarget = item;
             ELEMENTS.lightboxImage.src = item.getAttribute('data-src');
@@ -707,6 +708,44 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(remove, CONFIG.PRELOADER_TIMEOUT_MS); // Safety fallback
     };
 
+    // --- Cool Feature 1: Debian Boot Console Log ---
+    const runDebianBootSequence = () => {
+        const styleOk = "color: #0f0; font-weight: bold;";
+        const styleInfo = "color: #0dcaf0; font-weight: bold;";
+        const styleBase = "color: #ccc;";
+        
+        console.log("%c[  OK  ] %cStarted sysfx web services.", styleOk, styleBase);
+        setTimeout(() => console.log("%c[  OK  ] %cReached target Network is Online.", styleOk, styleBase), 200);
+        setTimeout(() => console.log("%c[ INFO ] %cMounting /dev/sda1...", styleInfo, styleBase), 450);
+        setTimeout(() => console.log("%c[  OK  ] %cMounted /var/www/html.", styleOk, styleBase), 600);
+        setTimeout(() => console.log("%c[  OK  ] %cStarted Docker Application Container Engine.", styleOk, styleBase), 800);
+        setTimeout(() => console.log("%c[  OK  ] %cStarted Debian system initialization.", styleOk, styleBase), 1100);
+        setTimeout(() => {
+            console.log("%c\nWelcome to sysfx terminal. All systems nominal.", "color: #00d062; font-size: 14px; font-weight: bold;");
+            console.log("%c(Hint: Press the '~' key for terminal mode)\n", "color: #6c757d; font-style: italic;");
+        }, 1500);
+    };
+
+    // --- Cool Feature 2: Terminal Mode Hotkey ---
+    const handleEasterEggHotkeys = () => {
+        document.addEventListener('keydown', (e) => {
+            // Toggle terminal mode when the tilde (~) key is pressed
+            if (e.key === '`' || e.key === '~') {
+                // Prevent toggling if user is typing in a form field
+                if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    ELEMENTS.body.classList.toggle('terminal-mode');
+                    
+                    if (ELEMENTS.body.classList.contains('terminal-mode')) {
+                        console.log("%c> Terminal mode activated. UI stripped.", "color: #0f0;");
+                    } else {
+                        console.log("%c> Terminal mode deactivated. UI restored.", "color: #0f0;");
+                    }
+                }
+            }
+        });
+    };
+
     // --- Initialization ---
     const initialize = () => {
         hidePreloader();
@@ -721,6 +760,10 @@ document.addEventListener('DOMContentLoaded', () => {
         handleLightbox();
         handleTestimonialCarousel();
         handleFormSubmission();
+        
+        // Execute the new Easter Egg functions
+        runDebianBootSequence();
+        handleEasterEggHotkeys();
 
         requestAnimationFrame(() => {
             initializeParticles();

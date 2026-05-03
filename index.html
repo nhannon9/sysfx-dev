@@ -17,7 +17,7 @@
     
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"></noscript>
-    <link rel="stylesheet" href="styles.css?v=3.1">
+    <link rel="stylesheet" href="styles.css?v=3.2">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,7 +28,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js" defer></script>
-    <script src="script.js?v=3.0" defer></script>
+    <script src="script.js?v=3.2" defer></script>
 </head>
 
 <body class="preload">
@@ -261,6 +261,54 @@
             </div>
         </section>
 
+        <section id="about" class="about container section-animation py-5" aria-labelledby="about-title">
+            <div class="row align-items-center flex-row-reverse gy-5 gap-lg-5">
+                <div class="col-lg-6 text-start">
+                    <h2 id="about-title" class="glow-text fw-bold mb-4">About Us</h2>
+                    <p class="text-secondary fs-5 mb-4">sysfx is a collective of highly disciplined tech professionals. We approach every infrastructure issue with a focus on system longevity and clean, maintainable architecture.</p>
+                    <p class="text-secondary mb-4">Our mission is to empower local businesses through uncompromised technical reliability. From fixing complex OS failures to deploying comprehensive cloud networks across the Connecticut shoreline, we ensure your tech stack is an asset, not a liability.</p>
+                    <a href="#contact" class="modern-button action-button pulse-effect-primary mt-2" aria-label="Contact sysfx today"><span class="button-text">Start a Project</span></a>
+                </div>
+                <div class="col-lg-5 d-none d-lg-block">
+                    <div class="bg-primary bg-opacity-10 rounded-4 p-5 text-center shadow-sm border border-primary border-opacity-25 h-100 d-flex flex-column justify-content-center">
+                        <i class="fas fa-microchip fa-4x text-primary mb-4 opacity-75"></i>
+                        <h3 class="fw-bold mb-3">15+ Years</h3>
+                        <p class="text-muted m-0">Of meticulous technical execution.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="history" class="tech-timeline-section container py-5 my-5" aria-labelledby="timeline-title">
+            <div class="text-center mb-5 max-w-700 mx-auto">
+                <h2 id="timeline-title" class="glow-text fw-bold mb-3">Our Tech Journey</h2>
+                <p class="text-secondary fs-5 m-0">The evolution of sysfx.</p>
+            </div>
+            
+            <div class="timeline position-relative mx-auto" style="max-width: 700px; padding-left: 50px;">
+                <div class="timeline-item card-hover position-relative pb-4 mb-3 border-0 bg-transparent">
+                    <span class="timeline-year d-inline-block text-primary fw-bold fs-5 mb-2">2010</span>
+                    <p class="timeline-description text-secondary fs-6 lh-lg m-0">Founded as N-TEC, focusing on local PC repairs and IT support in Clinton, CT.</p>
+                </div>
+                <div class="timeline-item card-hover position-relative pb-4 mb-3 border-0 bg-transparent">
+                    <span class="timeline-year d-inline-block text-tertiary fw-bold fs-5 mb-2">2015</span>
+                    <p class="timeline-description text-secondary fs-6 lh-lg m-0">Expanded services into cybersecurity and networking solutions tailored for small businesses.</p>
+                </div>
+                <div class="timeline-item card-hover position-relative pb-4 mb-3 border-0 bg-transparent">
+                    <span class="timeline-year d-inline-block text-primary fw-bold fs-5 mb-2">2018</span>
+                    <p class="timeline-description text-secondary fs-6 lh-lg m-0">Launched web development services, creating modern online presences for clients.</p>
+                </div>
+                <div class="timeline-item card-hover position-relative pb-4 mb-3 border-0 bg-transparent">
+                    <span class="timeline-year d-inline-block text-tertiary fw-bold fs-5 mb-2">2020</span>
+                    <p class="timeline-description text-secondary fs-6 lh-lg m-0">Rebranded to sysfx, integrating cloud solutions and offering comprehensive 24/7 IT support.</p>
+                </div>
+                <div class="timeline-item card-hover position-relative border-0 bg-transparent">
+                    <span class="timeline-year d-inline-block text-primary fw-bold fs-5 mb-2">2026</span>
+                    <p class="timeline-description text-secondary fs-6 lh-lg m-0">Continuing a legacy of dedicated service, precision engineering, and technical growth.</p>
+                </div>
+            </div>
+        </section>
+
         <section id="contact" class="contact section-animation container py-5 my-5" aria-labelledby="contact-title">
             <div class="glass-morphism rounded-4 p-4 p-lg-5 shadow-lg position-relative overflow-hidden">
                 <div class="position-absolute top-0 end-0 bg-primary opacity-25" style="width: 300px; height: 300px; filter: blur(100px); border-radius: 50%;"></div>
@@ -353,7 +401,7 @@
     </div> 
 
     <audio id="background-music" loop preload="metadata" aria-label="Background music player">
-        <source src="https://ia802208.us.archive.org/30/items/title_20240514_0432/title.mp3" type="audio/mpeg">
+        <source src="https://archive.org/download/soundcloud-826123573/826123573.mp3" type="audio/mpeg">
     </audio>
 
     <aside class="floating-elements position-fixed bottom-0 end-0 p-4 z-3" aria-label="Quick access tools">

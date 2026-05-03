@@ -1,6 +1,6 @@
 /* ==========================================================================
    SysFX Stylesheet
-   Version: 3.1 (Cyber-Tech Palette, Ticker & Hero Fixes)
+   Version: 3.2 (Cyber-Tech Palette, Timeline Restored, Terminal Easter Egg)
    Author: sysfx
    ========================================================================== */
 
@@ -377,6 +377,49 @@ body.dark-mode .preloader { background: var(--bg-dark); }
 .scroll-progress {
     position: fixed; top: 0; left: 0; height: 3px; z-index: 9999;
     background: var(--button-gradient-primary); box-shadow: 0 0 10px var(--tertiary-color);
+}
+
+/* ==========================================================================
+   Timeline Styling
+   ========================================================================== */
+.timeline::before {
+    content: ''; position: absolute; top: 5px; left: 18px; 
+    width: 4px; height: calc(100% - 10px); 
+    background: var(--button-gradient-primary); 
+    border-radius: 2px; opacity: 0.3;
+}
+.timeline-item::after {
+    content: ''; position: absolute; top: 6px; left: -39px; 
+    width: 16px; height: 16px; background: var(--bg-surface-light); 
+    border: 3px solid var(--primary-color); border-radius: 50%; 
+    z-index: 2; transition: transform 0.3s ease;
+}
+body.dark-mode .timeline-item::after { background: var(--bg-surface-dark); border-color: var(--tertiary-color); }
+.timeline-item:hover::after { transform: scale(1.3); }
+
+/* ==========================================================================
+   Terminal Mode Easter Egg
+   ========================================================================== */
+body.terminal-mode {
+    background: #000 !important;
+}
+body.terminal-mode * {
+    background: transparent !important;
+    color: #0f0 !important;
+    border-color: #0f0 !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-radius: 0 !important;
+}
+body.terminal-mode .glass-morphism, body.terminal-mode .btn, body.terminal-mode .form-control {
+    border: 1px solid #0f0 !important;
+}
+body.terminal-mode img, body.terminal-mode .particles-container {
+    opacity: 0.2 !important;
+    filter: sepia(100%) hue-rotate(90deg) saturate(300%) !important;
 }
 
 /* ==========================================================================
