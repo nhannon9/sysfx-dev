@@ -282,17 +282,17 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             particlesJS('particles-js', {
                 particles: {
-                    number: { value: 100, density: { enable: true, value_area: 800 } },
-                    color: { value: "#0dcaf0" },
+                    number: { value: 60, density: { enable: true, value_area: 800 } },
+                    color: { value: ["#058743", "#00d062", "#0d6efd"] },
                     shape: { type: "circle" },
-                    opacity: { value: 0.35, random: true, anim: { enable: true, speed: 0.8, opacity_min: 0.1, sync: false } },
-                    size: { value: 3, random: true },
-                    line_linked: { enable: true, distance: 130, color: "#6f42c1", opacity: 0.3, width: 1 },
-                    move: { enable: true, speed: 1.5, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
+                    opacity: { value: 0.5, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false } },
+                    size: { value: 3, random: true, anim: { enable: true, speed: 2, size_min: 0.1, sync: false } },
+                    line_linked: { enable: true, distance: 150, color: "#058743", opacity: 0.2, width: 1 },
+                    move: { enable: true, speed: 1, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
                 },
                 interactivity: {
-                    detect_on: "canvas", events: { resize: true, onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "bubble" } },
-                    modes: { repulse: { distance: 80, duration: 0.4 }, push: { particles_nb: 4 }, grab: { distance: 140, line_opacity: 0.7 }, bubble: { distance: 200, size: 6, duration: 0.3 } }
+                    detect_on: "canvas", events: { resize: true, onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" } },
+                    modes: { grab: { distance: 140, line_opacity: 0.5 }, push: { particles_nb: 3 } }
                 }, retina_detect: true
             });
         } catch (error) { selectElement('#particles-js')?.style.setProperty('display', 'none', 'important'); }
@@ -540,12 +540,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (musicPlaying) {
             gsap?.to(audio, { volume: 0, duration: CONFIG.MUSIC_FADE_DURATION_MS/1000, onComplete: () => audio.pause() }) || (audio.volume = 0, audio.pause());
-            musicPlaying = false; btn.classList.add('muted'); btn.setAttribute('aria-pressed', 'false');
+            musicPlaying = false; btn.classList.remove('music-active'); btn.setAttribute('aria-pressed', 'false');
         } else {
             audio.volume = 0;
             audio.play().then(() => {
                 gsap?.to(audio, { volume: 1, duration: CONFIG.MUSIC_FADE_DURATION_MS/1000 }) || (audio.volume = 1);
-                musicPlaying = true; btn.classList.remove('muted'); btn.setAttribute('aria-pressed', 'true');
+                musicPlaying = true; btn.classList.add('music-active'); btn.setAttribute('aria-pressed', 'true');
             }).catch(e => logWarn("Music playback requires user interaction.", e));
         }
     };

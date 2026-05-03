@@ -209,6 +209,16 @@ body.dark-mode .glow-text { animation-name: pulseGlowDark; }
 .pulse-effect-primary { animation: pulsePrimary 2.5s infinite cubic-bezier(0.66, 0, 0, 1); }
 .pulse-effect-primary:hover { animation: none; }
 
+/* Music Button Active State */
+#music-toggle { transition: all var(--transition-speed) ease; }
+#music-toggle.music-active {
+    background: var(--button-gradient-primary);
+    border-color: transparent !important;
+    color: white !important;
+    box-shadow: 0 0 15px var(--primary-color);
+    animation: pulsePrimary 2.5s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+
 /* Custom Cursor */
 .cursor {
     position: fixed; top: 0; left: 0; width: 16px; height: 16px;
@@ -293,13 +303,19 @@ body.dark-mode .hamburger-inner, body.dark-mode .hamburger-inner::before, body.d
     background: var(--bg-dark); color: #fff;
     font-family: var(--font-family-mono); letter-spacing: 1px; font-weight: 700;
     border-bottom: 1px solid rgba(255,255,255,0.05);
+    overflow: hidden;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
 }
 .ticker-track {
-    animation: scroll-ticker 35s linear infinite;
+    display: flex;
+    width: max-content;
+    animation: scroll-ticker 25s linear infinite;
+    will-change: transform;
 }
 @keyframes scroll-ticker {
     0% { transform: translateX(0); }
-    /* Shifts exactly half its width to seamlessly loop the duplicated content */
     100% { transform: translateX(-50%); } 
 }
 
