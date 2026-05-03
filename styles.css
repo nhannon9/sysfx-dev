@@ -21,7 +21,7 @@
     --primary-color: #058743; /* Sysfx Green */
     --accent-bright: #00d062; /* Neon Green */
     
-    --secondary-color: #6f42c1; /* Deep Purple Accent */
+    --secondary-color: #552599; /* Deep Purple Accent (Darkened for Light Mode Readability) */
     --tertiary-color: #0d6efd; /* Electric Blue Accent */
     
     --glow-color: var(--accent-bright);
@@ -201,6 +201,16 @@ body.dark-mode .glow-text { animation-name: pulseGlowDark; }
 .modern-button.secondary:hover { box-shadow: 0 6px 20px rgba(111, 66, 193, 0.4); }
 .modern-button.small { padding: 10px 24px; font-size: 0.9em; }
 
+/* Dynamic Theme Toggle Button */
+#darkModeToggle {
+    background: linear-gradient(135deg, #f39c12, #d35400);
+    color: #fff; border: none; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+}
+body.dark-mode #darkModeToggle {
+    background: linear-gradient(135deg, #6f42c1, #0d6efd);
+    box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3);
+}
+
 @keyframes pulsePrimary { 
     0% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.5), var(--shadow-primary); } 
     70% { box-shadow: 0 0 0 15px rgba(13, 110, 253, 0), var(--shadow-primary); } 
@@ -243,8 +253,33 @@ body.dark-mode #main-header.header-shrunk { box-shadow: 0 4px 20px rgba(0,0,0,0.
     font-family: var(--font-family-mono); font-weight: 700;
     color: var(--primary-color); text-decoration: none;
     text-shadow: 0 0 5px var(--primary-color);
+    position: relative; display: inline-block;
 }
 body.dark-mode .css-logo-text { color: var(--accent-bright); text-shadow: 0 0 5px var(--accent-bright); }
+
+/* Logo Glitch Effect */
+.css-logo-text::before, .css-logo-text::after {
+    content: attr(data-text); position: absolute; top: 0; left: 0;
+    opacity: 0; pointer-events: none;
+}
+.css-logo-text:hover::before {
+    left: 2px; text-shadow: -2px 0 #ff00c1;
+    animation: glitch-anim-1 2s infinite linear alternate-reverse; opacity: 0.8;
+}
+.css-logo-text:hover::after {
+    left: -2px; text-shadow: 2px 0 #00fff9;
+    animation: glitch-anim-2 3s infinite linear alternate-reverse; opacity: 0.8;
+}
+@keyframes glitch-anim-1 {
+    0% { clip-path: inset(20% 0 80% 0); } 20% { clip-path: inset(60% 0 10% 0); }
+    40% { clip-path: inset(40% 0 50% 0); } 60% { clip-path: inset(80% 0 5% 0); }
+    80% { clip-path: inset(10% 0 70% 0); } 100% { clip-path: inset(30% 0 20% 0); }
+}
+@keyframes glitch-anim-2 {
+    0% { clip-path: inset(10% 0 60% 0); } 20% { clip-path: inset(30% 0 20% 0); }
+    40% { clip-path: inset(70% 0 10% 0); } 60% { clip-path: inset(20% 0 50% 0); }
+    80% { clip-path: inset(50% 0 30% 0); } 100% { clip-path: inset(5% 0 80% 0); }
+}
 
 /* Desktop Absolute Nav */
 .desktop-nav .nav-link {
@@ -387,6 +422,13 @@ body.dark-mode .hero-cyber-grid::before { opacity: 0.3; }
 }
 .lightbox.active, .modal.active { display: flex; opacity: 1; }
 .lightbox-image { max-width: 90vw; max-height: 85vh; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+.lightbox-close {
+    position: absolute; top: 15px; right: 25px; font-size: 3rem; line-height: 1;
+    color: #fff; background: transparent; border: none; padding: 10px;
+    cursor: pointer; z-index: 1205; text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    transition: color var(--transition-speed);
+}
+.lightbox-close:hover { color: var(--tertiary-color); }
 .modal-content {
     width: 90%; max-width: 600px; transform: translateY(20px);
     transition: transform 0.3s var(--transition-cubic);
@@ -478,6 +520,13 @@ body.terminal-mode img, body.terminal-mode .particles-container {
 }
 
 @media (max-width: 576px) {
+    :root {
+        /* Crisp mobile text glow */
+        --glow-intensity: 2px;
+        --glow-spread: 4px;
+        --text-gradient: linear-gradient(45deg, #10e572, #4da3ff); /* Lighter green for text */
+        --glow-color: rgba(3, 80, 40, 0.9); /* Darker green for shadow */
+    }
     .logo-container { width: 40px; height: 40px; }
     .css-logo-text { font-size: 1.2em; }
     .hero-title { font-size: 2.2rem; }
