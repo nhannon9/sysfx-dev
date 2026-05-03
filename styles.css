@@ -1,417 +1,408 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+/* ==========================================================================
+   SysFX Stylesheet
+   Version: 3.4 (Final Polish, Glitch Restore, OS Carousel)
+   Author: sysfx
+   ========================================================================== */
 
-    <title>sysfx - Sys Fix Tech Solutions | Clinton, CT Computer Repair & IT Services</title>
-    <meta name="description" content="sysfx provides expert computer repair, cybersecurity, web development, networking, cloud solutions, and IT support for homes and businesses in Clinton, CT and surrounding areas.">
-    <meta name="keywords" content="sysfx, Sys Fix, computer repair Clinton CT, IT support Clinton CT, tech support, cybersecurity, web development, networking, cloud solutions, managed IT services, Clinton Connecticut">
-    <meta name="author" content="sysfx">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://www.sysfx.net">
-
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+:root {
+    /* Base Tones */
+    --text-light: #f8f9fa;
+    --text-dark: #212529;
+    --text-muted-light: #6c757d;
+    --text-muted-dark: #adb5bd;
+    --border-light: rgba(0, 0, 0, 0.1);
+    --border-dark: rgba(255, 255, 255, 0.15);
+    --bg-light: #f8f9fa;
+    --bg-dark: #0d0e15; 
+    --bg-surface-light: #ffffff;
+    --bg-surface-dark: #151623;
     
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"></noscript>
-    <link rel="stylesheet" href="styles.css?v=3.4">
+    /* Cyber-Tech Palette */
+    --primary-color: #058743; 
+    --accent-bright: #00d062; 
+    --secondary-color: #6f42c1; 
+    --tertiary-color: #0d6efd; 
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    --glow-color: var(--accent-bright);
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js" defer></script>
-    <script src="script.js?v=3.2" defer></script>
-</head>
+    /* Glow & Shadows */
+    --glow-intensity: 5px;
+    --glow-spread: 8px;
+    --text-glow-shadow: 0 0 var(--glow-intensity) var(--glow-color), 0 0 var(--glow-spread) var(--glow-color);
+    --text-glow-shadow-dark-mode: 0 0 calc(var(--glow-intensity) * 1.2) var(--glow-color), 0 0 calc(var(--glow-spread) * 1.3) var(--glow-color);
 
-<body class="preload">
-    <a href="#main-content" class="skip-link fw-bold">Skip to main content</a>
+    /* Gradients */
+    --text-gradient: linear-gradient(45deg, var(--accent-bright), var(--tertiary-color));
+    --button-gradient-primary: linear-gradient(135deg, var(--primary-color), var(--tertiary-color));
+    --button-gradient-secondary: linear-gradient(135deg, var(--secondary-color), var(--tertiary-color));
+    --bg-gradient-dark: linear-gradient(135deg, #0d0e15, #161224);
 
-    <div id="preloader" class="preloader" aria-live="polite" aria-busy="true">
-        <div class="preloader-logo">
-            <div class="css-loader" aria-label="sysfx loading...">
-                <span>S</span><span>Y</span><span>S</span><span>F</span><span>X</span>
-            </div>
-        </div>
-        <div class="preloader-dots" aria-hidden="true">
-            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        </div>
-        <p class="sr-only">Loading sysfx website...</p>
-    </div>
+    /* Glassmorphism */
+    --glass-bg-light: rgba(255, 255, 255, 0.75);
+    --glass-border-light: rgba(255, 255, 255, 0.4);
+    --glass-bg-dark: rgba(20, 22, 35, 0.6);
+    --glass-border-dark: rgba(255, 255, 255, 0.08);
+    --glass-blur: 8px; 
 
-    <div class="scroll-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Page scroll progress"></div>
-    <div class="cursor" aria-hidden="true"></div>
+    /* Typography */
+    --font-family-base: 'Inter', 'Segoe UI', sans-serif;
+    --font-family-mono: 'JetBrains Mono', monospace;
 
-    <header id="main-header" class="glass-morphism fixed-top border-0" role="banner">
-        <div class="header-top-bar d-none d-lg-flex w-100 px-4 py-2 border-bottom border-secondary border-opacity-25 align-items-center justify-content-between">
-            <div id="current-time" aria-live="polite" class="text-nowrap text-muted small fw-medium" style="min-width: 180px;">Loading time...</div>
-            <div class="tech-trivia-container text-center px-4">
-                <span id="trivia-icon" aria-hidden="true" class="text-warning me-1">💡</span> 
-                <span id="trivia-text" class="text-muted small fw-medium">Loading tech fact...</span>
-            </div>
-            <div style="min-width: 180px;" class="d-none d-xl-block"></div>
-        </div>
-        
-        <div class="header-main d-flex align-items-center justify-content-between position-relative px-4 py-3">
-            <div class="brand-wrapper d-flex align-items-center z-3">
-                <div class="logo-container">
-                    <a href="#home" class="css-logo-link" aria-label="sysfx Home">
-                        <span class="css-logo-text fs-4" data-text="[sysfx]" aria-hidden="true">[sysfx]</span>
-                    </a>
-                </div>
-                <div class="header-titles ms-3 d-none d-xl-block text-start">
-                    <h1 class="glow-text m-0 fs-3" id="header-brand-title">sysfx</h1>
-                    <p id="typing-effect" class="m-0 text-muted small" aria-label="Company Tagline"> </p>
-                </div>
-            </div>
+    /* Shadows */
+    --shadow-primary: 0 4px 20px rgba(13, 110, 253, 0.25);
+    --shadow-primary-hover: 0 6px 25px rgba(13, 110, 253, 0.4);
 
-            <nav id="desktop-navigation" class="main-nav desktop-nav d-none d-lg-flex position-absolute top-50 start-50 translate-middle" role="navigation" aria-label="Main website navigation">
-                <ul class="nav-list d-flex list-unstyled m-0 p-0 gap-3 gap-xl-4">
-                    <li><a href="#home" class="nav-link"><i class="fas fa-home fa-fw me-1"></i> Home</a></li>
-                    <li><a href="#services" class="nav-link"><i class="fas fa-cogs fa-fw me-1"></i> Services</a></li>
-                    <li><a href="#about" class="nav-link"><i class="fas fa-info-circle fa-fw me-1"></i> About</a></li>
-                    <li><a href="#gallery" class="nav-link"><i class="fas fa-image fa-fw me-1"></i> Our Work</a></li>
-                    <li><a href="#contact" class="nav-link"><i class="fas fa-envelope fa-fw me-1"></i> Contact</a></li>
-                </ul>
-            </nav>
+    /* Transitions */
+    --transition-speed-fast: 0.15s;
+    --transition-speed: 0.3s;
+    --transition-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+}
 
-            <div class="header-actions d-flex align-items-center gap-3 z-3">
-                <button id="darkModeToggle" class="mode-button modern-button py-2 px-3 m-0" aria-label="Switch to dark mode" aria-pressed="false">
-                    <span class="icon-container"><i class="fas fa-moon" aria-hidden="true"></i></span>
-                    <span class="mode-button-text d-none d-xl-inline ms-2 small">Dark Mode</span>
-                </button>
-                <button class="hamburger d-lg-none border-0 bg-transparent p-0 ms-2" id="hamburger-button" aria-label="Toggle Navigation Menu" aria-expanded="false" aria-controls="mobile-navigation">
-                    <span class="hamburger-box" aria-hidden="true">
-                        <span class="hamburger-inner"></span>
-                    </span>
-                </button>
-            </div>
-        </div>
-    </header>
+html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+}
 
-    <div class="mobile-nav-overlay d-lg-none" id="mobile-nav-overlay" aria-hidden="true"></div>
-    <nav id="mobile-navigation" class="main-nav mobile-nav d-lg-none glass-morphism" role="navigation" aria-label="Mobile website navigation" aria-hidden="true">
-        <button class="mobile-nav-close border-0 bg-transparent" aria-label="Close Navigation Menu">
-            <i class="fas fa-times" aria-hidden="true"></i>
-        </button>
-        <ul class="nav-list list-unstyled p-0 m-0 mt-4">
-            <li><a href="#home" class="nav-link"><i class="fas fa-home fa-fw me-2" aria-hidden="true"></i> Home</a></li>
-            <li><a href="#services" class="nav-link"><i class="fas fa-cogs fa-fw me-2" aria-hidden="true"></i> Services</a></li>
-            <li><a href="#about" class="nav-link"><i class="fas fa-info-circle fa-fw me-2" aria-hidden="true"></i> About</a></li>
-            <li><a href="#gallery" class="nav-link"><i class="fas fa-image fa-fw me-2" aria-hidden="true"></i> Our Work</a></li>
-            <li><a href="#contact" class="nav-link"><i class="fas fa-envelope fa-fw me-2" aria-hidden="true"></i> Contact</a></li>
-        </ul>
-    </nav>
+body {
+    font-family: var(--font-family-base);
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    position: relative;
+    overflow-x: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease-in, background-color var(--transition-speed), color var(--transition-speed);
+}
 
-    <div class="tech-ticker py-2 text-center">
-        <span class="px-2">N-TEC IS NOW SYSFX.</span><span class="px-2 text-white-50 opacity-50">•</span>
-        <span class="px-2">DIAGNOSTICS. NETWORKING. SECURITY.</span><span class="px-2 text-white-50 opacity-50">•</span>
-        <span class="px-2">NEXT-GEN IT SUPPORT.</span>
-    </div>
+body:not(.preload) { opacity: 1; }
+body.no-scroll { overflow: hidden; }
 
-    <main id="main-content" role="main">
-        <section id="home" class="hero section-animation m-0 p-0 w-100" aria-labelledby="hero-title">
-            <div id="particles-js" class="particles-container position-absolute top-0 start-0 w-100 h-100" aria-hidden="true"></div>
-            <div class="hero-content position-relative z-2 w-100 px-4 d-flex flex-column align-items-center justify-content-center mx-auto text-center">
-                <h2 id="hero-title" class="hero-title gradient-text glow-text display-1 fw-bold mb-4">Welcome to sysfx</h2>
-                <p class="hero-text lead mb-5 text-white opacity-75" style="max-width: 750px;">Unlock cutting-edge technology with Sys Fix—your trusted partner in repairs, security, web development, networking, cloud solutions, and IT support in Clinton, CT.</p>
-                <div class="button-container d-flex flex-wrap justify-content-center gap-3">
-                    <a href="#contact" class="modern-button primary action-button pulse-effect-primary" aria-label="Get started with sysfx services">
-                        <i class="fas fa-paper-plane" aria-hidden="true"></i> <span class="button-text ms-2">Get Started</span>
-                    </a>
-                    <a href="#services" class="modern-button secondary action-button explore-services" aria-label="Explore sysfx services list">
-                        <span class="button-text">Explore Services</span> <i class="fas fa-arrow-right ms-2"></i>
-                    </a>
-                </div>
-            </div>
-        </section>
+/* ==========================================================================
+   Dark Mode Mechanics & Bootstrap Customization
+   ========================================================================== */
+body.dark-mode {
+    background: var(--bg-gradient-dark);
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+}
 
-        <section id="welcome" class="welcome section-animation container py-5 my-5" aria-labelledby="welcome-title">
-            <div class="row align-items-center gy-5 gap-lg-5">
-                <div class="col-lg-6 text-start">
-                    <h2 id="welcome-title" class="gradient-text glow-text fw-bold mb-4">Why Choose sysfx?</h2>
-                    <p class="text-secondary fs-5 mb-4">At sysfx, we deliver expert tech solutions tailored to your needs. Our certified technicians specialize in computer repairs, cybersecurity, web development, networking, and cloud solutions.</p>
-                    <p class="text-secondary mb-4">With over a decade of experience, we are committed to precision, innovation, and customer satisfaction. Based in Clinton, CT, we serve clients regionally and remotely, transforming your technical infrastructure.</p>
-                    <div class="d-flex align-items-center gap-3 mb-4 mt-5">
-                        <div class="bg-primary-soft rounded-circle p-3 text-primary shadow-sm">
-                            <i class="fas fa-headset fa-2x"></i>
-                        </div>
-                        <div>
-                            <span class="d-block text-muted small text-uppercase fw-bold tracking-wide">24/7 Support</span>
-                            <a href="mailto:nick@sysfx.net" class="email-link text-decoration-none fs-5 fw-bold gradient-text" id="email-display">nick@sysfx.net</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-5 position-relative d-none d-lg-block ms-auto">
-                    <div class="modern-image-stack">
-                        <div class="glass-morphism p-4 rounded-4 shadow-lg position-relative z-2">
-                            <div class="d-flex align-items-center gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-3">
-                                <i class="fas fa-server text-primary fa-2x"></i>
-                                <h4 class="m-0 fw-bold">System Status</h4>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2"><span class="text-muted fw-medium">Network Optimization</span><span class="text-primary fw-bold">100%</span></div>
-                            <div class="progress bg-secondary-soft mb-4 rounded-pill" style="height: 6px;"><div class="progress-bar bg-primary rounded-pill" style="width: 100%"></div></div>
-                            <div class="d-flex justify-content-between mb-2"><span class="text-muted fw-medium">Threat Deflection</span><span class="text-tertiary fw-bold">Active</span></div>
-                            <div class="progress bg-secondary-soft rounded-pill" style="height: 6px;"><div class="progress-bar bg-tertiary rounded-pill progress-bar-striped progress-bar-animated" style="width: 100%"></div></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+body.dark-mode .text-body { color: var(--text-light) !important; }
+body.dark-mode .bg-body { background-color: var(--bg-surface-dark) !important; }
+body.dark-mode .text-secondary { color: #adb5bd !important; }
+body.dark-mode .text-muted { color: rgba(255, 255, 255, 0.5) !important; }
+body.dark-mode .border-secondary { border-color: rgba(255, 255, 255, 0.1) !important; }
+body.dark-mode .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
 
-        <section id="services" class="services parallax section-animation py-5 my-5" aria-labelledby="services-title">
-            <div class="container position-relative z-2 py-5">
-                <div class="text-center mb-5 max-w-700 mx-auto">
-                    <h2 id="services-title" class="gradient-text glow-text fw-bold">Our Services</h2>
-                    <p class="services-description text-white opacity-75 fs-5 mt-3">sysfx offers a comprehensive suite of tech services to empower your business. From hardware fixes to cloud migrations, we engineer robust solutions.</p>
-                </div>
-                
-                <div class="bento-grid mt-5">
-                    <article class="service bento-large glass-morphism card-hover text-start p-4 p-lg-5" data-modal-target="computer-repair-modal" tabindex="0" role="button" aria-haspopup="dialog">
-                        <div class="service-icon mb-4"><i class="fas fa-laptop fa-2x text-primary" aria-hidden="true"></i></div>
-                        <h3 class="fw-bold mb-3">Computer Repair & Diagnostics</h3>
-                        <p class="text-secondary flex-grow-1 fs-5">Fast, reliable repairs for desktops, laptops, and custom builds. We resolve deep hardware faults, optimize OS environments, and guarantee rigorous diagnostic testing.</p>
-                        <div class="mt-4"><span class="text-primary fw-bold tracking-wide text-uppercase small">Learn More <i class="fas fa-arrow-right ms-1"></i></span></div>
-                    </article>
-                    
-                    <article class="service glass-morphism card-hover text-start p-4" data-modal-target="cybersecurity-modal" tabindex="0" role="button" aria-haspopup="dialog">
-                        <div class="service-icon mb-3"><i class="fas fa-shield-alt fa-2x text-tertiary" aria-hidden="true"></i></div>
-                        <h3 class="fw-bold h5 mb-2">Cybersecurity</h3>
-                        <p class="text-secondary small mb-0">Advanced threat detection and fortified network perimeters.</p>
-                    </article>
-                    
-                    <article class="service glass-morphism card-hover text-start p-4" data-modal-target="web-development-modal" tabindex="0" role="button" aria-haspopup="dialog">
-                        <div class="service-icon mb-3"><i class="fas fa-code fa-2x text-primary" aria-hidden="true"></i></div>
-                        <h3 class="fw-bold h5 mb-2">Web Architecture</h3>
-                        <p class="text-secondary small mb-0">High-performance, SEO-optimized digital storefronts.</p>
-                    </article>
-                    
-                    <article class="service glass-morphism card-hover text-start p-4" data-modal-target="networking-modal" tabindex="0" role="button" aria-haspopup="dialog">
-                        <div class="service-icon mb-3"><i class="fas fa-network-wired fa-2x text-tertiary" aria-hidden="true"></i></div>
-                        <h3 class="fw-bold h5 mb-2">Enterprise Networking</h3>
-                        <p class="text-secondary small mb-0">Seamless, secure, and infinitely scalable local networks.</p>
-                    </article>
-                    
-                    <article class="service glass-morphism card-hover text-start p-4" data-modal-target="cloud-solutions-modal" tabindex="0" role="button" aria-haspopup="dialog">
-                        <div class="service-icon mb-3"><i class="fas fa-cloud fa-2x text-primary" aria-hidden="true"></i></div>
-                        <h3 class="fw-bold h5 mb-2">Cloud Migrations</h3>
-                        <p class="text-secondary small mb-0">Fluid transition to scalable off-site infrastructures.</p>
-                    </article>
-                </div>
-            </div>
-        </section>
+.text-primary { color: var(--primary-color) !important; }
+.text-secondary { color: var(--secondary-color) !important; }
+.text-tertiary { color: var(--tertiary-color) !important; }
 
-        <section class="py-5 border-top border-bottom border-secondary border-opacity-25 my-5">
-            <div class="container text-center">
-                <h4 class="text-muted small text-uppercase tracking-wide fw-bold mb-4">Supporting All Major Environments</h4>
-                <div class="os-logo-scroller overflow-hidden" aria-label="Supported Operating Systems Logos">
-                    <div class="os-logo-track d-flex align-items-center">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Windows_logo_and_wordmark_-_2021.svg/512px-Windows_logo_and_wordmark_-_2021.svg.png" alt="Windows" class="os-logo mx-4" loading="lazy" width="50" height="50">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/MacOS_logo_%282017%29.svg/512px-MacOS_logo_%282017%29.svg.png" alt="macOS" class="os-logo mx-4" loading="lazy" width="50" height="50">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Linux_logo.svg/512px-Linux_logo.svg.png" alt="Linux" class="os-logo mx-4" loading="lazy" width="50" height="50">
-                        <img src="https://techicons.dev/icons/ubuntu.svg" alt="Ubuntu" class="os-logo mx-4" loading="lazy" width="50" height="50">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Android_robot.svg/512px-Android_robot.svg.png" alt="Android" class="os-logo mx-4" loading="lazy" width="50" height="50">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/512px-Apple_logo_black.svg.png" alt="iOS" class="os-logo apple-dark-invert mx-4" loading="lazy" width="50" height="50">
-                        <img src="https://techicons.dev/icons/debian.svg" alt="Debian" class="os-logo mx-4" loading="lazy" width="50" height="50">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Windows_logo_and_wordmark_-_2021.svg/512px-Windows_logo_and_wordmark_-_2021.svg.png" alt="" class="os-logo mx-4" loading="lazy" aria-hidden="true" width="50" height="50">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/MacOS_logo_%282017%29.svg/512px-MacOS_logo_%282017%29.svg.png" alt="" class="os-logo mx-4" loading="lazy" aria-hidden="true" width="50" height="50">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Linux_logo.svg/512px-Linux_logo.svg.png" alt="" class="os-logo mx-4" loading="lazy" aria-hidden="true" width="50" height="50">
-                        <img src="https://techicons.dev/icons/ubuntu.svg" alt="" class="os-logo mx-4" loading="lazy" aria-hidden="true" width="50" height="50">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Android_robot.svg/512px-Android_robot.svg.png" alt="" class="os-logo mx-4" loading="lazy" aria-hidden="true" width="50" height="50">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/512px-Apple_logo_black.svg.png" alt="" class="os-logo apple-dark-invert mx-4" loading="lazy" aria-hidden="true" width="50" height="50">
-                        <img src="https://techicons.dev/icons/debian.svg" alt="" class="os-logo mx-4" loading="lazy" aria-hidden="true" width="50" height="50">
-                    </div>
-                </div>
-            </div>
-        </section>
+.bg-primary-soft { background-color: rgba(5, 135, 67, 0.15) !important; }
+.bg-secondary-soft { background-color: rgba(111, 66, 193, 0.15) !important; }
+.bg-tertiary-soft { background-color: rgba(13, 110, 253, 0.15) !important; }
 
-        <section id="gallery" class="gallery section-animation container py-5 my-5" aria-labelledby="gallery-title">
-            <div class="d-flex justify-content-between align-items-end mb-4 px-2">
-                <div class="text-start">
-                    <h2 id="gallery-title" class="glow-text fw-bold m-0">Our Work</h2>
-                    <p class="text-secondary mt-2 m-0 fs-5">Precision deployment and flawless cable management.</p>
-                </div>
-                <button type="button" class="modern-button secondary small fw-bold d-none d-md-flex" onclick="alert('Full portfolio coming soon!')" aria-label="View full project portfolio">View Archive <i class="fas fa-arrow-right ms-2"></i></button>
-            </div>
-            
-            <div class="gallery-container p-0 m-0 pb-4" role="list">
-                <div class="gallery-item card-hover rounded-4" role="listitem" tabindex="0" aria-label="View image: Tech hardware repair project" data-src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" data-alt="Close-up of a computer motherboard with components">
-                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70" alt="Tech hardware repair project" loading="lazy">
-                </div>
-                <div class="gallery-item card-hover rounded-4" role="listitem" tabindex="0" aria-label="View image: Networking setup installation" data-src="https://images.unsplash.com/photo-1548544027-1a96c4c24c7a?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3" data-alt="Server room with racks of network equipment">
-                    <img src="https://images.unsplash.com/photo-1548544027-1a96c4c24c7a?q=80&w=400&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Networking setup installation" loading="lazy">
-                </div>
-                <div class="gallery-item card-hover rounded-4" role="listitem" tabindex="0" aria-label="View image: Web development project" data-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" data-alt="Laptop showing lines of code on screen">
-                    <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70" alt="Web development project" loading="lazy">
-                </div>
-            </div>
-            <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-alt-text" aria-hidden="true" style="display: none;">
-                <button class="lightbox-close" aria-label="Close lightbox" type="button">×</button>
-                <img src="" alt="" id="lightbox-image" class="lightbox-image">
-                <span id="lightbox-alt-text" class="sr-only"></span>
-            </div>
-        </section>
+body.dark-mode .text-primary { color: var(--accent-bright) !important; }
 
-        <section id="about" class="about container section-animation py-4 my-5" aria-labelledby="about-title">
-            <div class="row align-items-center flex-row-reverse gy-5 gap-lg-5">
-                <div class="col-lg-6 text-start">
-                    <h2 id="about-title" class="glow-text fw-bold mb-4">About Us</h2>
-                    <p class="text-secondary fs-5 mb-4">sysfx is a collective of highly disciplined tech professionals. We approach every infrastructure issue with a focus on system longevity and clean, maintainable architecture.</p>
-                    <p class="text-secondary mb-4">Our mission is to empower local businesses through uncompromised technical reliability. From fixing complex OS failures to deploying comprehensive cloud networks across the Connecticut shoreline, we ensure your tech stack is an asset, not a liability.</p>
-                    <a href="#contact" class="modern-button action-button pulse-effect-primary mt-2" aria-label="Contact sysfx today"><span class="button-text">Start a Project</span></a>
-                </div>
-                <div class="col-lg-5 d-none d-lg-block">
-                    <div class="bg-primary-soft rounded-4 p-5 text-center shadow-sm border border-primary border-opacity-25 h-100 d-flex flex-column justify-content-center">
-                        <i class="fas fa-microchip fa-4x text-primary mb-4 opacity-75"></i>
-                        <h3 class="fw-bold mb-3">15+ Years</h3>
-                        <p class="text-muted m-0">Of meticulous technical execution.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+/* ==========================================================================
+   Accessibility
+   ========================================================================== */
+.skip-link {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+.skip-link:focus {
+    position: fixed; top: 10px; left: 10px; width: auto; height: auto;
+    clip: auto; z-index: 999999; background: var(--button-gradient-primary);
+    color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;
+    box-shadow: var(--shadow-primary); outline: none;
+}
 
-        <section id="history" class="tech-timeline-section container py-5 my-5" aria-labelledby="timeline-title">
-            <div class="text-center mb-5 max-w-700 mx-auto">
-                <h2 id="timeline-title" class="glow-text fw-bold mb-3">Our Tech Journey</h2>
-                <p class="text-secondary fs-5 m-0">The evolution of sysfx.</p>
-            </div>
-            
-            <div class="timeline position-relative mx-auto" style="max-width: 700px; padding-left: 50px;">
-                <div class="timeline-item card-hover position-relative pb-4 mb-3 border-0 bg-transparent">
-                    <span class="timeline-year d-inline-block text-primary fw-bold fs-5 mb-2">2010</span>
-                    <p class="timeline-description text-secondary fs-6 lh-lg m-0">Founded as N-TEC, focusing on local PC repairs and IT support in Clinton, CT.</p>
-                </div>
-                <div class="timeline-item card-hover position-relative pb-4 mb-3 border-0 bg-transparent">
-                    <span class="timeline-year d-inline-block text-tertiary fw-bold fs-5 mb-2">2015</span>
-                    <p class="timeline-description text-secondary fs-6 lh-lg m-0">Expanded services into cybersecurity and networking solutions tailored for small businesses.</p>
-                </div>
-                <div class="timeline-item card-hover position-relative pb-4 mb-3 border-0 bg-transparent">
-                    <span class="timeline-year d-inline-block text-primary fw-bold fs-5 mb-2">2018</span>
-                    <p class="timeline-description text-secondary fs-6 lh-lg m-0">Launched web development services, creating modern online presences for clients.</p>
-                </div>
-                <div class="timeline-item card-hover position-relative pb-4 mb-3 border-0 bg-transparent">
-                    <span class="timeline-year d-inline-block text-tertiary fw-bold fs-5 mb-2">2020</span>
-                    <p class="timeline-description text-secondary fs-6 lh-lg m-0">Rebranded to sysfx, integrating cloud solutions and offering comprehensive 24/7 IT support.</p>
-                </div>
-                <div class="timeline-item card-hover position-relative border-0 bg-transparent">
-                    <span class="timeline-year d-inline-block text-primary fw-bold fs-5 mb-2">2026</span>
-                    <p class="timeline-description text-secondary fs-6 lh-lg m-0">Continuing a legacy of dedicated service, precision engineering, and technical growth.</p>
-                </div>
-            </div>
-        </section>
+/* ==========================================================================
+   Typography & Effects
+   ========================================================================== */
+.glass-morphism {
+    background: var(--glass-bg-light); backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border-light);
+}
+body.dark-mode .glass-morphism { background: var(--glass-bg-dark); border-color: var(--glass-border-dark); }
 
-        <section id="contact" class="contact section-animation container py-5 my-5" aria-labelledby="contact-title">
-            <div class="glass-morphism rounded-4 p-4 p-lg-5 shadow-lg position-relative overflow-hidden">
-                <div class="position-absolute top-0 end-0 bg-primary opacity-25" style="width: 300px; height: 300px; filter: blur(100px); border-radius: 50%;"></div>
-                <div class="position-absolute bottom-0 start-0 bg-tertiary opacity-25" style="width: 250px; height: 250px; filter: blur(80px); border-radius: 50%;"></div>
-                
-                <div class="text-center mb-5 max-w-700 mx-auto position-relative z-2">
-                    <h2 id="contact-title" class="glow-text fw-bold display-5 mb-3">Initiate Contact</h2>
-                    <p class="text-secondary fs-5 m-0">Ready to elevate your infrastructure? Our lines are open.</p>
-                </div>
-                
-                <div class="row gy-5 gap-lg-5 justify-content-center position-relative z-2 mt-4">
-                    <div class="col-lg-4 text-start">
-                        <div class="contact-item d-flex align-items-center mb-4 pb-4 border-bottom border-secondary border-opacity-25">
-                            <div class="bg-primary-soft p-3 rounded-3 text-primary me-4 shadow-sm"><i class="fas fa-envelope fa-xl m-0"></i></div>
-                            <div><span class="d-block text-muted small text-uppercase tracking-wide fw-bold mb-1">Email Us</span><a href="mailto:nick@sysfx.net" class="fw-bold text-decoration-none email-link text-body fs-5">nick@sysfx.net</a></div>
-                        </div>
-                        <div class="contact-item d-flex align-items-center mb-4 pb-4 border-bottom border-secondary border-opacity-25">
-                            <div class="bg-tertiary-soft p-3 rounded-3 text-tertiary me-4 shadow-sm"><i class="fas fa-phone fa-xl m-0"></i></div>
-                            <div><span class="d-block text-muted small text-uppercase tracking-wide fw-bold mb-1">Call Us</span><a href="tel:+18603754425" class="fw-bold text-decoration-none text-body fs-5">(860) 375-4425</a></div>
-                        </div>
-                        <div class="contact-item d-flex align-items-center">
-                            <div class="bg-primary-soft p-3 rounded-3 text-primary me-4 shadow-sm"><i class="fas fa-map-marker-alt fa-xl m-0"></i></div>
-                            <div><span class="d-block text-muted small text-uppercase tracking-wide fw-bold mb-1">Headquarters</span><address class="m-0 text-body fw-medium">123 Main Street<br>Clinton, CT 06413</address></div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-lg-7">
-                        <form class="contact-form bg-body bg-opacity-50 p-4 p-md-5 rounded-4 shadow-sm border border-secondary border-opacity-10" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate>
-                            <div class="row g-4">
-                                <div class="col-md-6 form-group">
-                                    <label for="name" class="form-label text-muted small fw-bold tracking-wide text-uppercase mb-2">Name</label>
-                                    <input type="text" id="name" name="name" class="form-control form-control-lg bg-body text-body border-secondary border-opacity-25 rounded-3" required placeholder="John Doe">
-                                </div>
-                                <div class="col-md-6 form-group">
-                                    <label for="email-input" class="form-label text-muted small fw-bold tracking-wide text-uppercase mb-2">Email</label>
-                                    <input type="email" id="email-input" name="email" class="form-control form-control-lg bg-body text-body border-secondary border-opacity-25 rounded-3" required placeholder="john@example.com">
-                                </div>
-                                <div class="col-12 form-group">
-                                    <label for="subject" class="form-label text-muted small fw-bold tracking-wide text-uppercase mb-2">Subject</label>
-                                    <input type="text" id="subject" name="subject" class="form-control form-control-lg bg-body text-body border-secondary border-opacity-25 rounded-3" required placeholder="Diagnostic Request">
-                                </div>
-                                <div class="col-12 form-group">
-                                    <label for="message" class="form-label text-muted small fw-bold tracking-wide text-uppercase mb-2">Message</label>
-                                    <textarea id="message" name="message" class="form-control bg-body text-body border-secondary border-opacity-25 rounded-3 p-3" rows="5" required placeholder="Describe the system fault or requirements..."></textarea>
-                                </div>
-                                <div class="col-12 mt-4 pt-2 text-end">
-                                    <button type="submit" class="modern-button primary action-button pulse-effect-primary w-100 w-sm-auto shadow-lg border-0 py-3 px-5">Transmit Request <i class="fas fa-paper-plane ms-2"></i></button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+.gradient-text {
+    background: var(--text-gradient); -webkit-background-clip: text;
+    background-clip: text; color: transparent !important;
+}
 
-    <footer class="main-footer py-4 border-top border-secondary border-opacity-25 bg-body bg-opacity-50" role="contentinfo">
-        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
-            <p class="copyright text-muted m-0 small fw-medium">© <span id="current-year">2026</span> sysfx. <span class="ct-glow">Engineered in Connecticut.</span></p>
-            <div class="social-links d-flex gap-4 mt-3 mt-md-0">
-                <a href="#" class="text-muted"><i class="fab fa-twitter fs-5"></i></a>
-                <a href="#" class="text-muted"><i class="fab fa-linkedin fs-5"></i></a>
-                <a href="https://www.instagram.com/sys.fx/" class="text-muted"><i class="fab fa-instagram fs-5"></i></a>
-            </div>
-        </div>
-    </footer>
+@keyframes pulseGlow {
+    0%, 100% { text-shadow: var(--text-glow-shadow); }
+    50% { text-shadow: 0 0 calc(var(--glow-intensity) * 1.4) var(--glow-color), 0 0 calc(var(--glow-spread) * 1.5) var(--glow-color); }
+}
+@keyframes pulseGlowDark {
+    0%, 100% { text-shadow: var(--text-glow-shadow-dark-mode); }
+    50% { text-shadow: 0 0 calc(var(--glow-intensity) * 1.6) var(--glow-color), 0 0 calc(var(--glow-spread) * 1.7) var(--glow-color); }
+}
+.glow-text { text-shadow: var(--text-glow-shadow); animation: pulseGlow 2.5s infinite ease-in-out; }
+body.dark-mode .glow-text { animation-name: pulseGlowDark; }
 
-    <div class="modal-container" aria-hidden="true">
-        <div id="computer-repair-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="computer-repair-title" aria-hidden="true">
-            <div class="modal-content glass-morphism rounded-4 border-0 shadow-lg">
-                <div class="d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25 p-4 pb-3">
-                    <h3 id="computer-repair-title" class="modal-title text-primary m-0 fw-bold fs-4"><i class="fas fa-laptop me-2"></i> System Diagnostics</h3>
-                    <button class="btn-close btn-close-white opacity-75" aria-label="Close" type="button" onclick="document.querySelector('.modal-close').click()"></button>
-                    <button class="modal-close d-none"></button>
-                </div>
-                <div class="modal-body text-secondary p-4 fs-6">
-                    <p class="mb-4">We execute rigorous hardware and software diagnostics to identify underlying faults within your infrastructure.</p>
-                    <ul class="list-unstyled m-0">
-                        <li class="mb-3 d-flex align-items-start"><i class="fas fa-check text-primary mt-1 me-3"></i> <span>Component-level hardware replacement and upgrades.</span></li>
-                        <li class="mb-3 d-flex align-items-start"><i class="fas fa-check text-tertiary mt-1 me-3"></i> <span>Deep-level OS optimization and registry repair.</span></li>
-                        <li class="mb-0 d-flex align-items-start"><i class="fas fa-check text-primary mt-1 me-3"></i> <span>Forensic data recovery attempts.</span></li>
-                    </ul>
-                </div>
-                <div class="modal-footer border-top border-secondary border-opacity-25 p-4 pt-3 border-0 bg-body bg-opacity-25 rounded-bottom-4">
-                    <button type="button" class="btn btn-link text-muted text-decoration-none fw-medium modal-close-alt me-2">Cancel</button>
-                    <button type="button" class="modern-button primary modal-action pulse-effect-primary py-2 px-4 m-0" data-scroll-target="#contact">Initiate Ticket</button>
-                </div>
-            </div>
-        </div>
-    </div> 
+/* Footer CT Glow Animation */
+@keyframes ctPulse {
+    0%, 100% { text-shadow: 0 0 4px var(--tertiary-color); color: var(--tertiary-color); }
+    50% { text-shadow: 0 0 12px var(--tertiary-color), 0 0 20px var(--tertiary-color); color: #fff; }
+}
+.ct-glow { animation: ctPulse 3s infinite ease-in-out; font-weight: bold; }
 
-    <audio id="background-music" loop preload="metadata" aria-label="Background music player">
-        <source src="https://ia802208.us.archive.org/30/items/title_20240514_0432/title.mp3" type="audio/mpeg">
-    </audio>
 
-    <aside class="floating-elements position-fixed bottom-0 end-0 p-4 z-3" aria-label="Quick access tools">
-        <div class="d-flex flex-column gap-2">
-            <button id="music-toggle" class="btn btn-dark border-secondary border-opacity-25 rounded-circle shadow-lg d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;" aria-label="Play background music">
-                <i class="fas fa-music"></i>
-            </button>
-            <button class="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center scroll-top-btn border-0" id="scroll-top-button" style="width: 48px; height: 48px; display: none; background: var(--button-gradient-primary);" aria-label="Scroll back to top">
-                <i class="fas fa-arrow-up"></i>
-            </button>
-        </div>
-    </aside>
+.tracking-wide { letter-spacing: 1.5px; }
+.max-w-700 { max-width: 700px; }
 
-    <div class="easter-egg-trigger" aria-hidden="true" style="position: absolute; bottom: 5px; left: 5px; width:10px; height: 10px; cursor: pointer;"></div>
-</body>
-</html>
+/* ==========================================================================
+   Buttons & Interactions
+   ========================================================================== */
+.card-hover { transition: transform var(--transition-speed-fast) var(--transition-cubic), box-shadow var(--transition-speed-fast) var(--transition-cubic); }
+.card-hover:hover, .card-hover:focus-within {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: var(--shadow-primary-hover) !important;
+    border-color: rgba(13, 110, 253, 0.4);
+}
+
+.modern-button {
+    background: var(--button-gradient-primary); border: none; color: #fff;
+    padding: 14px 32px; text-decoration: none; display: inline-flex;
+    align-items: center; justify-content: center; font-weight: 600;
+    border-radius: 50px; transition: all var(--transition-speed) var(--transition-cubic);
+    box-shadow: var(--shadow-primary);
+}
+.modern-button:hover, .modern-button:focus-visible {
+    transform: translateY(-3px); color: #fff; box-shadow: var(--shadow-primary-hover);
+}
+.modern-button.secondary { background: var(--button-gradient-secondary); box-shadow: 0 4px 15px rgba(111, 66, 193, 0.25); }
+.modern-button.secondary:hover { box-shadow: 0 6px 20px rgba(111, 66, 193, 0.4); }
+.modern-button.small { padding: 10px 24px; font-size: 0.9em; }
+
+@keyframes pulsePrimary { 
+    0% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.5), var(--shadow-primary); } 
+    70% { box-shadow: 0 0 0 15px rgba(13, 110, 253, 0), var(--shadow-primary); } 
+    100% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0), var(--shadow-primary); } 
+}
+.pulse-effect-primary { animation: pulsePrimary 2.5s infinite cubic-bezier(0.66, 0, 0, 1); }
+.pulse-effect-primary:hover { animation: none; }
+
+/* Custom Cursor */
+.cursor {
+    position: fixed; top: 0; left: 0; width: 16px; height: 16px;
+    background-color: var(--tertiary-color); border-radius: 50%;
+    pointer-events: none; z-index: 9999; opacity: 0;
+    border: 2px solid rgba(13, 110, 253, 0.5); mix-blend-mode: difference;
+    transform: translate(-50%, -50%) scale(1);
+    transition: width var(--transition-speed-fast), height var(--transition-speed-fast);
+}
+body.cursor-ready .cursor { opacity: 1; }
+.cursor.hover { transform: translate(-50%, -50%) scale(2.5); background-color: rgba(13, 110, 253, 0.3); }
+@media (pointer: coarse) or (hover: none) { .cursor { display: none !important; } }
+
+/* ==========================================================================
+   Header, Navigation & Glitch
+   ========================================================================== */
+#main-header { transition: all var(--transition-speed) ease; }
+#main-header.header-shrunk { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+body.dark-mode #main-header.header-shrunk { box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+
+/* Glitch CSS Logo restored */
+.css-logo-link { display: inline-block; text-decoration: none; outline: none; }
+.css-logo-text {
+    font-family: var(--font-family-mono); font-weight: 700;
+    color: var(--primary-color); text-decoration: none; text-shadow: 0 0 5px var(--primary-color);
+    position: relative; display: inline-block; line-height: 1; transition: all 0.3s ease;
+}
+body.dark-mode .css-logo-text { color: var(--accent-bright); text-shadow: 0 0 5px var(--accent-bright); }
+.css-logo-text::before, .css-logo-text::after {
+    content: attr(data-text); position: absolute; top: 0; left: 0; 
+    width: 100%; height: 100%; background: transparent; clip: rect(0, 0, 0, 0);
+}
+.css-logo-text::before { left: -2px; text-shadow: 2px 0 #ff00c1; animation: glitch-anim-1 3s infinite linear alternate-reverse; }
+.css-logo-text::after { left: 2px; text-shadow: -2px 0 #00fff9; animation: glitch-anim-2 3s infinite linear alternate-reverse; }
+.css-logo-link:hover .css-logo-text::before { animation: glitch-anim-hover 0.3s infinite linear alternate-reverse; }
+.css-logo-link:hover .css-logo-text::after { animation: glitch-anim-hover 0.3s infinite linear alternate-reverse reverse; }
+
+@keyframes glitch-anim-1 { 0% { clip: rect(74px, 9999px, 75px, 0); } 20% { clip: rect(44px, 9999px, 51px, 0); } 40% { clip: rect(27px, 9999px, 32px, 0); } 60% { clip: rect(58px, 9999px, 61px, 0); } 80% { clip: rect(28px, 9999px, 84px, 0); } 100% { clip: rect(55px, 9999px, 60px, 0); } }
+@keyframes glitch-anim-2 { 0% { clip: rect(2px, 9999px, 10px, 0); } 20% { clip: rect(67px, 9999px, 73px, 0); } 40% { clip: rect(14px, 9999px, 19px, 0); } 60% { clip: rect(81px, 9999px, 86px, 0); } 80% { clip: rect(12px, 9999px, 18px, 0); } 100% { clip: rect(1px, 9999px, 5px, 0); } }
+@keyframes glitch-anim-hover { 0% { clip: rect(0, 9999px, 10px, 0); } 50% { clip: rect(5px, 9999px, 15px, 0); } 100% { clip: rect(0, 9999px, 5px, 0); } }
+
+/* Desktop Absolute Nav */
+.desktop-nav .nav-link {
+    color: var(--text-dark); font-weight: 600; text-decoration: none;
+    padding: 8px 18px; border-radius: 50px; font-size: 0.95rem; 
+    transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out, box-shadow 0.4s ease-in-out; /* Smooth fade for Scrollspy */
+}
+body.dark-mode .desktop-nav .nav-link { color: var(--text-light); }
+.desktop-nav .nav-link:hover { color: var(--tertiary-color); background: rgba(13, 110, 253, 0.08); }
+body.dark-mode .desktop-nav .nav-link:hover { background: rgba(13, 110, 253, 0.15); color: #fff; }
+
+.desktop-nav li.current .nav-link { background: var(--button-gradient-primary); color: #fff; box-shadow: var(--shadow-primary); }
+
+/* Mobile Nav Drawer */
+.mobile-nav {
+    width: 85%; max-width: 320px; transform: translateX(-105%);
+    transition: transform 0.4s var(--transition-cubic), visibility 0.4s, opacity 0.4s;
+}
+body.nav-active .mobile-nav { transform: translateX(0); visibility: visible; opacity: 1; }
+.mobile-nav-overlay {
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(3px);
+    opacity: 0; visibility: hidden; transition: opacity 0.4s ease;
+}
+body.nav-active .mobile-nav-overlay { opacity: 1; visibility: visible; }
+
+.mobile-nav .nav-link {
+    display: block; padding: 15px 20px; color: var(--text-dark);
+    text-decoration: none; border-bottom: 1px solid var(--border-light);
+}
+body.dark-mode .mobile-nav .nav-link { color: var(--text-light); border-bottom-color: var(--border-dark); }
+.mobile-nav li.current .nav-link { color: var(--tertiary-color); background: rgba(13,110,253,0.1); }
+body.dark-mode .mobile-nav li.current .nav-link { color: #fff; background: rgba(13,110,253,0.15); }
+
+/* Hamburger Icon */
+.hamburger-box { width: 24px; height: 20px; display: inline-block; position: relative; }
+.hamburger-inner, .hamburger-inner::before, .hamburger-inner::after { width: 24px; height: 2px; background-color: var(--text-dark); border-radius: 2px; position: absolute; transition: all 0.2s; }
+body.dark-mode .hamburger-inner, body.dark-mode .hamburger-inner::before, body.dark-mode .hamburger-inner::after { background-color: var(--text-light); }
+.hamburger-inner { top: 50%; transform: translateY(-50%); }
+.hamburger-inner::before { content: ""; top: -8px; }
+.hamburger-inner::after { content: ""; bottom: -8px; }
+.hamburger.is-active .hamburger-inner { background: transparent !important; }
+.hamburger.is-active .hamburger-inner::before { top: 0; transform: rotate(45deg); }
+.hamburger.is-active .hamburger-inner::after { bottom: 0; transform: rotate(-45deg); }
+
+/* ==========================================================================
+   Sections & Components
+   ========================================================================== */
+
+/* Static Ticker Bar */
+.tech-ticker {
+    background: var(--bg-dark); color: #fff;
+    font-family: var(--font-family-mono); letter-spacing: 1px; font-weight: 700;
+    border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9em;
+}
+
+/* Hero Center Fix */
+.hero { min-height: 80vh; display: flex; align-items: center; justify-content: center; background: var(--bg-gradient-dark); }
+
+/* Parallax Overlay */
+.parallax { background-attachment: fixed; background-size: cover; background-position: center; position: relative; z-index: 1; }
+.parallax::before { content: ''; position: absolute; inset: 0; background: rgba(13, 14, 21, 0.85); z-index: -1; }
+
+/* Bento Box Grid */
+.bento-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+@media (min-width: 992px) {
+    .bento-grid { grid-template-columns: repeat(3, 1fr); grid-auto-rows: minmax(180px, auto); }
+    .bento-large { grid-column: span 2; grid-row: span 2; }
+}
+
+/* OS Logo Carousel - Restored Scrolling Animation */
+.os-logo-scroller {
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+.os-logo-track {
+    width: max-content;
+    animation: scroll-logos 30s linear infinite;
+}
+@keyframes scroll-logos {
+    0% { transform: translateX(0); }
+    /* Shifts exactly half its width to seamlessly loop the duplicated content */
+    100% { transform: translateX(-50%); }
+}
+
+/* Horizontal Gallery */
+.gallery-container {
+    display: flex; overflow-x: auto; gap: 1.5rem; scroll-snap-type: x mandatory; padding-bottom: 1rem;
+    scrollbar-width: thin; scrollbar-color: var(--tertiary-color) transparent;
+}
+.gallery-container::-webkit-scrollbar { height: 6px; }
+.gallery-container::-webkit-scrollbar-thumb { background-color: var(--tertiary-color); border-radius: 10px; }
+.gallery-item { flex: 0 0 min(350px, 85vw); scroll-snap-align: center; position: relative; overflow: hidden; }
+.gallery-item img { width: 100%; height: 250px; object-fit: cover; transition: transform 0.5s var(--transition-cubic); }
+.gallery-item:hover img { transform: scale(1.05); }
+
+/* Lightbox & Modals */
+.lightbox, .modal {
+    position: fixed; inset: 0; background: rgba(0, 5, 10, 0.85); backdrop-filter: blur(8px);
+    z-index: 1200; display: none; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.3s ease;
+}
+.lightbox.active, .modal.active { display: flex; opacity: 1; }
+.lightbox-image { max-width: 90vw; max-height: 85vh; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+.modal-content { width: 90%; max-width: 600px; transform: translateY(20px); transition: transform 0.3s var(--transition-cubic); }
+.modal.active .modal-content { transform: translateY(0); }
+
+/* Form Elements */
+.form-control:focus {
+    background-color: var(--bg-surface-light); border-color: var(--tertiary-color);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2); outline: none;
+}
+body.dark-mode .form-control:focus {
+    background-color: var(--bg-surface-dark) !important; border-color: var(--tertiary-color);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.3);
+}
+
+/* Preloader */
+.preloader {
+    position: fixed; inset: 0; background: var(--bg-light); z-index: 99999;
+    display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease;
+}
+body.dark-mode .preloader { background: var(--bg-dark); }
+.css-loader span { display: inline-block; animation: bounce 1.4s infinite ease-in-out both; color: var(--tertiary-color); }
+.css-loader span:nth-child(1) { animation-delay: 0.1s; } .css-loader span:nth-child(2) { animation-delay: 0.2s; }
+.css-loader span:nth-child(3) { animation-delay: 0.3s; } .css-loader span:nth-child(4) { animation-delay: 0.4s; }
+.css-loader span:nth-child(5) { animation-delay: 0.5s; }
+@keyframes bounce { 0%, 100% { transform: translateY(5px); opacity: 0.5; } 50% { transform: translateY(-5px); opacity: 1; } }
+
+/* Scroll Progress */
+.scroll-progress {
+    position: fixed; top: 0; left: 0; height: 3px; z-index: 9999;
+    background: var(--button-gradient-primary); box-shadow: 0 0 10px var(--tertiary-color);
+}
+
+/* ==========================================================================
+   Timeline Styling
+   ========================================================================== */
+.timeline::before {
+    content: ''; position: absolute; top: 5px; left: 18px; 
+    width: 4px; height: calc(100% - 10px); 
+    background: var(--button-gradient-primary); 
+    border-radius: 2px; opacity: 0.3;
+}
+.timeline-item::after {
+    content: ''; position: absolute; top: 6px; left: -39px; 
+    width: 16px; height: 16px; background: var(--bg-surface-light); 
+    border: 3px solid var(--primary-color); border-radius: 50%; 
+    z-index: 2; transition: transform 0.3s ease;
+}
+body.dark-mode .timeline-item::after { background: var(--bg-surface-dark); border-color: var(--tertiary-color); }
+.timeline-item:hover::after { transform: scale(1.3); }
+
+/* ==========================================================================
+   Terminal Mode Easter Egg
+   ========================================================================== */
+body.terminal-mode { background: #000 !important; }
+body.terminal-mode * {
+    background: transparent !important; color: #0f0 !important;
+    border-color: #0f0 !important; font-family: 'JetBrains Mono', monospace !important;
+    box-shadow: none !important; text-shadow: none !important;
+    backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+    border-radius: 0 !important;
+}
+body.terminal-mode .glass-morphism, body.terminal-mode .btn, body.terminal-mode .form-control { border: 1px solid #0f0 !important; }
+body.terminal-mode img, body.terminal-mode .particles-container {
+    opacity: 0.2 !important; filter: sepia(100%) hue-rotate(90deg) saturate(300%) !important;
+}
+
+/* ==========================================================================
+   Media Queries
+   ========================================================================== */
+@media (max-width: 991px) {
+    .hero { min-height: 60vh; }
+}
+
+@media (max-width: 576px) {
+    .logo-container { width: 40px; height: 40px; }
+    .css-logo-text { font-size: 1.2em; }
+    .hero-title { font-size: 2.2rem; }
+    .floating-elements { padding: 1rem !important; }
+    .tech-ticker { font-size: 0.8em; }
+}
